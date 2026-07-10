@@ -82,7 +82,7 @@ const BerandaSidoarjo = () => {
 
   const getStyle = () => {
     return {
-      fillColor: "#22c55e", // Tailwind green-500
+      fillColor: "#2563eb", // Tailwind blue-600
       weight: 1,
       opacity: 1,
       color: "white",
@@ -92,7 +92,7 @@ const BerandaSidoarjo = () => {
 
   const getHoverStyle = () => {
     return {
-      fillColor: "#15803d", // Tailwind green-700
+      fillColor: "#1d4ed8", // Tailwind blue-700
       weight: 2,
       opacity: 1,
       color: "white",
@@ -161,11 +161,14 @@ const BerandaSidoarjo = () => {
       `}</style>
 
       {/* Header Info */}
-      <div className="text-center z-10 mb-6">
+      <div className="text-center z-10 mb-6 mt-2">
+        <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-3">
+          Jelajahi
+        </p>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
-        <p className="text-gray-600 italic text-sm md:text-base">
+        <p className="italic text-sm md:text-base font-medium" style={{ color: "black", opacity: 1 }}>
           Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
