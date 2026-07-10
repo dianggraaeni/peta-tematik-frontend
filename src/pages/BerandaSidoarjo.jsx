@@ -173,10 +173,10 @@ const BerandaSidoarjo = () => {
         </p>
       </div>
 
-      <div className="w-full max-w-6xl flex-grow relative pb-10" style={{ height: "75vh" }}>
+      <div className="w-full flex-grow relative pb-10 px-4 md:px-12" style={{ height: "75vh" }}>
         
         {/* Search Bar Overlay - Top Left within the map container */}
-        <div ref={searchRef} className="absolute top-4 left-4 z-[1000] w-64 md:w-80">
+        <div ref={searchRef} className="absolute top-4 left-4 md:left-12 z-[1000] w-64 md:w-80">
           <div className="relative">
             <input
               type="text"
@@ -224,6 +224,10 @@ const BerandaSidoarjo = () => {
           <MapContainer
             center={[-7.45, 112.7]}
             zoom={11}
+            minZoom={10}
+            maxZoom={14}
+            maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
+            maxBoundsViscosity={1.0}
             style={{ height: "100%", width: "100%", background: "transparent" }}
             zoomControl={true}
             dragging={true}
