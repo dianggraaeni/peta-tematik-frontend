@@ -12,7 +12,7 @@ const AutoZoom = ({ geojsonData }) => {
       const tempLayer = L.geoJSON(geojsonData);
       const bounds = tempLayer.getBounds();
       if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [20, 20] });
+        map.fitBounds(bounds, { padding: [5, 5] });
       }
     }
   }, [geojsonData, map]);
@@ -148,6 +148,9 @@ const BerandaSidoarjo = () => {
         .leaflet-container {
           background: transparent !important;
         }
+        .leaflet-interactive {
+          cursor: pointer !important;
+        }
         .leaflet-control-zoom {
           border: none !important;
           border-radius: 8px !important;
@@ -188,7 +191,7 @@ const BerandaSidoarjo = () => {
         <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-2">
           Jelajahi
         </p>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 tracking-tight leading-none">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 tracking-tight leading-none transition-all duration-300 hover:scale-[1.02] hover:drop-shadow-md cursor-default">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
         <p className="italic text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
@@ -250,6 +253,8 @@ const BerandaSidoarjo = () => {
               zoom={11}
               minZoom={10}
               maxZoom={14}
+              zoomSnap={0.5}
+              zoomDelta={0.5}
               maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
               maxBoundsViscosity={1.0}
               style={{ height: "100%", width: "100%", background: "transparent" }}
