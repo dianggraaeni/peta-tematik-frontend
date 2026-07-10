@@ -273,7 +273,8 @@ const BerandaSidoarjo = () => {
         <div className="w-full sm:w-auto flex justify-end order-1 sm:order-2">
           <button 
             onClick={() => navigate('/login')}
-            className="w-full sm:w-auto px-6 py-2 bg-white text-gray-800 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 text-sm md:text-base"
+            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 text-sm md:text-base"
+            style={{ color: "#1f2937" }}
           >
             Masuk Admin
           </button>
