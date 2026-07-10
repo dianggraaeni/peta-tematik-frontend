@@ -115,6 +115,8 @@ const BerandaSidoarjo = () => {
       permanent: false,
       direction: "top",
       className: "beranda-tooltip",
+      sticky: true,
+      opacity: 1
     });
 
     layer.on({
@@ -233,7 +235,8 @@ const BerandaSidoarjo = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              className="w-full px-4 py-2 pl-10 bg-white rounded-full shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563eb] text-gray-800 placeholder-gray-400 font-medium text-sm md:text-base"
+              className="w-full px-4 py-2 pl-10 bg-white rounded-full shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563eb] placeholder-gray-400 font-medium text-sm md:text-base"
+              style={{ color: "#1f2937" }}
             />
             <svg
               className="absolute left-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-gray-400"
@@ -256,8 +259,8 @@ const BerandaSidoarjo = () => {
                     onClick={() => handleSelectVillage(result.DESA)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
                   >
-                    <div className="font-semibold text-gray-800 text-sm md:text-base">{result.DESA}</div>
-                    <div className="text-xs text-gray-500">Kecamatan {result.KECAMATAN}</div>
+                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA}</div>
+                    <div className="text-xs" style={{ color: "#6b7280" }}>Kecamatan {result.KECAMATAN}</div>
                   </button>
                 ))
               ) : (
