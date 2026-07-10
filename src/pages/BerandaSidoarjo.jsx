@@ -220,20 +220,21 @@ const BerandaSidoarjo = () => {
           )}
         </div>
 
-        {geojsonData ? (
-          <MapContainer
-            center={[-7.45, 112.7]}
-            zoom={11}
-            minZoom={10}
-            maxZoom={14}
-            maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
-            maxBoundsViscosity={1.0}
-            style={{ height: "100%", width: "100%", background: "transparent" }}
-            zoomControl={true}
-            dragging={true}
-            scrollWheelZoom={true}
-            doubleClickZoom={true}
-          >
+        <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+          {geojsonData ? (
+            <MapContainer
+              center={[-7.45, 112.7]}
+              zoom={11}
+              minZoom={10}
+              maxZoom={14}
+              maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
+              maxBoundsViscosity={1.0}
+              style={{ height: "100%", width: "100%", background: "transparent" }}
+              zoomControl={true}
+              dragging={true}
+              scrollWheelZoom={true}
+              doubleClickZoom={true}
+            >
             <AutoZoom geojsonData={geojsonData} />
             <GeoJSON
               data={geojsonData}
@@ -246,6 +247,7 @@ const BerandaSidoarjo = () => {
             <div className="animate-pulse text-gray-500 font-semibold">Memuat peta...</div>
           </div>
         )}
+        </div>
       </div>
 
       {/* Login Button Absolute Top Right */}
