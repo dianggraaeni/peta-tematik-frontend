@@ -31,7 +31,7 @@ const AutoZoom = ({ geojsonData }) => {
   return null;
 };
 
-const Dashboard = () => {
+const Dashboard = ({ desaName }) => {
   // === STATE ===
   const [geojsonData, setGeojsonData] = useState(null);
   const [allRawData, setAllRawData] = useState([]);
@@ -437,7 +437,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchGeoData = async () => {
       try {
-        const res = await api6.get("/api/peta");
+        const url = desaName && desaName !== "SIDOARJO" 
+          ? `/api/peta?nmdesa=${encodeURIComponent(desaName)}` 
+          : "/api/peta";
+        const res = await api6.get(url);
         setGeojsonData(res.data);
       } catch (err) {
         message.error("Gagal memuat data peta geografis.");
@@ -445,19 +448,22 @@ const Dashboard = () => {
       }
     };
     fetchGeoData();
-  }, []);
+  }, [desaName]);
 
   useEffect(() => {
     const fetchOriginalData = async () => {
       try {
-        const res = await api6.get("/api/pekerjaan");
+        const url = desaName && desaName !== "SIDOARJO" 
+          ? `/api/pekerjaan?nmdesa=${encodeURIComponent(desaName)}` 
+          : "/api/pekerjaan";
+        const res = await api6.get(url);
         setAllOriginalData(res.data);
       } catch (err) {
         console.error("Fetch original data error:", err);
       }
     };
     fetchOriginalData();
-  }, []);
+  }, [desaName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -467,6 +473,8 @@ const Dashboard = () => {
       if (rt && rw) {
         apiUrl += `?rt=${rt}&rw=${rw}`;
         if (nmdesa) apiUrl += `&nmdesa=${encodeURIComponent(nmdesa)}`;
+      } else if (desaName && desaName !== "SIDOARJO") {
+        apiUrl += `?nmdesa=${encodeURIComponent(desaName)}`;
       }
       try {
         const res = await api6.get(apiUrl);
@@ -643,7 +651,7 @@ const Dashboard = () => {
 
   const handleResetView = () => {
     setSelectedArea({ rt: null, rw: null, nmdesa: null });
-    setSelectedAreaTitle("Seluruh Sidoarjo");
+    setSelectedAreaTitle(desaName === "SIDOARJO" ? "Seluruh Sidoarjo" : `Seluruh Desa ${desaName}`);
     setActiveFilters({
       gender: "",
       ageGroup: "",

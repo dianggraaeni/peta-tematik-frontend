@@ -6,7 +6,7 @@ import {
 } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 
-export default function NavbarPetaKelengkeng() {
+export default function NavbarPetaKelengkeng({ desaName = "SIDOARJO" }) {
   return (
     <div className="sticky top-0 z-50">
       <Navbar className="bg-[page] h-[11vh] p-3 sm:p-2 flex shadow-lg w-full">
@@ -35,8 +35,8 @@ export default function NavbarPetaKelengkeng() {
             <p className="font-sfProDisplay font-semibold text-[#0F1820] leading-tight">
               PETA KETENAGAKERJAAN
               <br />
-              <span className="text-[1.2rem] font-bold font-sfProDisplay">
-                SIDOARJO
+              <span className="text-[1.2rem] font-bold font-sfProDisplay uppercase">
+                {desaName !== "SIDOARJO" ? `DESA ${desaName}` : "SIDOARJO"}
               </span>
             </p>
           </div>

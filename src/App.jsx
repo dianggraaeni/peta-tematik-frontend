@@ -1,6 +1,7 @@
 import Login from "./pages/loginSidokepung";
 import Admin from "./pages/adminSidokepung";
 import PetaTematik from "./pages/PetaPekerjaanSidokepung";
+import BerandaSidoarjo from "./pages/BerandaSidoarjo";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { NextUIProvider } from "@nextui-org/system";
 import Logout from "./components/Logout";
@@ -13,7 +14,8 @@ function App() {
   return (
     <NextUIProvider navigate={navigate}>
       <Routes>
-        <Route path="/" element={<PetaTematik />} />
+        <Route path="/" element={<BerandaSidoarjo />} />
+        <Route path="/detail" element={<PetaTematik />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route
