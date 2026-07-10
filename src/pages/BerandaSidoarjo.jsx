@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, GeoJSON, useMap, ZoomControl } from "react-leaflet";
+import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -19,11 +19,21 @@ const AutoZoom = ({ geojsonData }) => {
   return null;
 };
 
+const desaTematikInfo = {
+  "Simoketawang": "Kelengkeng",
+  "Grogol": "Sayuran",
+  "Simoanginangin": "UMKM",
+  "Sidokepung": "Ketenagakerjaan"
+};
+
+const filterThemes = ["Semua Tema", "Kelengkeng", "Sayuran", "UMKM", "Ketenagakerjaan"];
+
 const BerandaSidoarjo = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeTheme, setActiveTheme] = useState("Semua Tema");
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
@@ -80,34 +90,44 @@ const BerandaSidoarjo = () => {
     navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
   };
 
-  const getStyle = () => {
+  const getStyle = (feature) => {
+    const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
+    const isTematik = desaTematikInfo[desaName] !== undefined;
+    const isHighlighted = activeTheme === "Semua Tema" ? isTematik : desaTematikInfo[desaName] === activeTheme;
+
     return {
-      fillColor: "#2563eb", // Tailwind blue-600
+      fillColor: isHighlighted ? "#1d4ed8" : "#3b82f6", // Highlighted solid blue vs base blue
       weight: 1,
       opacity: 1,
-      color: "white",
-      fillOpacity: 0.85,
+      color: "white", // Border color
+      fillOpacity: isHighlighted ? 0.85 : 0.15, // Transparent for non-highlighted so satellite shows
     };
   };
 
-  const getHoverStyle = () => {
+  const getHoverStyle = (feature) => {
+    const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
+    const isTematik = desaTematikInfo[desaName] !== undefined;
+    const isHighlighted = activeTheme === "Semua Tema" ? isTematik : desaTematikInfo[desaName] === activeTheme;
+
     return {
-      fillColor: "#1d4ed8", // Tailwind blue-700
+      fillColor: isHighlighted ? "#1e40af" : "#2563eb",
       weight: 2,
       opacity: 1,
       color: "white",
-      fillOpacity: 1,
+      fillOpacity: isHighlighted ? 1 : 0.4,
     };
   };
 
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
     const desaName = props.DESA || props.KECAMATAN;
+    const tema = desaTematikInfo[desaName];
 
     const tooltipContent = `
       <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
         <div style="font-weight: bold; font-size: 14px;">${desaName}</div>
         <div style="font-size: 11px; color: #666;">Kecamatan ${props.KECAMATAN}</div>
+        ${tema ? `<div style="font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Potensi: ${tema}</div>` : ''}
       </div>
     `;
 
@@ -122,12 +142,12 @@ const BerandaSidoarjo = () => {
     layer.on({
       mouseover: (e) => {
         const l = e.target;
-        l.setStyle(getHoverStyle());
+        l.setStyle(getHoverStyle(feature));
         l.bringToFront();
       },
       mouseout: (e) => {
         const l = e.target;
-        l.setStyle(getStyle());
+        l.setStyle(getStyle(feature));
       },
       click: () => {
         handleSelectVillage(desaName);
@@ -303,8 +323,30 @@ const BerandaSidoarjo = () => {
         </p>
       </div>
 
+      {/* Theme Filter Chips */}
+      <div className="w-full px-4 md:px-12 flex justify-start md:justify-end mb-3 gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {filterThemes.map((theme) => (
+          <button
+            key={theme}
+            onClick={() => setActiveTheme(theme)}
+            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all border ${
+              activeTheme === theme
+                ? "bg-[#2563eb] text-white border-[#2563eb] shadow-md"
+                : "bg-white text-[#1f2937] border-gray-300 hover:bg-blue-50 shadow-sm"
+            }`}
+          >
+            {theme}
+          </button>
+        ))}
+        <style>{`
+          .overflow-x-auto::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+      </div>
+
       {/* Map Container */}
-      <div className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" style={{ height: "75vh", minHeight: "500px" }}>
+      <div className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" style={{ height: "70vh", minHeight: "500px" }}>
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
@@ -322,9 +364,15 @@ const BerandaSidoarjo = () => {
               scrollWheelZoom={true}
               doubleClickZoom={true}
             >
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+              maxZoom={17}
+            />
             <ZoomControl position="bottomright" />
             <AutoZoom geojsonData={geojsonData} />
             <GeoJSON
+              key={`geojson-${activeTheme}`}
               data={geojsonData}
               style={getStyle}
               onEachFeature={onEachFeature}
