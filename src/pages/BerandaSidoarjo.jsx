@@ -184,14 +184,51 @@ const BerandaSidoarjo = () => {
         .leaflet-control-attribution {
           display: none !important;
         }
+
+        /* Custom Animations */
+        @keyframes colorShift {
+          0% { color: #111827; }
+          50% { color: #6b7280; }
+          100% { color: #111827; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes typing {
+          from { max-width: 0; }
+          to { max-width: 100%; }
+        }
+        @keyframes blink {
+          50% { border-color: transparent; }
+        }
+        
+        .animate-color-shift {
+          animation: colorShift 5s ease-in-out infinite;
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+          display: inline-block;
+        }
+        .typewriter-text {
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          border-right: 3px solid #2563eb;
+          animation: typing 2s steps(20, end) forwards, blink 0.75s step-end infinite;
+          max-width: 0;
+          padding-right: 4px;
+        }
       `}</style>
 
       {/* Header Info */}
       <div className="text-center z-10 mb-6 mt-2 flex flex-col items-center">
-        <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-2">
-          Jelajahi
-        </p>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 tracking-tight leading-none transition-all duration-300 hover:scale-[1.02] hover:drop-shadow-md cursor-default">
+        <div className="animate-float">
+          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-2 typewriter-text">
+            Jelajahi
+          </p>
+        </div>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none animate-color-shift cursor-default">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
         <p className="italic text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
