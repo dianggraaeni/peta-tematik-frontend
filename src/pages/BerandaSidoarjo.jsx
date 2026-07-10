@@ -152,6 +152,10 @@ const BerandaSidoarjo = () => {
         }
         .leaflet-interactive {
           cursor: pointer !important;
+          outline: none !important;
+        }
+        .leaflet-interactive:focus {
+          outline: none !important;
         }
         .leaflet-control-zoom {
           border: none !important;
