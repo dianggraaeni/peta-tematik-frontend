@@ -20,20 +20,22 @@ const AutoZoom = ({ geojsonData }) => {
 };
 
 const desaTematikInfo = {
-  "Simoketawang": "Kelengkeng",
-  "Grogol": "Sayuran",
-  "Simoanginangin": "UMKM",
-  "Sidokepung": "Ketenagakerjaan"
+  "Simoketawang": ["Kelengkeng", "UMKM"],
+  "Grogol": ["Sayuran"],
+  "Simoanginangin": ["UMKM", "Ketenagakerjaan"],
+  "Sidokepung": ["Ketenagakerjaan"]
 };
 
-const filterThemes = ["Semua Tema", "Kelengkeng", "Sayuran", "UMKM", "Ketenagakerjaan"];
+const filterThemes = ["Kelengkeng", "Sayuran", "UMKM", "Ketenagakerjaan"];
 
 const BerandaSidoarjo = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [activeTheme, setActiveTheme] = useState("Semua Tema");
+  const [activeThemes, setActiveThemes] = useState([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
@@ -90,16 +92,29 @@ const BerandaSidoarjo = () => {
     navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
   };
 
+  const toggleTheme = (theme) => {
+    setActiveThemes((prev) =>
+      prev.includes(theme)
+        ? prev.filter((t) => t !== theme)
+        : [...prev, theme]
+    );
+  };
+
   const getStyle = (feature) => {
     const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
     const isTematik = desaTematikInfo[desaName] !== undefined;
-    const isHighlighted = activeTheme === "Semua Tema" ? isTematik : desaTematikInfo[desaName] === activeTheme;
+    const villageThemes = desaTematikInfo[desaName] || [];
+    
+    // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
+    const isHighlighted = activeThemes.length === 0 
+      ? isTematik 
+      : villageThemes.some(t => activeThemes.includes(t));
 
     return {
-      fillColor: isHighlighted ? "#1d4ed8" : "#3b82f6", // Highlighted solid blue vs base blue
-      weight: 1,
+      fillColor: isHighlighted ? "#2563eb" : "#3b82f6", // Highlighted solid blue vs base blue
+      weight: isHighlighted ? 2 : 1,
       opacity: 1,
-      color: "white", // Border color
+      color: "white", // White border
       fillOpacity: isHighlighted ? 0.85 : 0.15, // Transparent for non-highlighted so satellite shows
     };
   };
@@ -107,13 +122,17 @@ const BerandaSidoarjo = () => {
   const getHoverStyle = (feature) => {
     const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
     const isTematik = desaTematikInfo[desaName] !== undefined;
-    const isHighlighted = activeTheme === "Semua Tema" ? isTematik : desaTematikInfo[desaName] === activeTheme;
+    const villageThemes = desaTematikInfo[desaName] || [];
+    
+    const isHighlighted = activeThemes.length === 0 
+      ? isTematik 
+      : villageThemes.some(t => activeThemes.includes(t));
 
     return {
       fillColor: isHighlighted ? "#1e40af" : "#2563eb",
-      weight: 2,
+      weight: 3,
       opacity: 1,
-      color: "white",
+      color: "white", // White on hover
       fillOpacity: isHighlighted ? 1 : 0.4,
     };
   };
@@ -121,13 +140,14 @@ const BerandaSidoarjo = () => {
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
     const desaName = props.DESA || props.KECAMATAN;
-    const tema = desaTematikInfo[desaName];
+    const villageThemes = desaTematikInfo[desaName] || [];
+    const temaString = villageThemes.length > 0 ? villageThemes.join(", ") : null;
 
     const tooltipContent = `
       <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
         <div style="font-weight: bold; font-size: 14px;">${desaName}</div>
         <div style="font-size: 11px; color: #666;">Kecamatan ${props.KECAMATAN}</div>
-        ${tema ? `<div style="font-size: 11px; font-weight: bold; color: #2563eb; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Potensi: ${tema}</div>` : ''}
+        ${temaString ? `<div style="font-size: 11px; font-weight: bold; color: #1e40af; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Potensi: ${temaString}</div>` : ''}
       </div>
     `;
 
@@ -228,6 +248,16 @@ const BerandaSidoarjo = () => {
         @keyframes blink {
           50% { border-color: transparent; }
         }
+
+        /* Leaflet Controls Focus Style */
+        .leaflet-bar a:active,
+        .leaflet-bar a:focus,
+        .leaflet-bar button:active,
+        .leaflet-bar button:focus {
+          outline: none !important;
+          box-shadow: inset 0 0 0 2px #2563eb !important;
+          color: #2563eb !important;
+        }
         
         .animate-color-shift {
           animation: colorShift 5s ease-in-out infinite;
@@ -300,7 +330,7 @@ const BerandaSidoarjo = () => {
         <div className="w-full sm:w-auto flex justify-end order-1 sm:order-2">
           <button 
             onClick={() => navigate('/login')}
-            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 text-sm md:text-base"
+            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-2 border-transparent hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base"
             style={{ color: "#1f2937" }}
           >
             Masuk Admin
@@ -323,26 +353,89 @@ const BerandaSidoarjo = () => {
         </p>
       </div>
 
-      {/* Theme Filter Chips */}
-      <div className="w-full px-4 md:px-12 flex justify-start md:justify-end mb-3 gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-        {filterThemes.map((theme) => (
+      {/* Theme Filter Area */}
+      <div className="w-full px-4 md:px-12 flex justify-start md:justify-end items-center mb-4 relative z-[2000] gap-3">
+        
+        {/* Active Theme Chips */}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar flex-grow md:flex-grow-0 justify-end" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {activeThemes.map((theme) => (
+            <div key={theme} className="flex items-center gap-1 px-3 py-1.5 bg-[#eff6ff] border-2 border-[#bfdbfe] text-[#1e40af] rounded-full text-xs font-bold shadow-sm whitespace-nowrap">
+              {theme}
+              <button onClick={() => toggleTheme(theme)} className="text-[#1d4ed8] hover:text-[#1e3a8a] ml-1 transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          ))}
+          <style>{`
+            .overflow-x-auto::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+        </div>
+
+        {/* Filter Dropdown */}
+        <div className="relative flex-shrink-0">
           <button
-            key={theme}
-            onClick={() => setActiveTheme(theme)}
-            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-all border ${
-              activeTheme === theme
-                ? "bg-[#2563eb] text-white border-[#2563eb] shadow-md"
-                : "bg-white text-[#1f2937] border-gray-300 hover:bg-blue-50 shadow-sm"
-            }`}
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#2563eb] text-white rounded-lg shadow-lg hover:bg-[#1d4ed8] hover:shadow-xl transition-all font-bold tracking-wide border-2 border-transparent active:border-white focus:border-white focus:outline-none"
           >
-            {theme}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="7" y1="12" x2="17" y2="12"></line>
+              <line x1="10" y1="17" x2="14" y2="17"></line>
+            </svg>
+            Tema {activeThemes.length > 0 && <span className="bg-white text-[#2563eb] text-[10px] px-2 py-0.5 rounded-full ml-1">{activeThemes.length}</span>}
           </button>
-        ))}
-        <style>{`
-          .overflow-x-auto::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
+          
+          {isFilterOpen && (
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[2000] flex flex-col max-h-[60vh]">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 flex justify-between items-center shrink-0">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pilih Tema</span>
+                {activeThemes.length > 0 && (
+                  <button onClick={() => setActiveThemes([])} className="text-xs font-bold text-red-500 hover:text-red-700 underline">Reset</button>
+                )}
+              </div>
+              
+              {/* Search Theme Input */}
+              <div className="px-3 py-2 bg-white border-b border-gray-50 shrink-0">
+                <input
+                  type="text"
+                  placeholder="Cari tema..."
+                  value={searchThemeQuery}
+                  onChange={(e) => setSearchThemeQuery(e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#2563eb] text-[#1f2937]"
+                />
+              </div>
+
+              <div className="overflow-y-auto no-scrollbar">
+              {filterThemes
+                .filter(theme => theme.toLowerCase().includes(searchThemeQuery.toLowerCase()))
+                .map((theme) => {
+                  const isSelected = activeThemes.includes(theme);
+                  return (
+                    <button
+                      key={theme}
+                      onClick={() => toggleTheme(theme)}
+                      className="w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-50 last:border-b-0 flex justify-between items-center hover:bg-blue-50"
+                    >
+                      <span className={`font-medium ${isSelected ? "text-[#1d4ed8] font-bold" : "text-[#1f2937]"}`}>
+                        {theme}
+                      </span>
+                      {isSelected && (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+              {filterThemes.filter(theme => theme.toLowerCase().includes(searchThemeQuery.toLowerCase())).length === 0 && (
+                <div className="px-4 py-4 text-center text-sm text-gray-400 font-medium">Tema tidak ditemukan</div>
+              )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Map Container */}
@@ -372,7 +465,7 @@ const BerandaSidoarjo = () => {
             <ZoomControl position="bottomright" />
             <AutoZoom geojsonData={geojsonData} />
             <GeoJSON
-              key={`geojson-${activeTheme}`}
+              key={`geojson-${activeThemes.join("-")}`}
               data={geojsonData}
               style={getStyle}
               onEachFeature={onEachFeature}
