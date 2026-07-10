@@ -148,30 +148,32 @@ const BerandaSidoarjo = () => {
         .leaflet-container {
           background: transparent !important;
         }
-        }
         .leaflet-control-zoom {
           border: none !important;
-          box-shadow: none !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
           margin-right: 1rem !important;
           margin-bottom: 1rem !important;
+          overflow: hidden !important;
+          background-color: white !important;
         }
         .leaflet-control-zoom-in, .leaflet-control-zoom-out {
-          background-color: white !important;
+          background-color: transparent !important;
           color: #1f2937 !important;
-          border: 1px solid #e5e7eb !important;
-          border-radius: 9999px !important;
-          width: 40px !important;
-          height: 40px !important;
+          border: none !important;
+          width: 34px !important;
+          height: 34px !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
           font-weight: 600 !important;
-          font-size: 1.25rem !important;
+          font-size: 1.2rem !important;
           transition: background-color 0.2s !important;
+        }
+        .leaflet-control-zoom-in {
+          border-bottom: 1px solid #e5e7eb !important;
         }
         .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
           background-color: #f3f4f6 !important;
@@ -182,14 +184,14 @@ const BerandaSidoarjo = () => {
       `}</style>
 
       {/* Header Info */}
-      <div className="text-center z-10 mb-6 mt-2">
-        <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-3">
+      <div className="text-center z-10 mb-6 mt-2 flex flex-col items-center">
+        <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-2">
           Jelajahi
         </p>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 tracking-tight leading-none">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
-        <p className="italic text-sm md:text-base font-medium" style={{ color: "black", opacity: 1 }}>
+        <p className="italic text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
           Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
