@@ -134,7 +134,7 @@ const BerandaSidoarjo = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col items-center pt-10 relative">
+    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -221,68 +221,82 @@ const BerandaSidoarjo = () => {
         }
       `}</style>
 
+      {/* Top Navigation Bar - Responsive */}
+      <div className="w-full flex flex-col sm:flex-row justify-between items-center px-4 py-4 md:px-8 md:pt-6 gap-4 sm:gap-0 z-[1000]">
+        
+        {/* Search Bar */}
+        <div ref={searchRef} className="w-full sm:w-72 md:w-80 relative order-2 sm:order-1">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Cari desa..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              className="w-full px-4 py-2 pl-10 bg-white rounded-full shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563eb] text-gray-800 placeholder-gray-400 font-medium text-sm md:text-base"
+            />
+            <svg
+              className="absolute left-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          {/* Autocomplete Dropdown */}
+          {isSearchFocused && searchTerm.trim() !== "" && (
+            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden flex flex-col border border-gray-100">
+              {searchResults.length > 0 ? (
+                searchResults.map((result, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSelectVillage(result.DESA)}
+                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
+                  >
+                    <div className="font-semibold text-gray-800 text-sm md:text-base">{result.DESA}</div>
+                    <div className="text-xs text-gray-500">Kecamatan {result.KECAMATAN}</div>
+                  </button>
+                ))
+              ) : (
+                <div className="px-4 py-3 text-sm text-gray-500 text-center italic">
+                  Desa tidak ditemukan
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Login Button */}
+        <div className="w-full sm:w-auto flex justify-end order-1 sm:order-2">
+          <button 
+            onClick={() => navigate('/login')}
+            className="w-full sm:w-auto px-6 py-2 bg-white text-gray-800 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border border-gray-200 text-sm md:text-base"
+          >
+            Masuk Admin
+          </button>
+        </div>
+      </div>
+
       {/* Header Info */}
-      <div className="text-center z-10 mb-6 mt-2 flex flex-col items-center">
+      <div className="text-center z-10 mb-4 md:mb-6 mt-2 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm mb-2 typewriter-text">
+          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-2 typewriter-text">
             Jelajahi
           </p>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none animate-color-shift cursor-default">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none animate-color-shift cursor-default">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
-        <p className="italic text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
+        <p className="italic text-xs sm:text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
           Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
 
-      {/* Search Bar - Absolute Top Left on the Page */}
-      <div ref={searchRef} className="absolute top-6 left-8 z-[1000] w-64 md:w-80">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Cari desa..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            className="w-full px-4 py-2 pl-10 bg-white rounded-full shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563eb] text-gray-800 placeholder-gray-400 font-medium"
-          />
-          <svg
-            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        
-        {/* Autocomplete Dropdown */}
-        {isSearchFocused && searchTerm.trim() !== "" && (
-          <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden flex flex-col border border-gray-100">
-            {searchResults.length > 0 ? (
-              searchResults.map((result, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSelectVillage(result.DESA)}
-                  className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
-                >
-                  <div className="font-semibold text-gray-800">{result.DESA}</div>
-                  <div className="text-xs text-gray-500">Kecamatan {result.KECAMATAN}</div>
-                </button>
-              ))
-            ) : (
-              <div className="px-4 py-3 text-sm text-gray-500 text-center italic">
-                Desa tidak ditemukan
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="w-full flex-grow relative pb-10 px-4 md:px-12" style={{ height: "75vh" }}>
-
+      {/* Map Container */}
+      <div className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" style={{ height: "75vh", minHeight: "500px" }}>
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
@@ -310,19 +324,11 @@ const BerandaSidoarjo = () => {
           </MapContainer>
         ) : (
           <div className="flex h-full items-center justify-center">
-            <div className="animate-pulse text-gray-500 font-semibold">Memuat peta...</div>
+            <div className="animate-pulse text-gray-500 font-semibold text-sm md:text-base">Memuat peta...</div>
           </div>
         )}
         </div>
       </div>
-
-      {/* Login Button Absolute Top Right */}
-      <button 
-        onClick={() => navigate('/login')}
-        className="absolute top-6 right-8 px-6 py-2 bg-white text-gray-800 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg border border-gray-200"
-      >
-        Masuk Admin
-      </button>
     </div>
   );
 };
