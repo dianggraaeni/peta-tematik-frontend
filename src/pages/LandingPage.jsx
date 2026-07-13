@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Auto Zoom to fit Sidoarjo
-const AutoZoom = ({ geojsonData }) => {
+// Auto Zoom to fit Sidoarjo or selected Kecamatan
+const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
   const map = useMap();
+  
+  // Initial zoom to fit Sidoarjo
   useEffect(() => {
-    if (geojsonData && map) {
+    if (geojsonData && map && !selectedKecamatan) {
       const tempLayer = L.geoJSON(geojsonData);
       const bounds = tempLayer.getBounds();
       if (bounds.isValid()) {
@@ -16,6 +18,20 @@ const AutoZoom = ({ geojsonData }) => {
       }
     }
   }, [geojsonData, map]);
+
+  // Zoom to selected Kecamatan
+  useEffect(() => {
+    if (selectedKecamatan && geoJsonRef.current && map) {
+      geoJsonRef.current.eachLayer((layer) => {
+        if (layer.feature.properties.KECAMATAN === selectedKecamatan) {
+          map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
+          // Optionally open tooltip
+          layer.openTooltip();
+        }
+      });
+    }
+  }, [selectedKecamatan, map, geoJsonRef]);
+
   return null;
 };
 
@@ -25,7 +41,9 @@ const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const searchRef = useRef(null);
+  const geoJsonRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,6 +101,12 @@ const LandingPage = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
+  const handleSelectSearch = (kecamatanName) => {
+    setSelectedKecamatan(kecamatanName);
+    setSearchTerm(kecamatanName);
+    setIsSearchFocused(false);
+  };
+
   // Helper function to get stats for a district
   const getDistrictStats = (kecamatanName) => {
     if (!kecamatanName || !statsData.length) return null;
@@ -106,24 +130,28 @@ const LandingPage = () => {
   const getStyle = (feature) => {
     const stats = getDistrictStats(feature.properties.KECAMATAN);
     const density = stats ? stats.kepadatan_penduduk : 0;
+    const isSelected = selectedKecamatan === feature.properties.KECAMATAN;
+    
     return {
       fillColor: getColor(density),
-      weight: 1,
+      weight: isSelected ? 5 : 1,
       opacity: 1,
-      color: "white",
-      dashArray: "3",
-      fillOpacity: 0.8,
+      color: isSelected ? "#ffffff" : "white", // Thick white highlight if selected
+      dashArray: isSelected ? "" : "3",
+      fillOpacity: isSelected ? 1 : 0.8,
     };
   };
 
   const getHoverStyle = (feature) => {
     const stats = getDistrictStats(feature.properties.KECAMATAN);
     const density = stats ? stats.kepadatan_penduduk : 0;
+    const isSelected = selectedKecamatan === feature.properties.KECAMATAN;
+    
     return {
       fillColor: getColor(density),
-      weight: 3,
+      weight: isSelected ? 5 : 3,
       opacity: 1,
-      color: "#666",
+      color: isSelected ? "#ffffff" : "#666", // White highlight if selected, otherwise grey hover
       dashArray: "",
       fillOpacity: 1,
     };
@@ -131,7 +159,6 @@ const LandingPage = () => {
 
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
-    const desaName = props.DESA || props.KECAMATAN;
     const stats = getDistrictStats(props.KECAMATAN);
     
     if (stats) {
@@ -160,11 +187,16 @@ const LandingPage = () => {
         mouseover: (e) => {
           const l = e.target;
           l.setStyle(getHoverStyle(feature));
-          l.bringToFront();
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            l.bringToFront();
+          }
         },
         mouseout: (e) => {
           const l = e.target;
           l.setStyle(getStyle(feature));
+        },
+        click: () => {
+          setSelectedKecamatan(props.KECAMATAN);
         }
       });
     }
@@ -299,7 +331,8 @@ const LandingPage = () => {
                 searchResults.map((result, idx) => (
                   <button
                     key={idx}
-                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 cursor-default"
+                    onClick={() => handleSelectSearch(result.KECAMATAN)}
+                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 cursor-pointer"
                   >
                     <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>Kecamatan {result.KECAMATAN}</div>
                     <div className="text-xs" style={{ color: "#6b7280" }}>Kabupaten Sidoarjo</div>
@@ -372,8 +405,13 @@ const LandingPage = () => {
                 maxZoom={17}
               />
               <ZoomControl position="bottomright" />
-              <AutoZoom geojsonData={geojsonData} />
+              <MapController 
+                geojsonData={geojsonData} 
+                selectedKecamatan={selectedKecamatan} 
+                geoJsonRef={geoJsonRef} 
+              />
               <GeoJSON
+                ref={geoJsonRef}
                 data={geojsonData}
                 style={getStyle}
                 onEachFeature={onEachFeature}
