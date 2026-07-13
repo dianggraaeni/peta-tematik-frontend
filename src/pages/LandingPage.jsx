@@ -351,13 +351,19 @@ const LandingPage = () => {
         <div className="w-full sm:w-auto flex gap-3 justify-end order-1 sm:order-2">
           <button 
             onClick={() => navigate('/peta-tematik')}
-            className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-2 border-[#2563eb] hover:bg-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base animate-soft-blink"
+            className="w-full sm:w-auto pl-5 pr-1.5 py-1.5 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-[#1d4ed8] hover:border-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-3"
           >
-            Peta Tematik
+            <span>Peta Tematik</span>
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="13 17 18 12 13 7"></polyline>
+                <polyline points="6 17 11 12 6 7"></polyline>
+              </svg>
+            </div>
           </button>
           <button 
             onClick={() => navigate('/login')}
-            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-2 border-transparent hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base"
+            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center"
             style={{ color: "#1f2937" }}
           >
             Masuk Admin
