@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer } from "react-leaflet";
+import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -56,6 +56,7 @@ const BerandaSidoarjo = () => {
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const selectedDesaRef = useRef(null);
+  const isFeatureClicked = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -168,6 +169,30 @@ const BerandaSidoarjo = () => {
     };
   };
 
+  // Update styles dynamically without unmounting the GeoJSON layer
+  useEffect(() => {
+    if (geoJsonRef.current) {
+      geoJsonRef.current.eachLayer((layer) => {
+        layer.setStyle(getStyle(layer.feature));
+        const layerDesa = layer.feature.properties.DESA || layer.feature.properties.KECAMATAN;
+        if (selectedDesa && layerDesa === selectedDesa) {
+          layer.bringToFront();
+        }
+      });
+    }
+  }, [selectedDesa, activeThemes]);
+
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: () => {
+        if (!isFeatureClicked.current) {
+          setSelectedDesa(null);
+        }
+      },
+    });
+    return null;
+  };
+
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
     const desaName = props.DESA || props.KECAMATAN;
@@ -200,18 +225,20 @@ const BerandaSidoarjo = () => {
         const l = e.target;
         l.setStyle(getStyle(feature));
       },
-      click: () => {
+      click: (e) => {
+        isFeatureClicked.current = true;
         if (selectedDesaRef.current === desaName) {
           navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
         } else {
           setSelectedDesa(desaName);
         }
+        setTimeout(() => { isFeatureClicked.current = false; }, 50);
       },
     });
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
+    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col" onClick={() => setSelectedDesa(null)}>
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -316,7 +343,7 @@ const BerandaSidoarjo = () => {
       <div className="w-full flex flex-col sm:flex-row justify-between items-center px-4 py-4 md:px-8 md:pt-6 gap-4 sm:gap-0 z-[1000]">
         
         {/* Search Bar */}
-        <div ref={searchRef} className="w-full sm:w-72 md:w-80 relative order-2 sm:order-1">
+        <div ref={searchRef} className="w-full sm:w-72 md:w-80 relative order-2 sm:order-1" onClick={(e) => e.stopPropagation()}>
           <div className="relative">
             <input
               type="text"
@@ -421,7 +448,7 @@ const BerandaSidoarjo = () => {
         </div>
 
         {/* Filter Dropdown */}
-        <div className="relative flex-shrink-0">
+        <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#2563eb] text-white rounded-lg shadow-lg hover:bg-[#1d4ed8] hover:shadow-xl transition-all font-bold tracking-wide border-2 border-transparent active:border-white focus:border-white focus:outline-none"
@@ -486,7 +513,11 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Map Container */}
-      <div className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" style={{ height: "70vh", minHeight: "500px" }}>
+      <div 
+        className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" 
+        style={{ height: "70vh", minHeight: "500px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
@@ -522,6 +553,7 @@ const BerandaSidoarjo = () => {
               style={getStyle}
               onEachFeature={onEachFeature}
             />
+            <MapClickHandler />
           </MapContainer>
         ) : (
           <div className="flex h-full items-center justify-center">
