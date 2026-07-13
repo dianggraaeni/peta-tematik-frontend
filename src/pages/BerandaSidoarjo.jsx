@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Auto Zoom to fit Sidoarjo
-const AutoZoom = ({ geojsonData }) => {
+// Auto Zoom to fit Sidoarjo or selected Desa
+const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
   const map = useMap();
+  
+  // Initial zoom to fit Sidoarjo
   useEffect(() => {
-    if (geojsonData && map) {
+    if (geojsonData && map && !selectedDesa) {
       const tempLayer = L.geoJSON(geojsonData);
       const bounds = tempLayer.getBounds();
       if (bounds.isValid()) {
@@ -16,6 +18,20 @@ const AutoZoom = ({ geojsonData }) => {
       }
     }
   }, [geojsonData, map]);
+
+  // Zoom to selected Desa
+  useEffect(() => {
+    if (selectedDesa && geoJsonRef.current && map) {
+      geoJsonRef.current.eachLayer((layer) => {
+        if ((layer.feature.properties.DESA || layer.feature.properties.KECAMATAN) === selectedDesa) {
+          map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
+          // Optionally open tooltip
+          layer.openTooltip();
+        }
+      });
+    }
+  }, [selectedDesa, map, geoJsonRef]);
+
   return null;
 };
 
@@ -34,10 +50,17 @@ const BerandaSidoarjo = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeThemes, setActiveThemes] = useState([]);
+  const [selectedDesa, setSelectedDesa] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const searchRef = useRef(null);
+  const geoJsonRef = useRef(null);
+  const selectedDesaRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    selectedDesaRef.current = selectedDesa;
+  }, [selectedDesa]);
 
   useEffect(() => {
     // Fetch the boundaries GeoJSON from public folder
@@ -88,8 +111,14 @@ const BerandaSidoarjo = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
-  const handleSelectVillage = (desaName) => {
-    navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+  const handleSelectSearch = (desaName) => {
+    if (selectedDesa === desaName) {
+      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+    } else {
+      setSelectedDesa(desaName);
+      setSearchTerm(desaName);
+      setIsSearchFocused(false);
+    }
   };
 
   const toggleTheme = (theme) => {
@@ -104,6 +133,7 @@ const BerandaSidoarjo = () => {
     const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
     const isTematik = desaTematikInfo[desaName] !== undefined;
     const villageThemes = desaTematikInfo[desaName] || [];
+    const isSelected = selectedDesa === desaName;
     
     // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
     const isHighlighted = activeThemes.length === 0 
@@ -112,10 +142,10 @@ const BerandaSidoarjo = () => {
 
     return {
       fillColor: isHighlighted ? "#2563eb" : "#3b82f6", // Highlighted solid blue vs base blue
-      weight: isHighlighted ? 2 : 1,
+      weight: isSelected ? 5 : (isHighlighted ? 2 : 1),
       opacity: 1,
       color: "white", // White border
-      fillOpacity: isHighlighted ? 0.85 : 0.15, // Transparent for non-highlighted so satellite shows
+      fillOpacity: isSelected ? 1 : (isHighlighted ? 0.85 : 0.15),
     };
   };
 
@@ -123,6 +153,7 @@ const BerandaSidoarjo = () => {
     const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
     const isTematik = desaTematikInfo[desaName] !== undefined;
     const villageThemes = desaTematikInfo[desaName] || [];
+    const isSelected = selectedDesa === desaName;
     
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
@@ -130,7 +161,7 @@ const BerandaSidoarjo = () => {
 
     return {
       fillColor: isHighlighted ? "#1e40af" : "#2563eb",
-      weight: 3,
+      weight: isSelected ? 5 : 3,
       opacity: 1,
       color: "white", // White on hover
       fillOpacity: isHighlighted ? 1 : 0.4,
@@ -170,7 +201,11 @@ const BerandaSidoarjo = () => {
         l.setStyle(getStyle(feature));
       },
       click: () => {
-        handleSelectVillage(desaName);
+        if (selectedDesaRef.current === desaName) {
+          navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+        } else {
+          setSelectedDesa(desaName);
+        }
       },
     });
   };
@@ -310,7 +345,7 @@ const BerandaSidoarjo = () => {
                 searchResults.map((result, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleSelectVillage(result.DESA)}
+                    onClick={() => handleSelectSearch(result.DESA)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
                   >
                     <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA}</div>
@@ -475,9 +510,14 @@ const BerandaSidoarjo = () => {
               maxZoom={17}
             />
             <ZoomControl position="bottomright" />
-            <AutoZoom geojsonData={geojsonData} />
+            <MapController 
+              geojsonData={geojsonData} 
+              selectedDesa={selectedDesa} 
+              geoJsonRef={geoJsonRef} 
+            />
             <GeoJSON
               key={`geojson-${activeThemes.join("-")}`}
+              ref={geoJsonRef}
               data={geojsonData}
               style={getStyle}
               onEachFeature={onEachFeature}
@@ -488,6 +528,25 @@ const BerandaSidoarjo = () => {
             <div className="animate-pulse text-gray-500 font-semibold text-sm md:text-base">Memuat peta...</div>
           </div>
         )}
+        
+        {/* Selected Village Action Card */}
+        <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${selectedDesa ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+            <div className="bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-4 md:p-5 flex flex-col items-center gap-3 border border-gray-100/50 max-w-sm w-[90vw]">
+              <div className="text-center">
+                <h3 className="font-extrabold text-lg md:text-xl text-gray-800">{selectedDesa}</h3>
+                <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
+                  {selectedDesa && desaTematikInfo[selectedDesa] ? `Memiliki ${desaTematikInfo[selectedDesa].length} Potensi Tematik` : 'Desa di Kabupaten Sidoarjo'}
+                </p>
+              </div>
+              <button 
+                onClick={() => selectedDesa && navigate(`/detail?desa=${encodeURIComponent(selectedDesa)}`)}
+                className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+              >
+                <span>Lihat Detail Desa</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
