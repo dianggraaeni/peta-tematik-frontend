@@ -14,6 +14,7 @@ import api3 from "../utils/api3";
 import SimoketawangSlsTable from "../components/SimoketawangSlsTable";
 import SimoketawangUsahaTable from "../components/SimoketawangUsahaTable";
 import { useMediaQuery } from "react-responsive";
+import AdminLayout from "../components/AdminLayout";
 
 const username = localStorage.getItem("username");
 
@@ -78,17 +79,10 @@ const AdminSimoketawang = () => {
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center absolute border-b-3 border-[#eff991] w-full px-[10%] 2xl:px-[20%] font-inter text-pyellow py-[16px] admin-simoketawang">
-        <h1 className="text-lg font-semibold">Manajemen Data Peta Tematik</h1>
-        <div className="flex items-center gap-2">
-          <PiUserCircleDashedDuotone className="text-[40px]" />
-          <h1 className="text-lg font-semibold">{username}</h1>
-        </div>
-      </div>
-      <div className="flex flex-col items-center w-full min-h-screen bg-[#fdffec] px-[10%] 2xl:px-[20%] font-inter text-pyellow">
-        <h1 className="font-semibold text-[16px] mt-[90px] mb-[12px] bg-white py-2 px-3 w-fit rounded-xl">
-          Ringkasan Statistik Potensi Kelengkeng Desa Simoketawang
+    <AdminLayout>
+      <div className="flex flex-col items-center w-full min-h-screen font-inter text-[#1f2937]">
+        <h1 className="font-semibold text-[16px] mb-[12px] bg-white py-2 px-3 w-fit rounded-xl">
+          Ringkasan Statistik Usaha Tanaman Kelengkeng Desa Simoketawang
         </h1>
         <div className="flex flex-col w-full gap-0 p-5 pb-3 bg-white rounded-xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -125,7 +119,7 @@ const AdminSimoketawang = () => {
           )}
         </Tabs>
       </div>
-    </>
+    </AdminLayout>
   );
 };
 

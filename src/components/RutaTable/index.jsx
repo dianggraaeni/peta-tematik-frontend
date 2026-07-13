@@ -28,7 +28,7 @@ import {
 import { SearchIcon } from "./SearchIcon";
 import "./table.css";
 import { FaPlus } from "react-icons/fa6";
-import { SiMicrosoftexcel } from "react-icons/si";
+import { FaFileExcel } from "react-icons/fa6";
 import { message, Popconfirm } from "antd";
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
@@ -393,7 +393,7 @@ const RutaTable = ({ fetchDataAggregate }) => {
             color="success"
             className="text-[14px] font-semibold text-white"
             startContent={
-              <SiMicrosoftexcel className="text-[20px] text-white" />
+              <FaFileExcel className="text-[20px] text-white" />
             }
             onClick={handleEksporButtonClick}
           >
@@ -401,11 +401,10 @@ const RutaTable = ({ fetchDataAggregate }) => {
           </Button>
         </div>
       </div>
-      <Table
-        aria-label="Example table with custom cells"
+      <Table aria-label="Example table with custom cells"
         shadow="none"
         className="shadow rounded-xl font-inter simoanginangin-umkm-table"
-        classNames={{ loadingWrapper: "mx-auto" }}
+        classNames={{ th: "bg-[#1f2937] text-white font-semibold text-sm border-none", wrapper: "shadow-none p-0" }}
         bottomContent={
           <div className="flex justify-center w-full">
             <Pagination

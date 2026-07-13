@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Button, Input } from "@nextui-org/react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import Logo from "../../public/pict/logo_dc.png";
+
 import { useNavigate } from "react-router-dom";
 import "./pages.css";
 import api from "../utils/api";
 import { Bars } from "react-loader-spinner";
+import api3 from "../utils/api3";
+import api4 from "../utils/api4";
 
 const TopEllipse = () => {
   return (
     <div className="absolute z-0 flex items-center justify-center top-[calc(50%-260px)] md:top-[5%] md:transform md:-translate-x-[224px] md:translate-y-[110%] 2xl:translate-y-[75%]">
-      <div className="size-[100px] rounded-full bg-gradient-to-r from-pdarkblue to-[#CAF4FF]"></div>
+      <div className="size-[100px] rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] shadow-md transition-colors"></div>
     </div>
   );
 };
@@ -18,12 +20,12 @@ const TopEllipse = () => {
 const BottomEllipse = () => {
   return (
     <div className="absolute z-0 flex items-center justify-center bottom-[calc(50%-260px)] md:bottom-[5%] md:transform md:translate-x-[224px] md:-translate-y-[110%] 2xl:-translate-y-[75%]">
-      <div className="size-[100px] rounded-full bg-[#f3fdff]"></div>
+      <div className="size-[100px] rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] shadow-md transition-colors"></div>
     </div>
   );
 };
 
-const LoginSimoanginangin = () => {
+const LoginGeneral = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordType, setPasswordType] = useState("password");
@@ -55,18 +57,41 @@ const LoginSimoanginangin = () => {
     }
 
     try {
-      const response = await api.post("/api/auth/login", {
+      const response = await api4.post("/api/auth/login", {
         username,
         password,
       });
 
       if (response.status === 200) {
         // Handle successful login
-        console.log(response.data);
-        localStorage.setItem("token-simoanginangin", response.data.token);
-        localStorage.setItem("username", username);
+        const returnedUser = response.data.user.username;
+        const returnedToken = response.data.token;
+        
+        localStorage.setItem("username", returnedUser);
+        
+        let destination = "/";
+        if (returnedUser === "admin_pusat") {
+          localStorage.setItem("token-pusat", returnedToken);
+          destination = "/admin-pusat";
+        } else if (returnedUser === "admin_sidokepung") {
+          localStorage.setItem("token-sidokepung", returnedToken);
+          destination = "/admin-sidokepung";
+        } else if (returnedUser === "admin_grogol") {
+          localStorage.setItem("token-grogol", returnedToken);
+          destination = "/admin-grogol";
+        } else if (returnedUser === "admin_simoanginangin") {
+          localStorage.setItem("token-simoanginangin", returnedToken);
+          destination = "/admin-simoanginangin";
+        } else if (returnedUser === "admin_simoketawang" || returnedUser === "admin_ketawang") {
+          localStorage.setItem("token-simoketawang", returnedToken);
+          destination = "/admin-simoketawang";
+        } else {
+          localStorage.setItem("token-desa", returnedToken);
+          destination = "/admin-sidokepung"; // fallback
+        }
+
         setLoading(false);
-        navigate("/admin-simoanginangin");
+        navigate(destination);
       }
     } catch (error) {
       if (error.response) {
@@ -81,26 +106,23 @@ const LoginSimoanginangin = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-[#CAF4FF]">
+    <div className="relative flex items-center justify-center min-h-screen bg-slate-50">
       <TopEllipse />
       <BottomEllipse />
-      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-sm p-8 m-5 bg-white shadow-md rounded-xl md:max-w-md">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-sm p-8 m-5 bg-white shadow-2xl rounded-2xl border border-gray-100 md:max-w-md">
         <div className="flex flex-col items-center mb-8">
           <img
-            src={Logo}
+            src="/pict/logo_dc.png"
             alt="Logo"
             className="w-20 h-20 mb-3 md:w-30 md:h-30"
           />
-          <p className="text-lg italic font-bold font-inter text-pdarkblue md:text-xl">
-            UMKM UNGGUL
-          </p>
-          <p className="text-sm font-semibold tracking-wider text-gray-500 font-assistant">
-            DESA SIMOANGINANGIN
+          <p className="text-lg font-bold font-inter text-[#1f2937] md:text-xl mt-3">
+            ADMIN PETA TEMATIK
           </p>
         </div>
         <form
           onSubmit={handleLogin}
-          className="flex flex-col w-full font-quicksand form-login"
+          className="flex flex-col w-full font-inter form-login"
         >
           <Input
             label="Username"
@@ -109,8 +131,7 @@ const LoginSimoanginangin = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             classNames={{
-              label:
-                "text-black text-base md:text-lg mt-[5px] font-nunito font-bold",
+              label: "text-[#1f2937] md:text-lg mt-[5px] font-inter font-semibold",
               inputWrapper: "bg-slate-100",
             }}
             className="my-2"
@@ -124,7 +145,7 @@ const LoginSimoanginangin = () => {
               onChange={(e) => setPassword(e.target.value)}
               classNames={{
                 label:
-                  "text-black text-base md:text-lg mt-1 font-nunito font-bold",
+                  "text-[#1f2937] text-base md:text-lg mt-1 font-inter font-semibold",
                 inputWrapper: "bg-slate-100",
               }}
               className="my-2"
@@ -135,9 +156,9 @@ const LoginSimoanginangin = () => {
               className="absolute transform -translate-y-1/2 right-2 top-10"
             >
               {passwordType === "password" ? (
-                <AiFillEye className="text-pdarkblue" />
+                <AiFillEye className="text-[#1f2937]" />
               ) : (
-                <AiFillEyeInvisible className="text-pdarkblue" />
+                <AiFillEyeInvisible className="text-[#1f2937]" />
               )}
             </button>
           </div>
@@ -147,7 +168,7 @@ const LoginSimoanginangin = () => {
           <div className="flex justify-center">
             <Button
               type="submit"
-              className="w-full font-bold font-nunito bg-[#0B588F] text-white my-2"
+              className="w-full my-2 font-bold text-white font-nunito bg-[#2563eb] hover:bg-[#1d4ed8] shadow-md transition-colors"
               disabled={loading}
             >
               {loading ? (
@@ -161,7 +182,7 @@ const LoginSimoanginangin = () => {
       </div>
 
       {/* {loading && (
-        <div className="fixed inset-0 bg-[#caf4ff85] flex flex-col justify-center items-center z-50 overflow-hidden">
+        <div className="fixed inset-0 bg-[#2563eb] hover:bg-[#1d4ed8] shadow-md transition-colors flex flex-col justify-center items-center z-50 overflow-hidden">
           <Bars
             height="60"
             width="60"
@@ -171,11 +192,11 @@ const LoginSimoanginangin = () => {
             wrapperClass=""
             visible={true}
           />
-          <p className="mt-3 font-semibold font-inter text-pdarkblue">Loading</p>
+          <p className="mt-3 font-semibold font-inter text-[#1f2937]">Loading</p>
         </div>
       )} */}
     </div>
   );
 };
 
-export default LoginSimoanginangin;
+export default LoginGeneral;

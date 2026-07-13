@@ -142,6 +142,7 @@ import api from "../utils/api";
 import { useEffect, useState } from "react";
 import { dataLabels } from "./data";
 import { useMediaQuery } from "react-responsive";
+import AdminLayout from "../components/AdminLayout";
 
 const username = localStorage.getItem("username");
 
@@ -201,16 +202,9 @@ const AdminSimoanginangin = () => {
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center absolute border-b-1 border-[#bed5e3] w-full px-[5%] sm:px-[10%] 2xl:px-[20%] font-inter text-pdarkblue py-[16px]">
-        <h1 className="text-sm font-semibold md:text-lg">Manajemen Data Peta Tematik</h1>
-        <div className="flex items-center gap-2">
-          <PiUserCircleDashedDuotone className="md:text-[40px] text-[30px]" />
-          <h1 className="font-semibold md:text-lg text:sm">{username}</h1>
-        </div>
-      </div>
-      <div className="flex flex-col items-center w-full min-h-screen bg-[#eefcff] px-[5%] sm:px-[10%] 2xl:px-[20%] font-inter text-pdarkblue">
-        <h1 className="font-semibold text-[16px] mt-[90px] mb-[12px] bg-white py-2 px-3 w-fit rounded-xl text-center">
+    <AdminLayout>
+      <div className="flex flex-col items-center w-full min-h-screen font-inter text-[#1f2937]">
+        <h1 className="font-semibold text-[16px] md:text-lg mb-[12px] bg-white py-2 px-3 w-fit rounded-xl text-center">
           Ringkasan Statistik UMKM Desa Simoangin-angin
         </h1>
         <div className="flex flex-col w-full gap-0 p-5 pb-3 bg-white rounded-xl admin-simoanginangin">
@@ -245,7 +239,7 @@ const AdminSimoanginangin = () => {
           )}
         </Tabs>
       </div>
-    </>
+    </AdminLayout>
   );
 };
 

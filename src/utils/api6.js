@@ -7,7 +7,7 @@ const api6 = axios.create({
 // Add a request interceptor
 api6.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-sidokepung");
+    const token = localStorage.getItem("token-sidokepung") || localStorage.getItem("token-pusat");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

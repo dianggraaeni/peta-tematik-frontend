@@ -18,6 +18,7 @@ import api4 from "../utils/api4";
 import GrogolSlsTable from "../components/GrogolSlsTable";
 import GrogolUsahaTable from "../components/GrogolUsahaTable";
 import { formatNumberWithSpace } from "../utils/formatNumberWithSpace";
+import AdminLayout from "../components/AdminLayout";
 
 const username = localStorage.getItem("username");
 
@@ -72,7 +73,7 @@ const AdminGrogol = () => {
 
   const StatComponent = ({ label = "Jumlah UMKM", value = 100 }) => {
     return (
-      <div className="flex items-center justify-between w-full p-2 border-2 border-dashed border-pgreen rounded-xl font-inter text-pgreen">
+      <div className="flex items-center justify-between w-full p-2 border-2 border-dashed border-[#bfdbfe] bg-[#eff6ff] rounded-xl font-inter text-[#1f2937]">
         <div className="flex justify-between items-center w-full text-[14px]">
           <span className="font-semibold text-[14px]">{label}</span>
           <span className="ml-2">{value}</span>
@@ -82,16 +83,9 @@ const AdminGrogol = () => {
   };
 
   return (
-    <>
-      <div className="flex justify-between items-center absolute border-b-3 border-[#b4fa82] w-full px-[10%] 2xl:px-[20%] font-inter text-pgreen py-[16px] admin-grogol">
-        <h1 className="text-lg font-semibold">Manajemen Data Peta Tematik</h1>
-        <div className="flex items-center gap-2">
-          <PiUserCircleDashedDuotone className="text-[40px]" />
-          <h1 className="text-lg font-semibold">{username}</h1>
-        </div>
-      </div>
-      <div className="flex flex-col items-center w-full min-h-screen bg-[#eaffdb] px-[10%] 2xl:px-[20%] font-inter text-pgreen">
-        <h1 className="font-semibold text-[16px] mt-[90px] mb-[12px] bg-white py-2 px-3 w-fit rounded-xl">
+    <AdminLayout>
+      <div className="flex flex-col items-center w-full min-h-screen font-inter text-[#1f2937]">
+        <h1 className="font-semibold text-[16px] mb-[12px] bg-white py-2 px-3 w-fit rounded-xl">
           Ringkasan Statistik Usaha Tanaman Sayuran Desa Grogol
         </h1>
         <div className="flex flex-col w-full gap-0 p-5 pb-3 bg-white rounded-xl">
@@ -134,7 +128,7 @@ const AdminGrogol = () => {
           )}
         </Tabs>
       </div>
-    </>
+    </AdminLayout>
   );
 };
 

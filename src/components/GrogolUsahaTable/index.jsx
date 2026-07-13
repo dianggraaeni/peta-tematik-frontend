@@ -31,7 +31,7 @@ import api4 from "../../utils/api4";
 import { useMediaQuery } from "react-responsive";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
-import { SiMicrosoftexcel } from "react-icons/si";
+import { FaFileExcel } from "react-icons/fa6";
 import { AiTwotoneDelete } from "react-icons/ai";
 
 const GrogolUsahaTable = ({ fetchDataAggregate }) => {
@@ -511,7 +511,7 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
             color="success"
             className="text-[14px] font-semibold text-white"
             startContent={
-              <SiMicrosoftexcel className="text-[20px] text-white" />
+              <FaFileExcel className="text-[20px] text-white" />
             }
             onClick={handleEksporButtonClick}
           >
@@ -520,11 +520,10 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
         </div>
       </div>
       {/* <div className="relative"> */}
-      <Table
-        aria-label="Example table with custom cells"
+      <Table aria-label="Example table with custom cells"
         shadow="none"
         className="shadow rounded-xl font-inter grogol-usaha-table"
-        classNames={{ loadingWrapper: "mx-auto" }}
+        classNames={{ th: "bg-[#1f2937] text-white font-semibold text-sm border-none", wrapper: "shadow-none p-0" }}
         bottomContent={
           <div className="relative flex justify-center w-full">
             <Popconfirm

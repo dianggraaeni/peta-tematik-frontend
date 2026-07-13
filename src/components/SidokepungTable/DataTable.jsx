@@ -62,7 +62,8 @@ const DataTable = ({
 
   return (
     <>
-      <Table aria-label="Data Pekerjaan">
+      <Table aria-label="Data Pekerjaan"
+        classNames={{ th: "bg-[#1f2937] text-white font-semibold text-sm border-none", wrapper: "shadow-none p-0" }}>
         <TableHeader>
           <TableColumn>NAMA</TableColumn>
           <TableColumn>RT/RW</TableColumn>
@@ -134,7 +135,7 @@ const DataTable = ({
                   <Button
                     isIconOnly
                     size="sm"
-                    variant="flat"
+                    
                     color="primary"
                     onClick={() => onEdit(item)}
                   >
@@ -143,7 +144,7 @@ const DataTable = ({
                   <Button
                     isIconOnly
                     size="sm"
-                    variant="flat"
+                    
                     color="danger"
                     onClick={() => onDelete(item)}
                   >
