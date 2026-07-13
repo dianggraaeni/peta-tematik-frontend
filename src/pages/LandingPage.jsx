@@ -30,7 +30,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     // Fetch the boundaries GeoJSON from public folder
-    fetch("/data/Administrasi_Desa.geojson")
+    fetch("/data/Administrasi_Kecamatan.geojson")
       .then((res) => res.json())
       .then((data) => setGeojsonData(data))
       .catch((err) => console.error("Error loading boundaries:", err));
@@ -65,8 +65,8 @@ const LandingPage = () => {
     const results = geojsonData.features
       .map((f) => f.properties)
       .filter((props) => {
-        const desa = (props.DESA || props.KECAMATAN || "").toLowerCase();
-        return desa.includes(term);
+        const kecamatan = (props.KECAMATAN || "").toLowerCase();
+        return kecamatan.includes(term);
       })
       .slice(0, 5); // Limit to 5 results for clean UI
     
@@ -74,8 +74,8 @@ const LandingPage = () => {
     const uniqueResults = [];
     const seen = new Set();
     for (const res of results) {
-      if (!seen.has(res.DESA)) {
-        seen.add(res.DESA);
+      if (!seen.has(res.KECAMATAN)) {
+        seen.add(res.KECAMATAN);
         uniqueResults.push(res);
       }
     }
@@ -301,8 +301,8 @@ const LandingPage = () => {
                     key={idx}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 cursor-default"
                   >
-                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA}</div>
-                    <div className="text-xs" style={{ color: "#6b7280" }}>Kecamatan {result.KECAMATAN}</div>
+                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>Kecamatan {result.KECAMATAN}</div>
+                    <div className="text-xs" style={{ color: "#6b7280" }}>Kabupaten Sidoarjo</div>
                   </button>
                 ))
               ) : (

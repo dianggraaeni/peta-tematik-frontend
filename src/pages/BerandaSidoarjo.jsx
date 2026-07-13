@@ -326,8 +326,14 @@ const BerandaSidoarjo = () => {
           )}
         </div>
 
-        {/* Login Button */}
-        <div className="w-full sm:w-auto flex justify-end order-1 sm:order-2">
+        {/* Action Buttons */}
+        <div className="w-full sm:w-auto flex gap-3 justify-end order-1 sm:order-2">
+          <button 
+            onClick={() => navigate('/')}
+            className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-2 border-[#2563eb] hover:bg-[#1d4ed8] text-sm md:text-base"
+          >
+            Peta Statistik
+          </button>
           <button 
             onClick={() => navigate('/login')}
             className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-2 border-transparent hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base"
