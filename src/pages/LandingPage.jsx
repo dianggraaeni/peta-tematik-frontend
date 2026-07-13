@@ -240,8 +240,9 @@ const LandingPage = () => {
           from { max-width: 0; }
           to { max-width: 100%; }
         }
-        @keyframes blink {
-          50% { border-color: transparent; }
+        @keyframes colorBlink {
+          0%, 100% { background-color: #2563eb; transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+          50% { background-color: #3b82f6; transform: scale(1.02); box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.6); }
         }
 
         .animate-color-shift {
@@ -250,6 +251,9 @@ const LandingPage = () => {
         .animate-float {
           animation: float 3s ease-in-out infinite;
           display: inline-block;
+        }
+        .animate-soft-blink {
+          animation: colorBlink 3.5s ease-in-out infinite;
         }
         .typewriter-text {
           display: inline-block;
@@ -314,7 +318,7 @@ const LandingPage = () => {
         <div className="w-full sm:w-auto flex gap-3 justify-end order-1 sm:order-2">
           <button 
             onClick={() => navigate('/peta-tematik')}
-            className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-2 border-[#2563eb] hover:bg-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base"
+            className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-2 border-[#2563eb] hover:bg-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base animate-soft-blink"
           >
             Peta Tematik
           </button>
