@@ -42,6 +42,7 @@ const LandingPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const navigate = useNavigate();
@@ -114,6 +115,17 @@ const LandingPage = () => {
       (stat) => stat.kecamatan.toUpperCase() === kecamatanName.toUpperCase()
     );
   };
+
+  // Aggregate stats
+  const totalPenduduk = statsData.reduce((sum, stat) => sum + stat.jumlah_penduduk, 0);
+  const totalLuas = statsData.reduce((sum, stat) => sum + stat.luas_wilayah, 0);
+  const avgKepadatan = totalLuas > 0 ? (totalPenduduk / totalLuas) : 0;
+  
+  // Top 5 Kecamatan
+  const top5Kecamatan = [...statsData]
+    .sort((a, b) => b.jumlah_penduduk - a.jumlah_penduduk)
+    .slice(0, 5);
+  const maxPop = top5Kecamatan.length > 0 ? top5Kecamatan[0].jumlah_penduduk : 1;
 
   // Choropleth color scale (Light Blue to Dark Blue) based on density
   const getColor = (density) => {
@@ -429,19 +441,99 @@ const LandingPage = () => {
             </div>
           )}
 
-          {/* Legend */}
-          <div className="absolute bottom-6 left-6 z-[1000] bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-gray-100">
-            <h4 className="font-bold text-sm text-gray-700 mb-2">Kepadatan Penduduk</h4>
-            <p className="text-xs text-gray-500 mb-3">(jiwa/km²)</p>
-            <div className="flex flex-col gap-1 text-xs text-gray-600 font-medium">
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#08306b]"></span> &gt; 7000</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#08519c]"></span> 5000 - 7000</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#2171b5]"></span> 3500 - 5000</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#4292c6]"></span> 2500 - 3500</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#6baed6]"></span> 1500 - 2500</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#9ecae1]"></span> 1000 - 1500</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#c6dbef]"></span> 500 - 1000</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm inline-block shadow-sm bg-[#deebf7]"></span> &lt; 500</div>
+          {/* Interactive Bottom-Left Panel */}
+          <div className="absolute top-6 bottom-6 left-6 z-[1000] flex items-end gap-4 pointer-events-none">
+            {/* Toggle Button */}
+            <button 
+              onClick={() => setIsPanelOpen(!isPanelOpen)}
+              className="bg-white/95 backdrop-blur-md text-gray-800 w-12 h-12 flex items-center justify-center shadow-xl rounded-2xl transition-all duration-300 hover:bg-white hover:scale-105 active:scale-95 z-20 shrink-0 pointer-events-auto"
+              title={isPanelOpen ? "Tutup Info Statistik" : "Buka Info Statistik"}
+            >
+              {isPanelOpen ? (
+                // Double Left Arrow (Close)
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="13 17 8 12 13 7"></polyline>
+                  <polyline points="18 17 13 12 18 7"></polyline>
+                </svg>
+              ) : (
+                // Legend / List Icon (Open)
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="4" height="4" rx="1"></rect>
+                  <circle cx="5" cy="12" r="2"></circle>
+                  <path d="M3 18l2-2 2 2z"></path>
+                  <line x1="10" y1="6" x2="21" y2="6"></line>
+                  <line x1="10" y1="12" x2="21" y2="12"></line>
+                  <line x1="10" y1="18" x2="21" y2="18"></line>
+                </svg>
+              )}
+            </button>
+
+            {/* Panel Content (Slides out to the right) */}
+            <div 
+              className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden flex flex-col h-full pointer-events-auto ${
+                isPanelOpen ? "w-[320px] opacity-100 translate-x-0" : "w-0 opacity-0 -translate-x-10 pointer-events-none"
+              }`}
+            >
+              <div className="p-5 w-[320px] h-full flex flex-col justify-between">
+                {/* Header */}
+                <div>
+                  <h3 className="font-bold text-lg text-gray-800">Statistik Sidoarjo</h3>
+                  <p className="text-xs text-gray-500">Ringkasan agregat wilayah</p>
+                </div>
+
+                {/* General Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-1">Total Penduduk</div>
+                    <div className="font-extrabold text-gray-800 text-lg leading-none">{totalPenduduk.toLocaleString('id-ID')}</div>
+                    <div className="text-[10px] text-gray-500 mt-1">Jiwa</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                    <div className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-1">Kepadatan Rata²</div>
+                    <div className="font-extrabold text-gray-800 text-lg leading-none">{Math.round(avgKepadatan).toLocaleString('id-ID')}</div>
+                    <div className="text-[10px] text-gray-500 mt-1">Jiwa/km²</div>
+                  </div>
+                </div>
+
+                {/* Bar Chart - Top 5 Kecamatan */}
+                <div>
+                  <h4 className="font-bold text-xs text-gray-700 mb-3 border-b pb-1">Top 5 Penduduk Terbanyak</h4>
+                  <div className="flex flex-col gap-3">
+                    {top5Kecamatan.map((kec, idx) => {
+                      const widthPercent = (kec.jumlah_penduduk / maxPop) * 100;
+                      return (
+                        <div key={idx} className="relative">
+                          <div className="flex justify-between text-[10px] mb-1 font-medium">
+                            <span className="text-gray-700">{kec.kecamatan}</span>
+                            <span className="text-gray-900 font-bold">{kec.jumlah_penduduk.toLocaleString('id-ID')}</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full transition-all duration-1000 ease-out" 
+                              style={{ width: `${widthPercent}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Legend (Original) */}
+                <div className="pt-2 border-t border-gray-100">
+                  <h4 className="font-bold text-xs text-gray-700 mb-2">Legenda Kepadatan (jiwa/km²)</h4>
+                  <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-gray-600 font-medium">
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#08306b]"></span> &gt; 7000</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#08519c]"></span> 5000 - 7000</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#2171b5]"></span> 3500 - 5000</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#4292c6]"></span> 2500 - 3500</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#6baed6]"></span> 1500 - 2500</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#9ecae1]"></span> 1000 - 1500</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#c6dbef]"></span> 500 - 1000</div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#deebf7]"></span> &lt; 500</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
