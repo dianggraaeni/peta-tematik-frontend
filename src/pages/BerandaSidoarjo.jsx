@@ -57,6 +57,7 @@ const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
 const desaTematikInfo = {
   "SIMOKETAWANG": ["Pertanian Pertambangan", "Ekonomi Perdagangan"],
   "GROGOL": ["Pertanian Pertambangan"],
+  "SIMO ANGIN ANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
   "SIMOANGINANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
   "SIDOKEPUNG": ["Sosial Kependudukan"]
 };
@@ -149,9 +150,18 @@ const BerandaSidoarjo = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
+  const handleNavigateDetail = (desaName) => {
+    const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
+    if (normalizedName === "SIMOANGINANGIN") {
+      navigate("/detail-simoanginangin");
+    } else {
+      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+    }
+  };
+
   const handleSelectSearch = (desaName) => {
     if (selectedDesa === desaName) {
-      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+      handleNavigateDetail(desaName);
     } else {
       setSelectedDesa(desaName);
       setSearchTerm(desaName);
@@ -325,7 +335,7 @@ const BerandaSidoarjo = () => {
       click: (e) => {
         isFeatureClicked.current = true;
         if (selectedDesaRef.current === desaName) {
-          navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+          handleNavigateDetail(desaName);
         } else {
           setSelectedDesa(desaName);
         }
@@ -754,7 +764,11 @@ const BerandaSidoarjo = () => {
                 </p>
               </div>
               <button 
-                onClick={() => selectedDesa && navigate(`/detail?desa=${encodeURIComponent(selectedDesa)}`)}
+                onClick={() => {
+                  if (selectedDesa) {
+                    handleNavigateDetail(selectedDesa);
+                  }
+                }}
                 className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
               >
                 <span>Lihat Detail Desa</span>

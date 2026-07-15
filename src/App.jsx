@@ -8,6 +8,7 @@ import VillageAdmin from "./pages/VillageAdmin";
 import PotensiAdmin from "./pages/potensiAdmin";
 
 import PetaTematik from "./pages/PetaPekerjaanSidokepung";
+import PetaUmkmSimoanginangin from "./pages/PetaUmkmSimoanginangin";
 import BerandaSidoarjo from "./pages/BerandaSidoarjo";
 import LandingPage from "./pages/LandingPage";
 import StatAdmin from "./pages/statAdmin";
@@ -28,6 +29,7 @@ function App() {
         {/* Thematic Map Route */}
         <Route path="/peta-tematik" element={<BerandaSidoarjo />} />
         <Route path="/detail" element={<PetaTematik />} />
+        <Route path="/detail-simoanginangin" element={<PetaUmkmSimoanginangin />} />
         
         {/* Login Routes */}
         <Route path="/login" element={<LoginGeneral />} /> {/* Default unified login */}

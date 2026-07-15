@@ -28,6 +28,8 @@
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "dayjs": "^1.11.12",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.3.8",
     "jsonwebtoken": "^9.0.2",
