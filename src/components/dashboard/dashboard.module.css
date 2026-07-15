@@ -27,7 +27,7 @@ p {
 }  
 
 .addButton {
-  background-color: #fcc300;
+  background-color: #3b82f6;
   color: white;
   font-family: Inter;
   font-weight: 600;
@@ -42,7 +42,7 @@ p {
 }
 
 .addButton:hover {
-  background-color: #e9b401; /* Darker green on hover */
+  background-color: #2563eb; /* Darker green on hover */
 }
 
 .addIcon {
@@ -76,7 +76,7 @@ p {
 }
 
 .table th {
-    background-color: #f07219; /* Green background */
+    background-color: #2563eb; /* Blue background */
     color: white;
     font-weight: 600;
     position: relative;
@@ -164,7 +164,7 @@ p {
 }
 
 .submitButton {
-  background-color: #fcc300;
+  background-color: #3b82f6;
   color: white;
   padding: 8px 16px;
   border: none;

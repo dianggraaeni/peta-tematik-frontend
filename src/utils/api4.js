@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const api4 = axios.create({
-  baseURL: "http://localhost:5003",
+  baseURL: "https://backend-webgis-grogol.vercel.app",
 });
 
 // Add a request interceptor
 api4.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-grogol") || localStorage.getItem("token-pusat");
+    const token = localStorage.getItem("token-grogol");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

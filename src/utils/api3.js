@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const api3 = axios.create({
-  baseURL: "http://localhost:5003",
+  baseURL: "https://backend-webgis-simoketawang.vercel.app",
 });
 
 // Add a request interceptor
 api3.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-simoketawang") || localStorage.getItem("token-pusat");
+    const token = localStorage.getItem("token-simoketawang");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

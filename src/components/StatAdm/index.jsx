@@ -158,7 +158,7 @@ const StatAdm = () => {
                     />
                     <button
                       type="submit"
-                      className={`px-4 py-2 text-white transition-all bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+                      className={`px-4 py-2 text-white transition-all bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                         errors[field.id] ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       onClick={(e) => handleSubmit(e, field.id)}

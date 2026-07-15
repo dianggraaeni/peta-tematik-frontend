@@ -26,6 +26,7 @@ import { Bars } from "react-loader-spinner";
 import GeoJSONUploadModal from "./GeoJSONUploadModal";
 import EditRtModal from "./EditRtModal";
 import DetailRtModal from "./DetailRtModal";
+import AddRtModal from "./AddRtModal";
 import { useAsyncList } from "@react-stately/data";
 
 const RtTable = ({ fetchDataAggregate }) => {
@@ -38,6 +39,13 @@ const RtTable = ({ fetchDataAggregate }) => {
     isOpen: isAddModalOpen,
     onOpen: onAddModalOpen,
     onOpenChange: onAddModalOpenChange,
+  } = useDisclosure();
+
+  // State untuk modal tambah manual
+  const {
+    isOpen: isAddRtModalOpen,
+    onOpen: onAddRtModalOpen,
+    onOpenChange: onAddRtModalOpenChange,
   } = useDisclosure();
 
   // State untuk modal edit
@@ -262,14 +270,24 @@ const RtTable = ({ fetchDataAggregate }) => {
           value={searchTerm}
           onChange={handleSearchChange}
         />
-        <Button
-          color="primary"
-          className="text-[14px] font-semibold text-white"
-          startContent={<FaPlus className="text-[20px] text-white" />}
-          onClick={onAddModalOpen}
-        >
-          Tambah
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            color="primary"
+            className="text-[14px] font-semibold text-white bg-blue-600"
+            startContent={<FaPlus className="text-[16px] text-white" />}
+            onClick={onAddRtModalOpen}
+          >
+            Tambah Manual
+          </Button>
+          <Button
+            color="success"
+            className="text-[14px] font-semibold text-white bg-green-600"
+            startContent={<FaPlus className="text-[16px] text-white" />}
+            onClick={onAddModalOpen}
+          >
+            Upload GeoJSON
+          </Button>
+        </div>
       </div>
       <Table
         aria-label="Example table with custom cells"
@@ -334,6 +352,13 @@ const RtTable = ({ fetchDataAggregate }) => {
         onSuccessCreate={() => {
           fetchData();
         }}
+      />
+
+      <AddRtModal
+        isAddModalOpen={isAddRtModalOpen}
+        onAddModalOpenChange={onAddRtModalOpenChange}
+        fetchData={fetchData}
+        fetchDataAggregate={fetchDataAggregate}
       />
 
       <EditRtModal

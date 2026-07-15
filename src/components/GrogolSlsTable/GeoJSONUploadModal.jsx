@@ -131,15 +131,15 @@ const GeoJSONUploadModal = ({
           wrapper: "overflow-y-hidden",
         }}
       >
-        <ModalContent className="font-inter text-pgreen">
+        <ModalContent className="font-inter text-blue-800">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-white bg-pgreen">
+              <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
                 Tambah Satuan Lingkungan Setempat (SLS)
               </ModalHeader>
               <ModalBody className="py-4">
-                <div className="flex flex-col text-pgreen font-inter">
-                  <p className="font-semibold text-[14px] mb-3 text-pgreen">
+                <div className="flex flex-col text-blue-800 font-inter">
+                  <p className="font-semibold text-[14px] mb-3 text-blue-800">
                     Upload geoJSON
                   </p>
                   <Dragger {...uploadProps}>
@@ -162,7 +162,7 @@ const GeoJSONUploadModal = ({
                   Tutup
                 </Button>
                 <Button
-                  className="font-semibold text-white bg-pgreen font-inter"
+                  className="font-semibold text-white bg-blue-600 font-inter"
                   onPress={handleAdd}
                   disabled={loading}
                 >

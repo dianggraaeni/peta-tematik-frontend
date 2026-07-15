@@ -73,8 +73,24 @@ const Login = () => {
         console.log(response.data);
         localStorage.setItem("token-desa-cantik", response.data.token);
         localStorage.setItem("username", username);
+
+        if (username === "admin_pusat") {
+          localStorage.setItem("token-pusat", response.data.token);
+        } else if (username.startsWith("admin_")) {
+          const desaNameStr = username.replace("admin_", "");
+          localStorage.setItem(`token-${desaNameStr}`, response.data.token);
+        }
+
         setLoading(false);
-        navigate("/admin");
+
+        if (username === "admin_pusat") {
+          navigate("/admin/pusat");
+        } else if (username.startsWith("admin_")) {
+          const desaName = username.replace("admin_", "").toUpperCase();
+          navigate(`/admin/desa/${desaName}`);
+        } else {
+          navigate("/admin/pusat");
+        }
       }
     } catch (error) {
       if (error.response) {

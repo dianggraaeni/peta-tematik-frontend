@@ -3,10 +3,14 @@ import AdminSidokepung from "./pages/adminSidokepung";
 import AdminGrogol from "./pages/adminGrogol";
 import AdminSimoanginangin from "./pages/adminSimoanginangin";
 import AdminSimoketawang from "./pages/adminSimoketawang";
+import AdminPusat from "./pages/AdminPusat";
+import VillageAdmin from "./pages/VillageAdmin";
+import PotensiAdmin from "./pages/potensiAdmin";
 
 import PetaTematik from "./pages/PetaPekerjaanSidokepung";
 import BerandaSidoarjo from "./pages/BerandaSidoarjo";
 import LandingPage from "./pages/LandingPage";
+import StatAdmin from "./pages/statAdmin";
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import { NextUIProvider } from "@nextui-org/system";
 import Logout from "./components/Logout";
@@ -35,46 +39,63 @@ function App() {
         
         <Route path="/logout" element={<Logout />} />
         
-        {/* Admin Routes */}
+        {/* Detail Desa Potensi Admin Route */}
         <Route
-          path="/admin-pusat"
+          path="/admin/potensi"
+          element={<PotensiAdmin />}
+        />
+
+        {/* Statistik Admin Route */}
+        <Route
+          path="/admin/stat"
           element={
             <ProtectedRoute village="pusat">
-              <AdminSidokepung />
+              <StatAdmin />
             </ProtectedRoute>
           }
         />
+        
+        {/* Admin Routes */}
         <Route
-          path="/admin-sidokepung"
+          path="/admin/pusat"
           element={
-            <ProtectedRoute village="sidokepung">
-              <AdminSidokepung />
+            <ProtectedRoute village="pusat">
+              <AdminPusat />
             </ProtectedRoute>
           }
+        />
+
+        {/* Dynamic Village Admin Route */}
+        <Route
+          path="/admin/desa/:nama_desa"
+          element={
+            <ProtectedRoute>
+              <VillageAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Legacy routes for fallback, to be removed later */}
+        <Route
+          path="/admin-pusat"
+          element={<Navigate to="/admin/pusat" replace />}
+        />
+        {/* Legacy routes redirected to dynamic VillageAdmin */}
+        <Route
+          path="/admin-sidokepung"
+          element={<Navigate to="/admin/desa/sidokepung" replace />}
         />
         <Route
           path="/admin-grogol"
-          element={
-            <ProtectedRoute village="grogol">
-              <AdminGrogol />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/admin/desa/grogol" replace />}
         />
         <Route
           path="/admin-simoanginangin"
-          element={
-            <ProtectedRoute village="simoanginangin">
-              <AdminSimoanginangin />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/admin/desa/simoanginangin" replace />}
         />
         <Route
           path="/admin-simoketawang"
-          element={
-            <ProtectedRoute village="simoketawang">
-              <AdminSimoketawang />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/admin/desa/simoketawang" replace />}
         />
         
         <Route path="*" element={<NotFoundPage />} />

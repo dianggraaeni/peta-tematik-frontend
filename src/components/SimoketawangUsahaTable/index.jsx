@@ -374,7 +374,7 @@ const SimoketawangUsahaTable = ({ fetchDataAggregate }) => {
           className="mb-4 w-[50%] simoketawang-usaha-search"
           placeholder="Ketikkan kata kunci..."
           startContent={
-            <SearchIcon className="mb-0.5 text-pyellow pointer-events-none flex-shrink-0" />
+            <SearchIcon className="mb-0.5 text-blue-800 pointer-events-none flex-shrink-0" />
           }
           value={searchTerm}
           onChange={handleSearchChange}
@@ -435,7 +435,7 @@ const SimoketawangUsahaTable = ({ fetchDataAggregate }) => {
         selectionBehavior="toggle"
         onRowAction={() => null}
       >
-        <TableHeader columns={columns} className="font-inter text-pyellow">
+        <TableHeader columns={columns} className="font-inter text-blue-800">
           {(column) => (
             <TableColumn
               key={column.uid}

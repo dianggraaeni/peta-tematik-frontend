@@ -239,10 +239,10 @@ const EditRtModal = ({
         hideCloseButton={true}
         isDismissable={false}
       >
-        <ModalContent className="font-inter text-pyellow">
+        <ModalContent className="font-inter text-blue-800">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-white bg-pyellow">
+              <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
                 Edit Satuan Lingkungan Setempat (SLS)
               </ModalHeader>
               <ModalBody className="py-4">
@@ -581,7 +581,7 @@ const EditRtModal = ({
                   Tutup
                 </Button>
                 <Button
-                  className="font-semibold text-white bg-pyellow font-inter"
+                  className="font-semibold text-white bg-blue-600 font-inter"
                   onPress={handleEditSave}
                   disabled={loading}
                 >

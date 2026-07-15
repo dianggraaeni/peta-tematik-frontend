@@ -1,0 +1,3462 @@
+{
+  "3515010001": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KRAMATTEMENGGUNG",
+    "L": 1141,
+    "P": 1119,
+    "total_penduduk": 2260,
+    "KK_L": 627,
+    "KK_P": 179,
+    "total_kk": 806
+  },
+  "3515010002": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "MLIRIPROWO",
+    "L": 1841,
+    "P": 1800,
+    "total_penduduk": 3641,
+    "KK_L": 1027,
+    "KK_P": 262,
+    "total_kk": 1289
+  },
+  "3515010003": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "SEBANI",
+    "L": 2508,
+    "P": 2398,
+    "total_penduduk": 4906,
+    "KK_L": 1394,
+    "KK_P": 319,
+    "total_kk": 1713
+  },
+  "3515010004": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KEDUNGBOCOK",
+    "L": 1715,
+    "P": 1682,
+    "total_penduduk": 3397,
+    "KK_L": 968,
+    "KK_P": 232,
+    "total_kk": 1200
+  },
+  "3515010005": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "SINGOGALIH",
+    "L": 1969,
+    "P": 1955,
+    "total_penduduk": 3924,
+    "KK_L": 1070,
+    "KK_P": 271,
+    "total_kk": 1341
+  },
+  "3515010006": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "TARIK",
+    "L": 2048,
+    "P": 2065,
+    "total_penduduk": 4113,
+    "KK_L": 1126,
+    "KK_P": 351,
+    "total_kk": 1477
+  },
+  "3515010007": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "MERGOBENER",
+    "L": 1115,
+    "P": 1083,
+    "total_penduduk": 2198,
+    "KK_L": 620,
+    "KK_P": 179,
+    "total_kk": 799
+  },
+  "3515010008": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "MERGOSARI",
+    "L": 1795,
+    "P": 1707,
+    "total_penduduk": 3502,
+    "KK_L": 1003,
+    "KK_P": 249,
+    "total_kk": 1252
+  },
+  "3515010009": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KENDALSEWU",
+    "L": 1019,
+    "P": 1054,
+    "total_penduduk": 2073,
+    "KK_L": 564,
+    "KK_P": 147,
+    "total_kk": 711
+  },
+  "3515010010": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KLANTINGSARI",
+    "L": 2182,
+    "P": 2120,
+    "total_penduduk": 4302,
+    "KK_L": 1227,
+    "KK_P": 252,
+    "total_kk": 1479
+  },
+  "3515010011": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KALIMATI",
+    "L": 2809,
+    "P": 2703,
+    "total_penduduk": 5512,
+    "KK_L": 1577,
+    "KK_P": 355,
+    "total_kk": 1932
+  },
+  "3515010012": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "GEMPOLKLUTUK",
+    "L": 823,
+    "P": 802,
+    "total_penduduk": 1625,
+    "KK_L": 474,
+    "KK_P": 119,
+    "total_kk": 593
+  },
+  "3515010013": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "BANJARWUNGU",
+    "L": 1592,
+    "P": 1605,
+    "total_penduduk": 3197,
+    "KK_L": 904,
+    "KK_P": 223,
+    "total_kk": 1127
+  },
+  "3515010014": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KEMUNING",
+    "L": 2717,
+    "P": 2700,
+    "total_penduduk": 5417,
+    "KK_L": 1542,
+    "KK_P": 393,
+    "total_kk": 1935
+  },
+  "3515010015": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "BALONGMACEKAN",
+    "L": 1432,
+    "P": 1346,
+    "total_penduduk": 2778,
+    "KK_L": 789,
+    "KK_P": 175,
+    "total_kk": 964
+  },
+  "3515010016": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "GAMPINGROWO",
+    "L": 1610,
+    "P": 1617,
+    "total_penduduk": 3227,
+    "KK_L": 894,
+    "KK_P": 197,
+    "total_kk": 1091
+  },
+  "3515010017": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "MINDUGADING",
+    "L": 1525,
+    "P": 1439,
+    "total_penduduk": 2964,
+    "KK_L": 873,
+    "KK_P": 187,
+    "total_kk": 1060
+  },
+  "3515010018": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "JANTI",
+    "L": 1626,
+    "P": 1683,
+    "total_penduduk": 3309,
+    "KK_L": 898,
+    "KK_P": 209,
+    "total_kk": 1107
+  },
+  "3515010019": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "SEGODOBANCANG",
+    "L": 1332,
+    "P": 1363,
+    "total_penduduk": 2695,
+    "KK_L": 782,
+    "KK_P": 171,
+    "total_kk": 953
+  },
+  "3515010020": {
+    "Kecamatan": "TARIK",
+    "nmdesa": "KEDINDING",
+    "L": 1488,
+    "P": 1420,
+    "total_penduduk": 2908,
+    "KK_L": 836,
+    "KK_P": 192,
+    "total_kk": 1028
+  },
+  "3515020001": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "PRAMBON",
+    "L": 2142,
+    "P": 2073,
+    "total_penduduk": 4215,
+    "KK_L": 1163,
+    "KK_P": 306,
+    "total_kk": 1469
+  },
+  "3515020002": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "KAJARTENGGULI",
+    "L": 1468,
+    "P": 1456,
+    "total_penduduk": 2924,
+    "KK_L": 773,
+    "KK_P": 249,
+    "total_kk": 1022
+  },
+  "3515020003": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "GEDANGROWO",
+    "L": 1650,
+    "P": 1615,
+    "total_penduduk": 3265,
+    "KK_L": 922,
+    "KK_P": 256,
+    "total_kk": 1178
+  },
+  "3515020004": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "WIROBITING",
+    "L": 2037,
+    "P": 1963,
+    "total_penduduk": 4000,
+    "KK_L": 1151,
+    "KK_P": 229,
+    "total_kk": 1380
+  },
+  "3515020005": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "SIMPANG",
+    "L": 1701,
+    "P": 1724,
+    "total_penduduk": 3425,
+    "KK_L": 950,
+    "KK_P": 261,
+    "total_kk": 1211
+  },
+  "3515020006": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "BULANG",
+    "L": 2014,
+    "P": 1883,
+    "total_penduduk": 3897,
+    "KK_L": 1095,
+    "KK_P": 298,
+    "total_kk": 1393
+  },
+  "3515020007": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "GAMPANG",
+    "L": 1385,
+    "P": 1300,
+    "total_penduduk": 2685,
+    "KK_L": 754,
+    "KK_P": 160,
+    "total_kk": 914
+  },
+  "3515020008": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "JATIKALANG",
+    "L": 2013,
+    "P": 1883,
+    "total_penduduk": 3896,
+    "KK_L": 1154,
+    "KK_P": 252,
+    "total_kk": 1406
+  },
+  "3515020009": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "PEJANGKUNGAN",
+    "L": 1660,
+    "P": 1692,
+    "total_penduduk": 3352,
+    "KK_L": 951,
+    "KK_P": 262,
+    "total_kk": 1213
+  },
+  "3515020010": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "KEDUNGSUGO",
+    "L": 2506,
+    "P": 2446,
+    "total_penduduk": 4952,
+    "KK_L": 1414,
+    "KK_P": 334,
+    "total_kk": 1748
+  },
+  "3515020011": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "KEDUNGWONOKERTO",
+    "L": 2999,
+    "P": 2959,
+    "total_penduduk": 5958,
+    "KK_L": 1674,
+    "KK_P": 438,
+    "total_kk": 2112
+  },
+  "3515020012": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "BENDOTRETEK",
+    "L": 2885,
+    "P": 2844,
+    "total_penduduk": 5729,
+    "KK_L": 1605,
+    "KK_P": 385,
+    "total_kk": 1990
+  },
+  "3515020013": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "WONOPLINTAHAN",
+    "L": 2704,
+    "P": 2722,
+    "total_penduduk": 5426,
+    "KK_L": 1499,
+    "KK_P": 376,
+    "total_kk": 1875
+  },
+  "3515020014": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "KEDUNGKEMBAR",
+    "L": 1610,
+    "P": 1560,
+    "total_penduduk": 3170,
+    "KK_L": 894,
+    "KK_P": 246,
+    "total_kk": 1140
+  },
+  "3515020015": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "JATIALUN-ALUN",
+    "L": 1430,
+    "P": 1438,
+    "total_penduduk": 2868,
+    "KK_L": 810,
+    "KK_P": 163,
+    "total_kk": 973
+  },
+  "3515020016": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "JEDONGCANGKRING",
+    "L": 1862,
+    "P": 1845,
+    "total_penduduk": 3707,
+    "KK_L": 1073,
+    "KK_P": 255,
+    "total_kk": 1328
+  },
+  "3515020017": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "CANGKRINGTURI",
+    "L": 1303,
+    "P": 1185,
+    "total_penduduk": 2488,
+    "KK_L": 723,
+    "KK_P": 133,
+    "total_kk": 856
+  },
+  "3515020018": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "SIMOGIRANG",
+    "L": 3314,
+    "P": 3116,
+    "total_penduduk": 6430,
+    "KK_L": 1710,
+    "KK_P": 382,
+    "total_kk": 2092
+  },
+  "3515020019": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "TEMU",
+    "L": 1527,
+    "P": 1586,
+    "total_penduduk": 3113,
+    "KK_L": 841,
+    "KK_P": 293,
+    "total_kk": 1134
+  },
+  "3515020020": {
+    "Kecamatan": "PRAMBON",
+    "nmdesa": "WATUTULIS",
+    "L": 2054,
+    "P": 2017,
+    "total_penduduk": 4071,
+    "KK_L": 1146,
+    "KK_P": 311,
+    "total_kk": 1457
+  },
+  "3515030001": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "TAMBAKREJO",
+    "L": 3442,
+    "P": 3388,
+    "total_penduduk": 6830,
+    "KK_L": 1931,
+    "KK_P": 359,
+    "total_kk": 2290
+  },
+  "3515030002": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KEPER",
+    "L": 1617,
+    "P": 1577,
+    "total_penduduk": 3194,
+    "KK_L": 913,
+    "KK_P": 199,
+    "total_kk": 1112
+  },
+  "3515030003": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KEDUNGSUMUR",
+    "L": 1767,
+    "P": 1734,
+    "total_penduduk": 3501,
+    "KK_L": 1004,
+    "KK_P": 242,
+    "total_kk": 1246
+  },
+  "3515030004": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KEDUNGRAWAN",
+    "L": 1584,
+    "P": 1619,
+    "total_penduduk": 3203,
+    "KK_L": 903,
+    "KK_P": 210,
+    "total_kk": 1113
+  },
+  "3515030005": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "TANJEKWAGIR",
+    "L": 1949,
+    "P": 1953,
+    "total_penduduk": 3902,
+    "KK_L": 1099,
+    "KK_P": 251,
+    "total_kk": 1350
+  },
+  "3515030006": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "MOJORUNTUT",
+    "L": 2885,
+    "P": 2927,
+    "total_penduduk": 5812,
+    "KK_L": 1612,
+    "KK_P": 443,
+    "total_kk": 2055
+  },
+  "3515030007": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "GADING",
+    "L": 1427,
+    "P": 1473,
+    "total_penduduk": 2900,
+    "KK_L": 796,
+    "KK_P": 210,
+    "total_kk": 1006
+  },
+  "3515030008": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "WANGKAL",
+    "L": 2205,
+    "P": 2136,
+    "total_penduduk": 4341,
+    "KK_L": 1207,
+    "KK_P": 266,
+    "total_kk": 1473
+  },
+  "3515030009": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "JENGGOT",
+    "L": 1403,
+    "P": 1374,
+    "total_penduduk": 2777,
+    "KK_L": 770,
+    "KK_P": 196,
+    "total_kk": 966
+  },
+  "3515030010": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "WAUNG",
+    "L": 1034,
+    "P": 1030,
+    "total_penduduk": 2064,
+    "KK_L": 586,
+    "KK_P": 130,
+    "total_kk": 716
+  },
+  "3515030011": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "PLOSO",
+    "L": 1492,
+    "P": 1444,
+    "total_penduduk": 2936,
+    "KK_L": 824,
+    "KK_P": 220,
+    "total_kk": 1044
+  },
+  "3515030012": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "REJENI",
+    "L": 2272,
+    "P": 2234,
+    "total_penduduk": 4506,
+    "KK_L": 1252,
+    "KK_P": 313,
+    "total_kk": 1565
+  },
+  "3515030013": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KANDANGAN",
+    "L": 1209,
+    "P": 1289,
+    "total_penduduk": 2498,
+    "KK_L": 653,
+    "KK_P": 221,
+    "total_kk": 874
+  },
+  "3515030014": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KREMBUNG",
+    "L": 2228,
+    "P": 2329,
+    "total_penduduk": 4557,
+    "KK_L": 1211,
+    "KK_P": 420,
+    "total_kk": 1631
+  },
+  "3515030015": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "LEMUJUT",
+    "L": 1223,
+    "P": 1199,
+    "total_penduduk": 2422,
+    "KK_L": 674,
+    "KK_P": 184,
+    "total_kk": 858
+  },
+  "3515030016": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "CANGKRING",
+    "L": 1485,
+    "P": 1510,
+    "total_penduduk": 2995,
+    "KK_L": 818,
+    "KK_P": 239,
+    "total_kk": 1057
+  },
+  "3515030017": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "KERET",
+    "L": 2238,
+    "P": 2202,
+    "total_penduduk": 4440,
+    "KK_L": 1207,
+    "KK_P": 320,
+    "total_kk": 1527
+  },
+  "3515030018": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "WONOMLATI",
+    "L": 2487,
+    "P": 2425,
+    "total_penduduk": 4912,
+    "KK_L": 1367,
+    "KK_P": 367,
+    "total_kk": 1734
+  },
+  "3515030019": {
+    "Kecamatan": "KREMBUNG",
+    "nmdesa": "BALONGGARUT",
+    "L": 666,
+    "P": 645,
+    "total_penduduk": 1311,
+    "KK_L": 358,
+    "KK_P": 94,
+    "total_kk": 452
+  },
+  "3515040001": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "KEBONAGUNG",
+    "L": 3285,
+    "P": 3128,
+    "total_penduduk": 6413,
+    "KK_L": 1768,
+    "KK_P": 414,
+    "total_kk": 2182
+  },
+  "3515040002": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "PORONG",
+    "L": 3318,
+    "P": 3307,
+    "total_penduduk": 6625,
+    "KK_L": 1823,
+    "KK_P": 654,
+    "total_kk": 2477
+  },
+  "3515040006": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "GLAGAHARUM",
+    "L": 2777,
+    "P": 2610,
+    "total_penduduk": 5387,
+    "KK_L": 1537,
+    "KK_P": 419,
+    "total_kk": 1956
+  },
+  "3515040007": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "PLUMBON",
+    "L": 604,
+    "P": 550,
+    "total_penduduk": 1154,
+    "KK_L": 336,
+    "KK_P": 77,
+    "total_kk": 413
+  },
+  "3515040009": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "GEDANG",
+    "L": 3067,
+    "P": 3114,
+    "total_penduduk": 6181,
+    "KK_L": 1679,
+    "KK_P": 666,
+    "total_kk": 2345
+  },
+  "3515040010": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "JUWETKENONGO",
+    "L": 2551,
+    "P": 2533,
+    "total_penduduk": 5084,
+    "KK_L": 1346,
+    "KK_P": 427,
+    "total_kk": 1773
+  },
+  "3515040011": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "KEDUNGSOLO",
+    "L": 2779,
+    "P": 2745,
+    "total_penduduk": 5524,
+    "KK_L": 1560,
+    "KK_P": 406,
+    "total_kk": 1966
+  },
+  "3515040012": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "KEBAKALAN",
+    "L": 958,
+    "P": 943,
+    "total_penduduk": 1901,
+    "KK_L": 510,
+    "KK_P": 117,
+    "total_kk": 627
+  },
+  "3515040013": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "KESAMBI",
+    "L": 3075,
+    "P": 3041,
+    "total_penduduk": 6116,
+    "KK_L": 1666,
+    "KK_P": 447,
+    "total_kk": 2113
+  },
+  "3515040014": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "PAMOTAN",
+    "L": 2076,
+    "P": 2065,
+    "total_penduduk": 4141,
+    "KK_L": 1151,
+    "KK_P": 299,
+    "total_kk": 1450
+  },
+  "3515040015": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "WUNUT",
+    "L": 2904,
+    "P": 2899,
+    "total_penduduk": 5803,
+    "KK_L": 1591,
+    "KK_P": 396,
+    "total_kk": 1987
+  },
+  "3515040016": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "CANDIPARI",
+    "L": 2399,
+    "P": 2478,
+    "total_penduduk": 4877,
+    "KK_L": 1325,
+    "KK_P": 323,
+    "total_kk": 1648
+  },
+  "3515040017": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "LAJUK",
+    "L": 3042,
+    "P": 2964,
+    "total_penduduk": 6006,
+    "KK_L": 1680,
+    "KK_P": 377,
+    "total_kk": 2057
+  },
+  "3515040018": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "KEDUNGBOTO",
+    "L": 1323,
+    "P": 1278,
+    "total_penduduk": 2601,
+    "KK_L": 733,
+    "KK_P": 148,
+    "total_kk": 881
+  },
+  "3515040019": {
+    "Kecamatan": "PORONG",
+    "nmdesa": "PESAWAHAN",
+    "L": 1321,
+    "P": 1321,
+    "total_penduduk": 2642,
+    "KK_L": 737,
+    "KK_P": 161,
+    "total_kk": 898
+  },
+  "3515050001": {
+    "Kecamatan": "JABON",
+    "nmdesa": "PANGGREH",
+    "L": 2334,
+    "P": 2337,
+    "total_penduduk": 4671,
+    "KK_L": 1302,
+    "KK_P": 364,
+    "total_kk": 1666
+  },
+  "3515050002": {
+    "Kecamatan": "JABON",
+    "nmdesa": "TROMPOASRI",
+    "L": 3250,
+    "P": 3198,
+    "total_penduduk": 6448,
+    "KK_L": 1767,
+    "KK_P": 473,
+    "total_kk": 2240
+  },
+  "3515050003": {
+    "Kecamatan": "JABON",
+    "nmdesa": "KEDUNGREJO",
+    "L": 2522,
+    "P": 2412,
+    "total_penduduk": 4934,
+    "KK_L": 1406,
+    "KK_P": 315,
+    "total_kk": 1721
+  },
+  "3515050004": {
+    "Kecamatan": "JABON",
+    "nmdesa": "KEDUNGPANDAN",
+    "L": 2477,
+    "P": 2532,
+    "total_penduduk": 5009,
+    "KK_L": 1399,
+    "KK_P": 413,
+    "total_kk": 1812
+  },
+  "3515050005": {
+    "Kecamatan": "JABON",
+    "nmdesa": "SEMAMBUNG",
+    "L": 1413,
+    "P": 1403,
+    "total_penduduk": 2816,
+    "KK_L": 806,
+    "KK_P": 205,
+    "total_kk": 1011
+  },
+  "3515050006": {
+    "Kecamatan": "JABON",
+    "nmdesa": "KUPANG",
+    "L": 2224,
+    "P": 2206,
+    "total_penduduk": 4430,
+    "KK_L": 1263,
+    "KK_P": 358,
+    "total_kk": 1621
+  },
+  "3515050007": {
+    "Kecamatan": "JABON",
+    "nmdesa": "TAMBAKKALISOGO",
+    "L": 1351,
+    "P": 1340,
+    "total_penduduk": 2691,
+    "KK_L": 769,
+    "KK_P": 196,
+    "total_kk": 965
+  },
+  "3515050008": {
+    "Kecamatan": "JABON",
+    "nmdesa": "BALONGTANI",
+    "L": 1470,
+    "P": 1432,
+    "total_penduduk": 2902,
+    "KK_L": 817,
+    "KK_P": 216,
+    "total_kk": 1033
+  },
+  "3515050009": {
+    "Kecamatan": "JABON",
+    "nmdesa": "JEMIRAHAN",
+    "L": 1524,
+    "P": 1522,
+    "total_penduduk": 3046,
+    "KK_L": 817,
+    "KK_P": 249,
+    "total_kk": 1066
+  },
+  "3515050010": {
+    "Kecamatan": "JABON",
+    "nmdesa": "DUKUHSARI",
+    "L": 3082,
+    "P": 3068,
+    "total_penduduk": 6150,
+    "KK_L": 1721,
+    "KK_P": 510,
+    "total_kk": 2231
+  },
+  "3515050011": {
+    "Kecamatan": "JABON",
+    "nmdesa": "KEDUNGCANGKRING",
+    "L": 2832,
+    "P": 2807,
+    "total_penduduk": 5639,
+    "KK_L": 1480,
+    "KK_P": 484,
+    "total_kk": 1964
+  },
+  "3515050014": {
+    "Kecamatan": "JABON",
+    "nmdesa": "KEBOGUYANG",
+    "L": 2666,
+    "P": 2634,
+    "total_penduduk": 5300,
+    "KK_L": 1448,
+    "KK_P": 381,
+    "total_kk": 1829
+  },
+  "3515050015": {
+    "Kecamatan": "JABON",
+    "nmdesa": "PERMISAN",
+    "L": 855,
+    "P": 846,
+    "total_penduduk": 1701,
+    "KK_L": 463,
+    "KK_P": 108,
+    "total_kk": 571
+  },
+  "3515060001": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "RANDEGAN",
+    "L": 2571,
+    "P": 2648,
+    "total_penduduk": 5219,
+    "KK_L": 1394,
+    "KK_P": 363,
+    "total_kk": 1757
+  },
+  "3515060002": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KEDENSARI",
+    "L": 3818,
+    "P": 3827,
+    "total_penduduk": 7645,
+    "KK_L": 2052,
+    "KK_P": 477,
+    "total_kk": 2529
+  },
+  "3515060003": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KALISAMPURNO",
+    "L": 4267,
+    "P": 4135,
+    "total_penduduk": 8402,
+    "KK_L": 2241,
+    "KK_P": 459,
+    "total_kk": 2700
+  },
+  "3515060004": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KETAPANG",
+    "L": 840,
+    "P": 750,
+    "total_penduduk": 1590,
+    "KK_L": 488,
+    "KK_P": 228,
+    "total_kk": 716
+  },
+  "3515060006": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "GEMPOLSARI",
+    "L": 2263,
+    "P": 2201,
+    "total_penduduk": 4464,
+    "KK_L": 1232,
+    "KK_P": 289,
+    "total_kk": 1521
+  },
+  "3515060007": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "SENTUL",
+    "L": 1954,
+    "P": 1858,
+    "total_penduduk": 3812,
+    "KK_L": 1055,
+    "KK_P": 233,
+    "total_kk": 1288
+  },
+  "3515060008": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "PENATARSEWU",
+    "L": 1634,
+    "P": 1608,
+    "total_penduduk": 3242,
+    "KK_L": 908,
+    "KK_P": 204,
+    "total_kk": 1112
+  },
+  "3515060009": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "BANJARASRI",
+    "L": 1350,
+    "P": 1394,
+    "total_penduduk": 2744,
+    "KK_L": 734,
+    "KK_P": 162,
+    "total_kk": 896
+  },
+  "3515060010": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "BANJARPANJI",
+    "L": 880,
+    "P": 844,
+    "total_penduduk": 1724,
+    "KK_L": 459,
+    "KK_P": 119,
+    "total_kk": 578
+  },
+  "3515060011": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KEDUNGBANTENG",
+    "L": 1660,
+    "P": 1652,
+    "total_penduduk": 3312,
+    "KK_L": 909,
+    "KK_P": 224,
+    "total_kk": 1133
+  },
+  "3515060012": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KALIDAWIR",
+    "L": 2193,
+    "P": 2206,
+    "total_penduduk": 4399,
+    "KK_L": 1183,
+    "KK_P": 236,
+    "total_kk": 1419
+  },
+  "3515060013": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "PUTAT",
+    "L": 1820,
+    "P": 1794,
+    "total_penduduk": 3614,
+    "KK_L": 980,
+    "KK_P": 230,
+    "total_kk": 1210
+  },
+  "3515060014": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "NGABAN",
+    "L": 2446,
+    "P": 2457,
+    "total_penduduk": 4903,
+    "KK_L": 1310,
+    "KK_P": 329,
+    "total_kk": 1639
+  },
+  "3515060015": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KALITENGAH",
+    "L": 6068,
+    "P": 6168,
+    "total_penduduk": 12236,
+    "KK_L": 3242,
+    "KK_P": 945,
+    "total_kk": 4187
+  },
+  "3515060016": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KLUDAN",
+    "L": 2526,
+    "P": 2591,
+    "total_penduduk": 5117,
+    "KK_L": 1330,
+    "KK_P": 315,
+    "total_kk": 1645
+  },
+  "3515060017": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "BORO",
+    "L": 2475,
+    "P": 2479,
+    "total_penduduk": 4954,
+    "KK_L": 1309,
+    "KK_P": 313,
+    "total_kk": 1622
+  },
+  "3515060018": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "KETEGAN",
+    "L": 2612,
+    "P": 2614,
+    "total_penduduk": 5226,
+    "KK_L": 1390,
+    "KK_P": 365,
+    "total_kk": 1755
+  },
+  "3515060019": {
+    "Kecamatan": "TANGGULANGIN",
+    "nmdesa": "GANGGANGPANJANG",
+    "L": 2815,
+    "P": 2867,
+    "total_penduduk": 5682,
+    "KK_L": 1587,
+    "KK_P": 370,
+    "total_kk": 1957
+  },
+  "3515070001": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KARANGTANJUNG",
+    "L": 3897,
+    "P": 3756,
+    "total_penduduk": 7653,
+    "KK_L": 2066,
+    "KK_P": 419,
+    "total_kk": 2485
+  },
+  "3515070002": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "SUMORAME",
+    "L": 3971,
+    "P": 4018,
+    "total_penduduk": 7989,
+    "KK_L": 2114,
+    "KK_P": 543,
+    "total_kk": 2657
+  },
+  "3515070003": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "NGAMPELSARI",
+    "L": 4460,
+    "P": 4551,
+    "total_penduduk": 9011,
+    "KK_L": 2318,
+    "KK_P": 652,
+    "total_kk": 2970
+  },
+  "3515070004": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "BALONGGABUS",
+    "L": 2367,
+    "P": 2389,
+    "total_penduduk": 4756,
+    "KK_L": 1250,
+    "KK_P": 310,
+    "total_kk": 1560
+  },
+  "3515070005": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "BALONGDOWO",
+    "L": 3556,
+    "P": 3526,
+    "total_penduduk": 7082,
+    "KK_L": 1889,
+    "KK_P": 448,
+    "total_kk": 2337
+  },
+  "3515070006": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KENDALPECABEAN",
+    "L": 2326,
+    "P": 2316,
+    "total_penduduk": 4642,
+    "KK_L": 1217,
+    "KK_P": 289,
+    "total_kk": 1506
+  },
+  "3515070007": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KEDUNGPELUK",
+    "L": 1712,
+    "P": 1660,
+    "total_penduduk": 3372,
+    "KK_L": 930,
+    "KK_P": 261,
+    "total_kk": 1191
+  },
+  "3515070008": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KALIPECABEAN",
+    "L": 5413,
+    "P": 5335,
+    "total_penduduk": 10748,
+    "KK_L": 2897,
+    "KK_P": 691,
+    "total_kk": 3588
+  },
+  "3515070009": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KLURAK",
+    "L": 2922,
+    "P": 2951,
+    "total_penduduk": 5873,
+    "KK_L": 1599,
+    "KK_P": 381,
+    "total_kk": 1980
+  },
+  "3515070010": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KEBONSARI",
+    "L": 3686,
+    "P": 3713,
+    "total_penduduk": 7399,
+    "KK_L": 1939,
+    "KK_P": 457,
+    "total_kk": 2396
+  },
+  "3515070011": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "GELAM",
+    "L": 3540,
+    "P": 3671,
+    "total_penduduk": 7211,
+    "KK_L": 1901,
+    "KK_P": 547,
+    "total_kk": 2448
+  },
+  "3515070012": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "CANDI",
+    "L": 1891,
+    "P": 1933,
+    "total_penduduk": 3824,
+    "KK_L": 1023,
+    "KK_P": 294,
+    "total_kk": 1317
+  },
+  "3515070013": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "SUGIHWARAS",
+    "L": 4019,
+    "P": 4007,
+    "total_penduduk": 8026,
+    "KK_L": 2151,
+    "KK_P": 463,
+    "total_kk": 2614
+  },
+  "3515070014": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "KEDUNGKENDO",
+    "L": 4569,
+    "P": 4606,
+    "total_penduduk": 9175,
+    "KK_L": 2507,
+    "KK_P": 511,
+    "total_kk": 3018
+  },
+  "3515070015": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "DURUNGBANJAR",
+    "L": 1475,
+    "P": 1350,
+    "total_penduduk": 2825,
+    "KK_L": 786,
+    "KK_P": 163,
+    "total_kk": 949
+  },
+  "3515070016": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "DURUNGBEDUG",
+    "L": 3290,
+    "P": 3233,
+    "total_penduduk": 6523,
+    "KK_L": 1785,
+    "KK_P": 435,
+    "total_kk": 2220
+  },
+  "3515070017": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "JAMBANGAN",
+    "L": 2654,
+    "P": 2650,
+    "total_penduduk": 5304,
+    "KK_L": 1396,
+    "KK_P": 250,
+    "total_kk": 1646
+  },
+  "3515070018": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "SUMOKALI",
+    "L": 3214,
+    "P": 3041,
+    "total_penduduk": 6255,
+    "KK_L": 1677,
+    "KK_P": 343,
+    "total_kk": 2020
+  },
+  "3515070019": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "TENGGULUNAN",
+    "L": 3452,
+    "P": 3381,
+    "total_penduduk": 6833,
+    "KK_L": 1763,
+    "KK_P": 435,
+    "total_kk": 2198
+  },
+  "3515070020": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "BLIGO",
+    "L": 3128,
+    "P": 3225,
+    "total_penduduk": 6353,
+    "KK_L": 1667,
+    "KK_P": 386,
+    "total_kk": 2053
+  },
+  "3515070021": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "WEDOROKLURAK",
+    "L": 2243,
+    "P": 2269,
+    "total_penduduk": 4512,
+    "KK_L": 1222,
+    "KK_P": 319,
+    "total_kk": 1541
+  },
+  "3515070022": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "LARANGAN",
+    "L": 3513,
+    "P": 3675,
+    "total_penduduk": 7188,
+    "KK_L": 1867,
+    "KK_P": 596,
+    "total_kk": 2463
+  },
+  "3515070023": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "SEPANDE",
+    "L": 5263,
+    "P": 5305,
+    "total_penduduk": 10568,
+    "KK_L": 2729,
+    "KK_P": 674,
+    "total_kk": 3403
+  },
+  "3515070024": {
+    "Kecamatan": "CANDI",
+    "nmdesa": "SIDODADI",
+    "L": 2361,
+    "P": 2308,
+    "total_penduduk": 4669,
+    "KK_L": 1247,
+    "KK_P": 273,
+    "total_kk": 1520
+  },
+  "3515080001": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "JANTI",
+    "L": 1505,
+    "P": 1481,
+    "total_penduduk": 2986,
+    "KK_L": 857,
+    "KK_P": 218,
+    "total_kk": 1075
+  },
+  "3515080002": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEBARON",
+    "L": 2047,
+    "P": 2037,
+    "total_penduduk": 4084,
+    "KK_L": 1185,
+    "KK_P": 297,
+    "total_kk": 1482
+  },
+  "3515080003": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KENONGO",
+    "L": 2620,
+    "P": 2723,
+    "total_penduduk": 5343,
+    "KK_L": 1419,
+    "KK_P": 418,
+    "total_kk": 1837
+  },
+  "3515080004": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "GELANG",
+    "L": 2497,
+    "P": 2584,
+    "total_penduduk": 5081,
+    "KK_L": 1409,
+    "KK_P": 351,
+    "total_kk": 1760
+  },
+  "3515080005": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "JIKEN",
+    "L": 1322,
+    "P": 1318,
+    "total_penduduk": 2640,
+    "KK_L": 742,
+    "KK_P": 174,
+    "total_kk": 916
+  },
+  "3515080006": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "PANGKEMIRI",
+    "L": 2045,
+    "P": 2069,
+    "total_penduduk": 4114,
+    "KK_L": 1134,
+    "KK_P": 265,
+    "total_kk": 1399
+  },
+  "3515080007": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEPATIHAN",
+    "L": 3027,
+    "P": 2956,
+    "total_penduduk": 5983,
+    "KK_L": 1648,
+    "KK_P": 383,
+    "total_kk": 2031
+  },
+  "3515080008": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "TULANGAN",
+    "L": 2380,
+    "P": 2442,
+    "total_penduduk": 4822,
+    "KK_L": 1323,
+    "KK_P": 373,
+    "total_kk": 1696
+  },
+  "3515080009": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEPADANGAN",
+    "L": 2581,
+    "P": 2463,
+    "total_penduduk": 5044,
+    "KK_L": 1409,
+    "KK_P": 344,
+    "total_kk": 1753
+  },
+  "3515080010": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "TLASIH",
+    "L": 1881,
+    "P": 1828,
+    "total_penduduk": 3709,
+    "KK_L": 1042,
+    "KK_P": 244,
+    "total_kk": 1286
+  },
+  "3515080011": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KAJEKSAN",
+    "L": 1351,
+    "P": 1289,
+    "total_penduduk": 2640,
+    "KK_L": 758,
+    "KK_P": 165,
+    "total_kk": 923
+  },
+  "3515080012": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "SINGOPADU",
+    "L": 1580,
+    "P": 1622,
+    "total_penduduk": 3202,
+    "KK_L": 898,
+    "KK_P": 208,
+    "total_kk": 1106
+  },
+  "3515080013": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEMANTREN",
+    "L": 3216,
+    "P": 3249,
+    "total_penduduk": 6465,
+    "KK_L": 1736,
+    "KK_P": 461,
+    "total_kk": 2197
+  },
+  "3515080014": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "MEDALEM",
+    "L": 1558,
+    "P": 1548,
+    "total_penduduk": 3106,
+    "KK_L": 846,
+    "KK_P": 230,
+    "total_kk": 1076
+  },
+  "3515080015": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "SUDIMORO",
+    "L": 2596,
+    "P": 2501,
+    "total_penduduk": 5097,
+    "KK_L": 1417,
+    "KK_P": 272,
+    "total_kk": 1689
+  },
+  "3515080016": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEDONDONG",
+    "L": 1947,
+    "P": 1933,
+    "total_penduduk": 3880,
+    "KK_L": 1084,
+    "KK_P": 233,
+    "total_kk": 1317
+  },
+  "3515080017": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "GROGOL",
+    "L": 3690,
+    "P": 3672,
+    "total_penduduk": 7362,
+    "KK_L": 1920,
+    "KK_P": 428,
+    "total_kk": 2348
+  },
+  "3515080018": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "MODONG",
+    "L": 2315,
+    "P": 2240,
+    "total_penduduk": 4555,
+    "KK_L": 1195,
+    "KK_P": 292,
+    "total_kk": 1487
+  },
+  "3515080019": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "GRINTING",
+    "L": 1940,
+    "P": 1960,
+    "total_penduduk": 3900,
+    "KK_L": 1077,
+    "KK_P": 257,
+    "total_kk": 1334
+  },
+  "3515080020": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEPUHKEMIRI",
+    "L": 3534,
+    "P": 3540,
+    "total_penduduk": 7074,
+    "KK_L": 1821,
+    "KK_P": 393,
+    "total_kk": 2214
+  },
+  "3515080021": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "KEPUNTEN",
+    "L": 1585,
+    "P": 1501,
+    "total_penduduk": 3086,
+    "KK_L": 845,
+    "KK_P": 230,
+    "total_kk": 1075
+  },
+  "3515080022": {
+    "Kecamatan": "TULANGAN",
+    "nmdesa": "GRABAGAN",
+    "L": 4364,
+    "P": 4284,
+    "total_penduduk": 8648,
+    "KK_L": 2352,
+    "KK_P": 512,
+    "total_kk": 2864
+  },
+  "3515090001": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "SIMOKETAWANG",
+    "L": 1050,
+    "P": 1057,
+    "total_penduduk": 2107,
+    "KK_L": 573,
+    "KK_P": 133,
+    "total_kk": 706
+  },
+  "3515090002": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "POPOH",
+    "L": 1654,
+    "P": 1728,
+    "total_penduduk": 3382,
+    "KK_L": 908,
+    "KK_P": 263,
+    "total_kk": 1171
+  },
+  "3515090003": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "JIMBARANWETAN",
+    "L": 923,
+    "P": 898,
+    "total_penduduk": 1821,
+    "KK_L": 497,
+    "KK_P": 117,
+    "total_kk": 614
+  },
+  "3515090004": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "KETIMANG",
+    "L": 1522,
+    "P": 1454,
+    "total_penduduk": 2976,
+    "KK_L": 784,
+    "KK_P": 185,
+    "total_kk": 969
+  },
+  "3515090005": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "PILANG",
+    "L": 2831,
+    "P": 2841,
+    "total_penduduk": 5672,
+    "KK_L": 1544,
+    "KK_P": 360,
+    "total_kk": 1904
+  },
+  "3515090006": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "SUMBEREJO",
+    "L": 2195,
+    "P": 2167,
+    "total_penduduk": 4362,
+    "KK_L": 1175,
+    "KK_P": 253,
+    "total_kk": 1428
+  },
+  "3515090007": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "MOJORANGAGUNG",
+    "L": 418,
+    "P": 399,
+    "total_penduduk": 817,
+    "KK_L": 227,
+    "KK_P": 45,
+    "total_kk": 272
+  },
+  "3515090008": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "WONOKASIAN",
+    "L": 2970,
+    "P": 2771,
+    "total_penduduk": 5741,
+    "KK_L": 1595,
+    "KK_P": 339,
+    "total_kk": 1934
+  },
+  "3515090009": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "PLOSO",
+    "L": 1873,
+    "P": 1877,
+    "total_penduduk": 3750,
+    "KK_L": 1009,
+    "KK_P": 251,
+    "total_kk": 1260
+  },
+  "3515090010": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "JIMBARANKULON",
+    "L": 675,
+    "P": 687,
+    "total_penduduk": 1362,
+    "KK_L": 374,
+    "KK_P": 86,
+    "total_kk": 460
+  },
+  "3515090011": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "WONOAYU",
+    "L": 2201,
+    "P": 2161,
+    "total_penduduk": 4362,
+    "KK_L": 1228,
+    "KK_P": 254,
+    "total_kk": 1482
+  },
+  "3515090012": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "SEMAMBUNG",
+    "L": 2134,
+    "P": 2014,
+    "total_penduduk": 4148,
+    "KK_L": 1138,
+    "KK_P": 247,
+    "total_kk": 1385
+  },
+  "3515090013": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "SIMOANGIN-ANGIN",
+    "L": 1848,
+    "P": 1762,
+    "total_penduduk": 3610,
+    "KK_L": 973,
+    "KK_P": 197,
+    "total_kk": 1170
+  },
+  "3515090014": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "TANGGUL",
+    "L": 2614,
+    "P": 2618,
+    "total_penduduk": 5232,
+    "KK_L": 1400,
+    "KK_P": 386,
+    "total_kk": 1786
+  },
+  "3515090015": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "WONOKALANG",
+    "L": 1652,
+    "P": 1569,
+    "total_penduduk": 3221,
+    "KK_L": 891,
+    "KK_P": 181,
+    "total_kk": 1072
+  },
+  "3515090016": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "PAGERNGUMBUK",
+    "L": 1633,
+    "P": 1627,
+    "total_penduduk": 3260,
+    "KK_L": 901,
+    "KK_P": 198,
+    "total_kk": 1099
+  },
+  "3515090017": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "PLAOSAN",
+    "L": 1704,
+    "P": 1699,
+    "total_penduduk": 3403,
+    "KK_L": 975,
+    "KK_P": 204,
+    "total_kk": 1179
+  },
+  "3515090018": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "MULYODADI",
+    "L": 1178,
+    "P": 1235,
+    "total_penduduk": 2413,
+    "KK_L": 676,
+    "KK_P": 148,
+    "total_kk": 824
+  },
+  "3515090019": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "LAMBANGAN",
+    "L": 1845,
+    "P": 1792,
+    "total_penduduk": 3637,
+    "KK_L": 995,
+    "KK_P": 229,
+    "total_kk": 1224
+  },
+  "3515090020": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "SAWOCANGKRING",
+    "L": 2713,
+    "P": 2698,
+    "total_penduduk": 5411,
+    "KK_L": 1475,
+    "KK_P": 304,
+    "total_kk": 1779
+  },
+  "3515090021": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "BECIRONGENGOR",
+    "L": 2434,
+    "P": 2403,
+    "total_penduduk": 4837,
+    "KK_L": 1340,
+    "KK_P": 312,
+    "total_kk": 1652
+  },
+  "3515090022": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "KARANGPURI",
+    "L": 3047,
+    "P": 2945,
+    "total_penduduk": 5992,
+    "KK_L": 1671,
+    "KK_P": 385,
+    "total_kk": 2056
+  },
+  "3515090023": {
+    "Kecamatan": "WONOAYU",
+    "nmdesa": "CANDINEGORO",
+    "L": 1968,
+    "P": 1854,
+    "total_penduduk": 3822,
+    "KK_L": 1070,
+    "KK_P": 240,
+    "total_kk": 1310
+  },
+  "3515100001": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "WILAYUT",
+    "L": 1646,
+    "P": 1695,
+    "total_penduduk": 3341,
+    "KK_L": 909,
+    "KK_P": 183,
+    "total_kk": 1092
+  },
+  "3515100002": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "KEBONAGUNG",
+    "L": 6277,
+    "P": 6318,
+    "total_penduduk": 12595,
+    "KK_L": 3246,
+    "KK_P": 715,
+    "total_kk": 3961
+  },
+  "3515100003": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "ANGGASWANGI",
+    "L": 3358,
+    "P": 3191,
+    "total_penduduk": 6549,
+    "KK_L": 1753,
+    "KK_P": 348,
+    "total_kk": 2101
+  },
+  "3515100004": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "JUMPUTREJO",
+    "L": 5462,
+    "P": 5450,
+    "total_penduduk": 10912,
+    "KK_L": 2980,
+    "KK_P": 528,
+    "total_kk": 3508
+  },
+  "3515100005": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "SURUH",
+    "L": 2015,
+    "P": 2007,
+    "total_penduduk": 4022,
+    "KK_L": 1096,
+    "KK_P": 232,
+    "total_kk": 1328
+  },
+  "3515100006": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "PEKARUNGAN",
+    "L": 4504,
+    "P": 4520,
+    "total_penduduk": 9024,
+    "KK_L": 2368,
+    "KK_P": 567,
+    "total_kk": 2935
+  },
+  "3515100007": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "PADEMONEGORO",
+    "L": 2441,
+    "P": 2418,
+    "total_penduduk": 4859,
+    "KK_L": 1333,
+    "KK_P": 306,
+    "total_kk": 1639
+  },
+  "3515100008": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "CANGKRINGSARI",
+    "L": 2656,
+    "P": 2599,
+    "total_penduduk": 5255,
+    "KK_L": 1424,
+    "KK_P": 329,
+    "total_kk": 1753
+  },
+  "3515100009": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "JOGOSATRU",
+    "L": 1717,
+    "P": 1658,
+    "total_penduduk": 3375,
+    "KK_L": 911,
+    "KK_P": 209,
+    "total_kk": 1120
+  },
+  "3515100010": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "NGARESREJO",
+    "L": 1736,
+    "P": 1701,
+    "total_penduduk": 3437,
+    "KK_L": 949,
+    "KK_P": 199,
+    "total_kk": 1148
+  },
+  "3515100011": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "SAMBUNGREJO",
+    "L": 2199,
+    "P": 2228,
+    "total_penduduk": 4427,
+    "KK_L": 1215,
+    "KK_P": 266,
+    "total_kk": 1481
+  },
+  "3515100012": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "PLUMBUNGAN",
+    "L": 1965,
+    "P": 1888,
+    "total_penduduk": 3853,
+    "KK_L": 1044,
+    "KK_P": 198,
+    "total_kk": 1242
+  },
+  "3515100013": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "SUKODONO",
+    "L": 4106,
+    "P": 4010,
+    "total_penduduk": 8116,
+    "KK_L": 2222,
+    "KK_P": 473,
+    "total_kk": 2695
+  },
+  "3515100014": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "KELOPOSEPULUH",
+    "L": 3500,
+    "P": 3402,
+    "total_penduduk": 6902,
+    "KK_L": 1872,
+    "KK_P": 405,
+    "total_kk": 2277
+  },
+  "3515100015": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "MASANGAN WETAN",
+    "L": 2729,
+    "P": 2658,
+    "total_penduduk": 5387,
+    "KK_L": 1448,
+    "KK_P": 265,
+    "total_kk": 1713
+  },
+  "3515100016": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "SUKO",
+    "L": 6282,
+    "P": 6214,
+    "total_penduduk": 12496,
+    "KK_L": 3282,
+    "KK_P": 726,
+    "total_kk": 4008
+  },
+  "3515100017": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "MASANGAN KULON",
+    "L": 5978,
+    "P": 5928,
+    "total_penduduk": 11906,
+    "KK_L": 3135,
+    "KK_P": 779,
+    "total_kk": 3914
+  },
+  "3515100018": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "PANJUNAN",
+    "L": 1959,
+    "P": 1945,
+    "total_penduduk": 3904,
+    "KK_L": 1062,
+    "KK_P": 203,
+    "total_kk": 1265
+  },
+  "3515100019": {
+    "Kecamatan": "SUKODONO",
+    "nmdesa": "BANGSRI",
+    "L": 2639,
+    "P": 2579,
+    "total_penduduk": 5218,
+    "KK_L": 1426,
+    "KK_P": 295,
+    "total_kk": 1721
+  },
+  "3515110001": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "LEBO",
+    "L": 2923,
+    "P": 2953,
+    "total_penduduk": 5876,
+    "KK_L": 1560,
+    "KK_P": 384,
+    "total_kk": 1944
+  },
+  "3515110002": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SUKO",
+    "L": 8690,
+    "P": 8799,
+    "total_penduduk": 17489,
+    "KK_L": 4425,
+    "KK_P": 1047,
+    "total_kk": 5472
+  },
+  "3515110003": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "BANJARBENDO",
+    "L": 4387,
+    "P": 4496,
+    "total_penduduk": 8883,
+    "KK_L": 2296,
+    "KK_P": 574,
+    "total_kk": 2870
+  },
+  "3515110004": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "LEMAHPUTRO",
+    "L": 6035,
+    "P": 6231,
+    "total_penduduk": 12266,
+    "KK_L": 3142,
+    "KK_P": 1145,
+    "total_kk": 4287
+  },
+  "3515110005": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SIDOKARE",
+    "L": 7726,
+    "P": 7932,
+    "total_penduduk": 15658,
+    "KK_L": 4117,
+    "KK_P": 1331,
+    "total_kk": 5448
+  },
+  "3515110006": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "CELEP",
+    "L": 2825,
+    "P": 2860,
+    "total_penduduk": 5685,
+    "KK_L": 1491,
+    "KK_P": 475,
+    "total_kk": 1966
+  },
+  "3515110007": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SEKARDANGAN",
+    "L": 3698,
+    "P": 3803,
+    "total_penduduk": 7501,
+    "KK_L": 1919,
+    "KK_P": 578,
+    "total_kk": 2497
+  },
+  "3515110008": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "GEBANG",
+    "L": 3682,
+    "P": 3599,
+    "total_penduduk": 7281,
+    "KK_L": 1920,
+    "KK_P": 483,
+    "total_kk": 2403
+  },
+  "3515110009": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "RANGKAHKIDUL",
+    "L": 2236,
+    "P": 2277,
+    "total_penduduk": 4513,
+    "KK_L": 1165,
+    "KK_P": 306,
+    "total_kk": 1471
+  },
+  "3515110010": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "BULUSIDOKARE",
+    "L": 4096,
+    "P": 4227,
+    "total_penduduk": 8323,
+    "KK_L": 2146,
+    "KK_P": 705,
+    "total_kk": 2851
+  },
+  "3515110011": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "PUCANGANOM",
+    "L": 3016,
+    "P": 3036,
+    "total_penduduk": 6052,
+    "KK_L": 1571,
+    "KK_P": 503,
+    "total_kk": 2074
+  },
+  "3515110012": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "PEKAUMAN",
+    "L": 1264,
+    "P": 1311,
+    "total_penduduk": 2575,
+    "KK_L": 649,
+    "KK_P": 246,
+    "total_kk": 895
+  },
+  "3515110013": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SIDOKUMPUL",
+    "L": 2915,
+    "P": 3049,
+    "total_penduduk": 5964,
+    "KK_L": 1516,
+    "KK_P": 599,
+    "total_kk": 2115
+  },
+  "3515110014": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SIDOKLUMPUK",
+    "L": 2607,
+    "P": 2695,
+    "total_penduduk": 5302,
+    "KK_L": 1372,
+    "KK_P": 480,
+    "total_kk": 1852
+  },
+  "3515110015": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "BLURU KIDUL",
+    "L": 9304,
+    "P": 9500,
+    "total_penduduk": 18804,
+    "KK_L": 5006,
+    "KK_P": 1233,
+    "total_kk": 6239
+  },
+  "3515110016": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "KEMIRI",
+    "L": 3770,
+    "P": 3858,
+    "total_penduduk": 7628,
+    "KK_L": 2012,
+    "KK_P": 534,
+    "total_kk": 2546
+  },
+  "3515110017": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "PUCANG",
+    "L": 2881,
+    "P": 3034,
+    "total_penduduk": 5915,
+    "KK_L": 1557,
+    "KK_P": 517,
+    "total_kk": 2074
+  },
+  "3515110018": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "MAGERSARI",
+    "L": 6947,
+    "P": 7072,
+    "total_penduduk": 14019,
+    "KK_L": 3694,
+    "KK_P": 1084,
+    "total_kk": 4778
+  },
+  "3515110019": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "JATI",
+    "L": 5087,
+    "P": 5110,
+    "total_penduduk": 10197,
+    "KK_L": 2702,
+    "KK_P": 740,
+    "total_kk": 3442
+  },
+  "3515110020": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "CEMENG KALANG",
+    "L": 2025,
+    "P": 2010,
+    "total_penduduk": 4035,
+    "KK_L": 1059,
+    "KK_P": 234,
+    "total_kk": 1293
+  },
+  "3515110021": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "CEMENG BAKALAN",
+    "L": 2230,
+    "P": 2220,
+    "total_penduduk": 4450,
+    "KK_L": 1226,
+    "KK_P": 259,
+    "total_kk": 1485
+  },
+  "3515110022": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "URANGAGUNG JEDONG",
+    "L": 3945,
+    "P": 3893,
+    "total_penduduk": 7838,
+    "KK_L": 2128,
+    "KK_P": 454,
+    "total_kk": 2582
+  },
+  "3515110023": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SARI ROGO",
+    "L": 2681,
+    "P": 2666,
+    "total_penduduk": 5347,
+    "KK_L": 1458,
+    "KK_P": 342,
+    "total_kk": 1800
+  },
+  "3515110024": {
+    "Kecamatan": "SIDOARJO",
+    "nmdesa": "SUMPUT",
+    "L": 4262,
+    "P": 4307,
+    "total_penduduk": 8569,
+    "KK_L": 2244,
+    "KK_P": 520,
+    "total_kk": 2764
+  },
+  "3515120001": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "ENTALSEWU",
+    "L": 3740,
+    "P": 3723,
+    "total_penduduk": 7463,
+    "KK_L": 2031,
+    "KK_P": 451,
+    "total_kk": 2482
+  },
+  "3515120002": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "PAGERWOJO",
+    "L": 6110,
+    "P": 6330,
+    "total_penduduk": 12440,
+    "KK_L": 3263,
+    "KK_P": 834,
+    "total_kk": 4097
+  },
+  "3515120003": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SIDOKERTO",
+    "L": 5471,
+    "P": 5431,
+    "total_penduduk": 10902,
+    "KK_L": 2872,
+    "KK_P": 714,
+    "total_kk": 3586
+  },
+  "3515120004": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "BUDURAN",
+    "L": 2310,
+    "P": 2367,
+    "total_penduduk": 4677,
+    "KK_L": 1220,
+    "KK_P": 410,
+    "total_kk": 1630
+  },
+  "3515120005": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SIWALAN PANJI",
+    "L": 4242,
+    "P": 4230,
+    "total_penduduk": 8472,
+    "KK_L": 2166,
+    "KK_P": 551,
+    "total_kk": 2717
+  },
+  "3515120006": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SIDOMULYO",
+    "L": 1055,
+    "P": 1088,
+    "total_penduduk": 2143,
+    "KK_L": 574,
+    "KK_P": 143,
+    "total_kk": 717
+  },
+  "3515120007": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "PRASUNG",
+    "L": 2876,
+    "P": 2778,
+    "total_penduduk": 5654,
+    "KK_L": 1531,
+    "KK_P": 359,
+    "total_kk": 1890
+  },
+  "3515120008": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SAWOHAN",
+    "L": 1463,
+    "P": 1426,
+    "total_penduduk": 2889,
+    "KK_L": 771,
+    "KK_P": 219,
+    "total_kk": 990
+  },
+  "3515120009": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "DAMARSI",
+    "L": 3301,
+    "P": 3169,
+    "total_penduduk": 6470,
+    "KK_L": 1734,
+    "KK_P": 402,
+    "total_kk": 2136
+  },
+  "3515120010": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "DUKUHTENGAH",
+    "L": 2930,
+    "P": 2928,
+    "total_penduduk": 5858,
+    "KK_L": 1544,
+    "KK_P": 296,
+    "total_kk": 1840
+  },
+  "3515120011": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "BANJARSARI",
+    "L": 1475,
+    "P": 1506,
+    "total_penduduk": 2981,
+    "KK_L": 813,
+    "KK_P": 163,
+    "total_kk": 976
+  },
+  "3515120012": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "WADUNGASIH",
+    "L": 2932,
+    "P": 2957,
+    "total_penduduk": 5889,
+    "KK_L": 1599,
+    "KK_P": 341,
+    "total_kk": 1940
+  },
+  "3515120013": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "BANJARKEMANTREN",
+    "L": 3744,
+    "P": 3799,
+    "total_penduduk": 7543,
+    "KK_L": 2033,
+    "KK_P": 526,
+    "total_kk": 2559
+  },
+  "3515120014": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SUKOREJO",
+    "L": 2158,
+    "P": 2089,
+    "total_penduduk": 4247,
+    "KK_L": 1143,
+    "KK_P": 321,
+    "total_kk": 1464
+  },
+  "3515120015": {
+    "Kecamatan": "BUDURAN",
+    "nmdesa": "SIDOKEPUNG",
+    "L": 6824,
+    "P": 6777,
+    "total_penduduk": 13601,
+    "KK_L": 3514,
+    "KK_P": 770,
+    "total_kk": 4284
+  },
+  "3515130001": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "KWANGSAN",
+    "L": 2607,
+    "P": 2561,
+    "total_penduduk": 5168,
+    "KK_L": 1386,
+    "KK_P": 276,
+    "total_kk": 1662
+  },
+  "3515130002": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "PEPE",
+    "L": 7221,
+    "P": 7402,
+    "total_penduduk": 14623,
+    "KK_L": 3805,
+    "KK_P": 899,
+    "total_kk": 4704
+  },
+  "3515130003": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "BUNCITAN",
+    "L": 2694,
+    "P": 2687,
+    "total_penduduk": 5381,
+    "KK_L": 1422,
+    "KK_P": 328,
+    "total_kk": 1750
+  },
+  "3515130004": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "KALANGANYAR",
+    "L": 2556,
+    "P": 2554,
+    "total_penduduk": 5110,
+    "KK_L": 1373,
+    "KK_P": 434,
+    "total_kk": 1807
+  },
+  "3515130005": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "TAMBAK CEMANDI",
+    "L": 1863,
+    "P": 1851,
+    "total_penduduk": 3714,
+    "KK_L": 1060,
+    "KK_P": 235,
+    "total_kk": 1295
+  },
+  "3515130006": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "GISIK CEMANDI",
+    "L": 1271,
+    "P": 1225,
+    "total_penduduk": 2496,
+    "KK_L": 695,
+    "KK_P": 170,
+    "total_kk": 865
+  },
+  "3515130007": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "CEMANDI",
+    "L": 3095,
+    "P": 3063,
+    "total_penduduk": 6158,
+    "KK_L": 1671,
+    "KK_P": 378,
+    "total_kk": 2049
+  },
+  "3515130008": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "PULUNGAN",
+    "L": 1407,
+    "P": 1427,
+    "total_penduduk": 2834,
+    "KK_L": 702,
+    "KK_P": 255,
+    "total_kk": 957
+  },
+  "3515130009": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "BETRO",
+    "L": 3499,
+    "P": 3387,
+    "total_penduduk": 6886,
+    "KK_L": 1866,
+    "KK_P": 404,
+    "total_kk": 2270
+  },
+  "3515130010": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "SEDATI AGUNG",
+    "L": 3364,
+    "P": 3280,
+    "total_penduduk": 6644,
+    "KK_L": 1790,
+    "KK_P": 479,
+    "total_kk": 2269
+  },
+  "3515130011": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "SEDATI GEDE",
+    "L": 5852,
+    "P": 5975,
+    "total_penduduk": 11827,
+    "KK_L": 3110,
+    "KK_P": 757,
+    "total_kk": 3867
+  },
+  "3515130012": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "PABEAN",
+    "L": 8095,
+    "P": 8021,
+    "total_penduduk": 16116,
+    "KK_L": 4286,
+    "KK_P": 1125,
+    "total_kk": 5411
+  },
+  "3515130013": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "SEMAMPIR",
+    "L": 1830,
+    "P": 1841,
+    "total_penduduk": 3671,
+    "KK_L": 969,
+    "KK_P": 227,
+    "total_kk": 1196
+  },
+  "3515130014": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "PRANTI",
+    "L": 1548,
+    "P": 1499,
+    "total_penduduk": 3047,
+    "KK_L": 809,
+    "KK_P": 155,
+    "total_kk": 964
+  },
+  "3515130015": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "SEGORO TAMBAK",
+    "L": 996,
+    "P": 879,
+    "total_penduduk": 1875,
+    "KK_L": 529,
+    "KK_P": 107,
+    "total_kk": 636
+  },
+  "3515130016": {
+    "Kecamatan": "SEDATI",
+    "nmdesa": "BANJAR KEMUNING",
+    "L": 1071,
+    "P": 1057,
+    "total_penduduk": 2128,
+    "KK_L": 595,
+    "KK_P": 151,
+    "total_kk": 746
+  },
+  "3515140001": {
+    "Kecamatan": "WARU",
+    "nmdesa": "MEDAENG",
+    "L": 4953,
+    "P": 5078,
+    "total_penduduk": 10031,
+    "KK_L": 2692,
+    "KK_P": 800,
+    "total_kk": 3492
+  },
+  "3515140002": {
+    "Kecamatan": "WARU",
+    "nmdesa": "PEPELEGI",
+    "L": 7208,
+    "P": 7304,
+    "total_penduduk": 14512,
+    "KK_L": 3919,
+    "KK_P": 1141,
+    "total_kk": 5060
+  },
+  "3515140003": {
+    "Kecamatan": "WARU",
+    "nmdesa": "WARU",
+    "L": 4263,
+    "P": 4412,
+    "total_penduduk": 8675,
+    "KK_L": 2286,
+    "KK_P": 737,
+    "total_kk": 3023
+  },
+  "3515140004": {
+    "Kecamatan": "WARU",
+    "nmdesa": "KUREKSARI",
+    "L": 6864,
+    "P": 7161,
+    "total_penduduk": 14025,
+    "KK_L": 3735,
+    "KK_P": 1157,
+    "total_kk": 4892
+  },
+  "3515140005": {
+    "Kecamatan": "WARU",
+    "nmdesa": "NGINGAS",
+    "L": 7216,
+    "P": 7235,
+    "total_penduduk": 14451,
+    "KK_L": 3680,
+    "KK_P": 998,
+    "total_kk": 4678
+  },
+  "3515140006": {
+    "Kecamatan": "WARU",
+    "nmdesa": "TROPODO",
+    "L": 9304,
+    "P": 9580,
+    "total_penduduk": 18884,
+    "KK_L": 4943,
+    "KK_P": 1588,
+    "total_kk": 6531
+  },
+  "3515140007": {
+    "Kecamatan": "WARU",
+    "nmdesa": "TAMBAK SAWAH",
+    "L": 4182,
+    "P": 4398,
+    "total_penduduk": 8580,
+    "KK_L": 2287,
+    "KK_P": 735,
+    "total_kk": 3022
+  },
+  "3515140008": {
+    "Kecamatan": "WARU",
+    "nmdesa": "TAMBAK REJO",
+    "L": 8325,
+    "P": 8518,
+    "total_penduduk": 16843,
+    "KK_L": 4496,
+    "KK_P": 1292,
+    "total_kk": 5788
+  },
+  "3515140009": {
+    "Kecamatan": "WARU",
+    "nmdesa": "TAMBAK OSO",
+    "L": 1665,
+    "P": 1617,
+    "total_penduduk": 3282,
+    "KK_L": 867,
+    "KK_P": 204,
+    "total_kk": 1071
+  },
+  "3515140010": {
+    "Kecamatan": "WARU",
+    "nmdesa": "TAMBAK SUMUR",
+    "L": 4026,
+    "P": 4209,
+    "total_penduduk": 8235,
+    "KK_L": 2145,
+    "KK_P": 716,
+    "total_kk": 2861
+  },
+  "3515140011": {
+    "Kecamatan": "WARU",
+    "nmdesa": "WADUNGASRI",
+    "L": 4478,
+    "P": 4622,
+    "total_penduduk": 9100,
+    "KK_L": 2396,
+    "KK_P": 807,
+    "total_kk": 3203
+  },
+  "3515140012": {
+    "Kecamatan": "WARU",
+    "nmdesa": "BERBEK",
+    "L": 4937,
+    "P": 4925,
+    "total_penduduk": 9862,
+    "KK_L": 2544,
+    "KK_P": 643,
+    "total_kk": 3187
+  },
+  "3515140013": {
+    "Kecamatan": "WARU",
+    "nmdesa": "KEPUH KIRIMAN",
+    "L": 7936,
+    "P": 8147,
+    "total_penduduk": 16083,
+    "KK_L": 4192,
+    "KK_P": 1332,
+    "total_kk": 5524
+  },
+  "3515140014": {
+    "Kecamatan": "WARU",
+    "nmdesa": "WEDORO",
+    "L": 7572,
+    "P": 7653,
+    "total_penduduk": 15225,
+    "KK_L": 3980,
+    "KK_P": 1075,
+    "total_kk": 5055
+  },
+  "3515140015": {
+    "Kecamatan": "WARU",
+    "nmdesa": "JANTI",
+    "L": 2657,
+    "P": 2738,
+    "total_penduduk": 5395,
+    "KK_L": 1407,
+    "KK_P": 446,
+    "total_kk": 1853
+  },
+  "3515140016": {
+    "Kecamatan": "WARU",
+    "nmdesa": "KEDUNGREJO",
+    "L": 5825,
+    "P": 5886,
+    "total_penduduk": 11711,
+    "KK_L": 3139,
+    "KK_P": 979,
+    "total_kk": 4118
+  },
+  "3515140017": {
+    "Kecamatan": "WARU",
+    "nmdesa": "BUNGURASIH",
+    "L": 5458,
+    "P": 5409,
+    "total_penduduk": 10867,
+    "KK_L": 2901,
+    "KK_P": 880,
+    "total_kk": 3781
+  },
+  "3515150001": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "GANTING",
+    "L": 2671,
+    "P": 2558,
+    "total_penduduk": 5229,
+    "KK_L": 1407,
+    "KK_P": 276,
+    "total_kk": 1683
+  },
+  "3515150002": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "KARANGBONG",
+    "L": 4403,
+    "P": 4397,
+    "total_penduduk": 8800,
+    "KK_L": 2367,
+    "KK_P": 505,
+    "total_kk": 2872
+  },
+  "3515150003": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "TEBEL",
+    "L": 6301,
+    "P": 6314,
+    "total_penduduk": 12615,
+    "KK_L": 3399,
+    "KK_P": 891,
+    "total_kk": 4290
+  },
+  "3515150004": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "KRAGAN",
+    "L": 1354,
+    "P": 1335,
+    "total_penduduk": 2689,
+    "KK_L": 722,
+    "KK_P": 156,
+    "total_kk": 878
+  },
+  "3515150005": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "GEMURUNG",
+    "L": 2812,
+    "P": 2805,
+    "total_penduduk": 5617,
+    "KK_L": 1472,
+    "KK_P": 303,
+    "total_kk": 1775
+  },
+  "3515150006": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "PUNGGUL",
+    "L": 4288,
+    "P": 4224,
+    "total_penduduk": 8512,
+    "KK_L": 2240,
+    "KK_P": 504,
+    "total_kk": 2744
+  },
+  "3515150007": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "SRUNI",
+    "L": 3252,
+    "P": 2987,
+    "total_penduduk": 6239,
+    "KK_L": 1797,
+    "KK_P": 356,
+    "total_kk": 2153
+  },
+  "3515150008": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "KEBOANANOM",
+    "L": 4835,
+    "P": 4860,
+    "total_penduduk": 9695,
+    "KK_L": 2611,
+    "KK_P": 549,
+    "total_kk": 3160
+  },
+  "3515150009": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "KEBOANSIKEP",
+    "L": 5651,
+    "P": 5761,
+    "total_penduduk": 11412,
+    "KK_L": 3050,
+    "KK_P": 728,
+    "total_kk": 3778
+  },
+  "3515150010": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "GEDANGAN",
+    "L": 4643,
+    "P": 4608,
+    "total_penduduk": 9251,
+    "KK_L": 2459,
+    "KK_P": 710,
+    "total_kk": 3169
+  },
+  "3515150011": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "KETAJEN",
+    "L": 3635,
+    "P": 3696,
+    "total_penduduk": 7331,
+    "KK_L": 1966,
+    "KK_P": 496,
+    "total_kk": 2462
+  },
+  "3515150012": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "WEDI",
+    "L": 2722,
+    "P": 2713,
+    "total_penduduk": 5435,
+    "KK_L": 1494,
+    "KK_P": 332,
+    "total_kk": 1826
+  },
+  "3515150013": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "SEMAMBUNG",
+    "L": 3428,
+    "P": 3531,
+    "total_penduduk": 6959,
+    "KK_L": 1872,
+    "KK_P": 481,
+    "total_kk": 2353
+  },
+  "3515150014": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "SAWOTRATAP",
+    "L": 6657,
+    "P": 6625,
+    "total_penduduk": 13282,
+    "KK_L": 3570,
+    "KK_P": 1006,
+    "total_kk": 4576
+  },
+  "3515150015": {
+    "Kecamatan": "GEDANGAN",
+    "nmdesa": "BANGAH",
+    "L": 3466,
+    "P": 3534,
+    "total_penduduk": 7000,
+    "KK_L": 1878,
+    "KK_P": 483,
+    "total_kk": 2361
+  },
+  "3515160001": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KRAMAT JEGU",
+    "L": 5753,
+    "P": 5989,
+    "total_penduduk": 11742,
+    "KK_L": 3037,
+    "KK_P": 894,
+    "total_kk": 3931
+  },
+  "3515160002": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "TROSOBO",
+    "L": 3764,
+    "P": 3847,
+    "total_penduduk": 7611,
+    "KK_L": 2039,
+    "KK_P": 620,
+    "total_kk": 2659
+  },
+  "3515160003": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "PERTAPAN MADURETNO",
+    "L": 2340,
+    "P": 2261,
+    "total_penduduk": 4601,
+    "KK_L": 1290,
+    "KK_P": 257,
+    "total_kk": 1547
+  },
+  "3515160004": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "TANJUNGSARI",
+    "L": 4050,
+    "P": 3864,
+    "total_penduduk": 7914,
+    "KK_L": 2192,
+    "KK_P": 447,
+    "total_kk": 2639
+  },
+  "3515160005": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "SIDODADI",
+    "L": 4616,
+    "P": 4618,
+    "total_penduduk": 9234,
+    "KK_L": 2448,
+    "KK_P": 642,
+    "total_kk": 3090
+  },
+  "3515160006": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "BRINGINBENDO",
+    "L": 4618,
+    "P": 4526,
+    "total_penduduk": 9144,
+    "KK_L": 2453,
+    "KK_P": 614,
+    "total_kk": 3067
+  },
+  "3515160007": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "SAMBI BULU",
+    "L": 4955,
+    "P": 5000,
+    "total_penduduk": 9955,
+    "KK_L": 2666,
+    "KK_P": 616,
+    "total_kk": 3282
+  },
+  "3515160008": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "GILANG",
+    "L": 3120,
+    "P": 3090,
+    "total_penduduk": 6210,
+    "KK_L": 1670,
+    "KK_P": 398,
+    "total_kk": 2068
+  },
+  "3515160009": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KREMBANGAN",
+    "L": 2583,
+    "P": 2393,
+    "total_penduduk": 4976,
+    "KK_L": 1311,
+    "KK_P": 291,
+    "total_kk": 1602
+  },
+  "3515160010": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "TAWANGSARI",
+    "L": 4346,
+    "P": 4325,
+    "total_penduduk": 8671,
+    "KK_L": 2340,
+    "KK_P": 542,
+    "total_kk": 2882
+  },
+  "3515160011": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KLETEK",
+    "L": 3535,
+    "P": 3570,
+    "total_penduduk": 7105,
+    "KK_L": 1913,
+    "KK_P": 510,
+    "total_kk": 2423
+  },
+  "3515160012": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "JEMUNDO",
+    "L": 3428,
+    "P": 3338,
+    "total_penduduk": 6766,
+    "KK_L": 1826,
+    "KK_P": 401,
+    "total_kk": 2227
+  },
+  "3515160013": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "SADANG",
+    "L": 2217,
+    "P": 2204,
+    "total_penduduk": 4421,
+    "KK_L": 1182,
+    "KK_P": 226,
+    "total_kk": 1408
+  },
+  "3515160014": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "GELURAN",
+    "L": 6594,
+    "P": 6639,
+    "total_penduduk": 13233,
+    "KK_L": 3498,
+    "KK_P": 952,
+    "total_kk": 4450
+  },
+  "3515160015": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "BOHAR",
+    "L": 2981,
+    "P": 2873,
+    "total_penduduk": 5854,
+    "KK_L": 1591,
+    "KK_P": 336,
+    "total_kk": 1927
+  },
+  "3515160016": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "WAGE",
+    "L": 9713,
+    "P": 9893,
+    "total_penduduk": 19606,
+    "KK_L": 5193,
+    "KK_P": 1375,
+    "total_kk": 6568
+  },
+  "3515160017": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KEDUNGTURI",
+    "L": 5887,
+    "P": 5699,
+    "total_penduduk": 11586,
+    "KK_L": 3076,
+    "KK_P": 703,
+    "total_kk": 3779
+  },
+  "3515160018": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "TAMAN",
+    "L": 3520,
+    "P": 3384,
+    "total_penduduk": 6904,
+    "KK_L": 1830,
+    "KK_P": 504,
+    "total_kk": 2334
+  },
+  "3515160019": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KALIJATEN",
+    "L": 4370,
+    "P": 4394,
+    "total_penduduk": 8764,
+    "KK_L": 2282,
+    "KK_P": 735,
+    "total_kk": 3017
+  },
+  "3515160020": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "NGELOM",
+    "L": 3150,
+    "P": 3210,
+    "total_penduduk": 6360,
+    "KK_L": 1592,
+    "KK_P": 542,
+    "total_kk": 2134
+  },
+  "3515160021": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "WONOCOLO",
+    "L": 4322,
+    "P": 4415,
+    "total_penduduk": 8737,
+    "KK_L": 2182,
+    "KK_P": 805,
+    "total_kk": 2987
+  },
+  "3515160022": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "KETEGAN",
+    "L": 3170,
+    "P": 3238,
+    "total_penduduk": 6408,
+    "KK_L": 1654,
+    "KK_P": 574,
+    "total_kk": 2228
+  },
+  "3515160023": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "BEBEKAN",
+    "L": 3736,
+    "P": 3611,
+    "total_penduduk": 7347,
+    "KK_L": 1895,
+    "KK_P": 668,
+    "total_kk": 2563
+  },
+  "3515160024": {
+    "Kecamatan": "TAMAN",
+    "nmdesa": "SEPANJANG",
+    "L": 4954,
+    "P": 5031,
+    "total_penduduk": 9985,
+    "KK_L": 2689,
+    "KK_P": 860,
+    "total_kk": 3549
+  },
+  "3515170001": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TROPODO",
+    "L": 3176,
+    "P": 3067,
+    "total_penduduk": 6243,
+    "KK_L": 1712,
+    "KK_P": 431,
+    "total_kk": 2143
+  },
+  "3515170002": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "SEDENGAN MIJEN",
+    "L": 2993,
+    "P": 3006,
+    "total_penduduk": 5999,
+    "KK_L": 1623,
+    "KK_P": 382,
+    "total_kk": 2005
+  },
+  "3515170003": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "KATRUNGAN",
+    "L": 2841,
+    "P": 2724,
+    "total_penduduk": 5565,
+    "KK_L": 1506,
+    "KK_P": 389,
+    "total_kk": 1895
+  },
+  "3515170004": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "JERUK GAMPING",
+    "L": 2510,
+    "P": 2433,
+    "total_penduduk": 4943,
+    "KK_L": 1350,
+    "KK_P": 358,
+    "total_kk": 1708
+  },
+  "3515170005": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "GAMPING",
+    "L": 2913,
+    "P": 2782,
+    "total_penduduk": 5695,
+    "KK_L": 1573,
+    "KK_P": 323,
+    "total_kk": 1896
+  },
+  "3515170006": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TERIK",
+    "L": 1774,
+    "P": 1753,
+    "total_penduduk": 3527,
+    "KK_L": 970,
+    "KK_P": 218,
+    "total_kk": 1188
+  },
+  "3515170007": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "JUNWANGI",
+    "L": 2590,
+    "P": 2484,
+    "total_penduduk": 5074,
+    "KK_L": 1380,
+    "KK_P": 347,
+    "total_kk": 1727
+  },
+  "3515170008": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TERUNG KULON",
+    "L": 2905,
+    "P": 2779,
+    "total_penduduk": 5684,
+    "KK_L": 1562,
+    "KK_P": 403,
+    "total_kk": 1965
+  },
+  "3515170009": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TERUNG WETAN",
+    "L": 1316,
+    "P": 1253,
+    "total_penduduk": 2569,
+    "KK_L": 705,
+    "KK_P": 170,
+    "total_kk": 875
+  },
+  "3515170010": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "JATIKALANG",
+    "L": 2654,
+    "P": 2680,
+    "total_penduduk": 5334,
+    "KK_L": 1472,
+    "KK_P": 342,
+    "total_kk": 1814
+  },
+  "3515170011": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "KEBOHARAN",
+    "L": 2570,
+    "P": 2505,
+    "total_penduduk": 5075,
+    "KK_L": 1381,
+    "KK_P": 355,
+    "total_kk": 1736
+  },
+  "3515170012": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "PONOKAWAN",
+    "L": 1968,
+    "P": 1923,
+    "total_penduduk": 3891,
+    "KK_L": 1074,
+    "KK_P": 274,
+    "total_kk": 1348
+  },
+  "3515170013": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "KEMASAN",
+    "L": 3185,
+    "P": 3173,
+    "total_penduduk": 6358,
+    "KK_L": 1660,
+    "KK_P": 424,
+    "total_kk": 2084
+  },
+  "3515170014": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "SIDOMOJO",
+    "L": 2140,
+    "P": 2033,
+    "total_penduduk": 4173,
+    "KK_L": 1095,
+    "KK_P": 238,
+    "total_kk": 1333
+  },
+  "3515170015": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TAMBAK KEMERAKAN",
+    "L": 3050,
+    "P": 3047,
+    "total_penduduk": 6097,
+    "KK_L": 1609,
+    "KK_P": 573,
+    "total_kk": 2182
+  },
+  "3515170016": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "KRIAN",
+    "L": 4406,
+    "P": 4320,
+    "total_penduduk": 8726,
+    "KK_L": 2287,
+    "KK_P": 811,
+    "total_kk": 3098
+  },
+  "3515170017": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "KRATON",
+    "L": 4000,
+    "P": 3989,
+    "total_penduduk": 7989,
+    "KK_L": 2131,
+    "KK_P": 520,
+    "total_kk": 2651
+  },
+  "3515170018": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "SIDOMULYO",
+    "L": 3087,
+    "P": 2922,
+    "total_penduduk": 6009,
+    "KK_L": 1621,
+    "KK_P": 407,
+    "total_kk": 2028
+  },
+  "3515170019": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "TEMPEL",
+    "L": 4117,
+    "P": 4141,
+    "total_penduduk": 8258,
+    "KK_L": 2214,
+    "KK_P": 489,
+    "total_kk": 2703
+  },
+  "3515170020": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "WATUGOLONG",
+    "L": 3089,
+    "P": 3026,
+    "total_penduduk": 6115,
+    "KK_L": 1708,
+    "KK_P": 410,
+    "total_kk": 2118
+  },
+  "3515170021": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "BARENGKRAJAN",
+    "L": 4554,
+    "P": 4506,
+    "total_penduduk": 9060,
+    "KK_L": 2439,
+    "KK_P": 644,
+    "total_kk": 3083
+  },
+  "3515170022": {
+    "Kecamatan": "KRIAN",
+    "nmdesa": "SIDOREJO",
+    "L": 5203,
+    "P": 5224,
+    "total_penduduk": 10427,
+    "KK_L": 2773,
+    "KK_P": 620,
+    "total_kk": 3393
+  },
+  "3515180001": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "SINGKALAN",
+    "L": 1569,
+    "P": 1520,
+    "total_penduduk": 3089,
+    "KK_L": 881,
+    "KK_P": 212,
+    "total_kk": 1093
+  },
+  "3515180002": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "KEDUNG SUKODANI",
+    "L": 1539,
+    "P": 1518,
+    "total_penduduk": 3057,
+    "KK_L": 850,
+    "KK_P": 247,
+    "total_kk": 1097
+  },
+  "3515180003": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "BAKUNG TEMENGGUNGAN",
+    "L": 2240,
+    "P": 2124,
+    "total_penduduk": 4364,
+    "KK_L": 1203,
+    "KK_P": 316,
+    "total_kk": 1519
+  },
+  "3515180004": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "SUMOKEMBANGSRI",
+    "L": 2262,
+    "P": 2153,
+    "total_penduduk": 4415,
+    "KK_L": 1293,
+    "KK_P": 250,
+    "total_kk": 1543
+  },
+  "3515180005": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "SEDURI",
+    "L": 1540,
+    "P": 1533,
+    "total_penduduk": 3073,
+    "KK_L": 872,
+    "KK_P": 234,
+    "total_kk": 1106
+  },
+  "3515180006": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "WONOKUPANG",
+    "L": 1727,
+    "P": 1706,
+    "total_penduduk": 3433,
+    "KK_L": 947,
+    "KK_P": 226,
+    "total_kk": 1173
+  },
+  "3515180007": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "WARUBERON",
+    "L": 940,
+    "P": 991,
+    "total_penduduk": 1931,
+    "KK_L": 554,
+    "KK_P": 146,
+    "total_kk": 700
+  },
+  "3515180008": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "BAKALAN WRINGINPITU",
+    "L": 1290,
+    "P": 1226,
+    "total_penduduk": 2516,
+    "KK_L": 686,
+    "KK_P": 172,
+    "total_kk": 858
+  },
+  "3515180009": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "GAGANG KEPUHSARI",
+    "L": 947,
+    "P": 938,
+    "total_penduduk": 1885,
+    "KK_L": 525,
+    "KK_P": 145,
+    "total_kk": 670
+  },
+  "3515180010": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "SUWALUH",
+    "L": 2077,
+    "P": 2075,
+    "total_penduduk": 4152,
+    "KK_L": 1112,
+    "KK_P": 332,
+    "total_kk": 1444
+  },
+  "3515180011": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "WATESARI",
+    "L": 1745,
+    "P": 1700,
+    "total_penduduk": 3445,
+    "KK_L": 948,
+    "KK_P": 224,
+    "total_kk": 1172
+  },
+  "3515180012": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "SEKETI",
+    "L": 3081,
+    "P": 2945,
+    "total_penduduk": 6026,
+    "KK_L": 1705,
+    "KK_P": 350,
+    "total_kk": 2055
+  },
+  "3515180013": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "KEMANGSEN",
+    "L": 4309,
+    "P": 4133,
+    "total_penduduk": 8442,
+    "KK_L": 2273,
+    "KK_P": 578,
+    "total_kk": 2851
+  },
+  "3515180014": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "JABARAN",
+    "L": 1443,
+    "P": 1504,
+    "total_penduduk": 2947,
+    "KK_L": 784,
+    "KK_P": 226,
+    "total_kk": 1010
+  },
+  "3515180015": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "BALONGBENDO",
+    "L": 1657,
+    "P": 1590,
+    "total_penduduk": 3247,
+    "KK_L": 893,
+    "KK_P": 232,
+    "total_kk": 1125
+  },
+  "3515180016": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "JERUK LEGI",
+    "L": 1743,
+    "P": 1690,
+    "total_penduduk": 3433,
+    "KK_L": 977,
+    "KK_P": 239,
+    "total_kk": 1216
+  },
+  "3515180017": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "PENAMBANGAN",
+    "L": 2682,
+    "P": 2613,
+    "total_penduduk": 5295,
+    "KK_L": 1428,
+    "KK_P": 365,
+    "total_kk": 1793
+  },
+  "3515180018": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "WONOKARANG",
+    "L": 1553,
+    "P": 1468,
+    "total_penduduk": 3021,
+    "KK_L": 843,
+    "KK_P": 200,
+    "total_kk": 1043
+  },
+  "3515180019": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "BAKUNG PRINGGODANI",
+    "L": 2078,
+    "P": 2013,
+    "total_penduduk": 4091,
+    "KK_L": 1197,
+    "KK_P": 240,
+    "total_kk": 1437
+  },
+  "3515180020": {
+    "Kecamatan": "BALONGBENDO",
+    "nmdesa": "BOGEM PINGGIR",
+    "L": 1269,
+    "P": 1269,
+    "total_penduduk": 2538,
+    "KK_L": 686,
+    "KK_P": 175,
+    "total_kk": 861
+  }
+}

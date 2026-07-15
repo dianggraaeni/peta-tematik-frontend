@@ -375,7 +375,7 @@ const BuletinAdm = () => {
                       </td>
                       <td>
                         <button
-                          className="text-orange-500 hover:text-orange-600"
+                          className="text-blue-600 hover:text-blue-800"
                           onClick={() => handleEditClick(item)}
                         >
                           <FaEdit />
@@ -400,7 +400,7 @@ const BuletinAdm = () => {
             {/* Pagination */}
             <div className="flex items-center justify-between mt-5">
               <button
-                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 ${
+                className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
                   currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={prevPage}
@@ -408,11 +408,11 @@ const BuletinAdm = () => {
               >
                 <FaArrowLeft />
               </button>
-              <span className="px-4 py-2 font-semibold text-orange-500 bg-orange-100 rounded-lg">
+              <span className="px-4 py-2 font-semibold text-blue-600 bg-blue-100 rounded-lg">
                 {currentPage} dari {totalPages}
               </span>
               <button
-                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 ${
+                className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
                   currentPage === totalPages
                     ? "opacity-50 cursor-not-allowed"
                     : ""

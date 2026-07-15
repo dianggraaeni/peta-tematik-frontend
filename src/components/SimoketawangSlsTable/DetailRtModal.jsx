@@ -101,7 +101,7 @@ const RtDetail = ({ rt, geojson = null }) => {
       </table>
       {geojson && (
         <div className="my-4">
-          <p className="text-[14px] font-semibold ml-3 my-2 text-pyellow">Peta Wilayah SLS</p>
+          <p className="text-[14px] font-semibold ml-3 my-2 text-blue-800">Peta Wilayah SLS</p>
           <MapContainer
             key={JSON.stringify(geojson)} // Ensure a new key when geojson changes
             ref={mapRef}
@@ -138,10 +138,10 @@ const DetailRtModal = ({ isOpen, onOpenChange, selectedRt, geojsonRt }) => {
         wrapper: "overflow-y-hidden",
       }}
     >
-      <ModalContent className="font-inter text-pyellow">
+      <ModalContent className="font-inter text-blue-800">
         {() => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-white bg-pyellow">
+            <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
               Detail {selectedRt.label}
             </ModalHeader>
             <ModalBody className="py-4 overflow-y-auto">
@@ -149,7 +149,7 @@ const DetailRtModal = ({ isOpen, onOpenChange, selectedRt, geojsonRt }) => {
             </ModalBody>
             <ModalFooter>
               <Button
-                className="font-semibold text-white bg-pyellow font-inter"
+                className="font-semibold text-white bg-blue-600 font-inter"
                 onPress={() => onOpenChange(false)}
               >
                 Tutup

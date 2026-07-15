@@ -69,7 +69,7 @@ const AdminSimoketawang = () => {
 
   const StatComponent = ({ label = "Jumlah UMKM", value = 100 }) => {
     return (
-      <div className="flex items-center justify-between w-full p-2 border-2 border-dashed border-pyellow rounded-xl font-inter text-pyellow">
+      <div className="flex items-center justify-between w-full p-2 border-2 border-dashed border-pyellow rounded-xl font-inter text-blue-800">
         <div className="flex justify-between items-center w-full text-[14px]">
           <span className="font-semibold text-[14px]">{label}</span>
           <span className="ml-2">{value}</span>

@@ -52,7 +52,7 @@ export default function NavbarCustom() {
   const getMenuClasses = (menu) => {
     return activeMenu === menu
       ? "font-bold font-inter text-sm text-white bg-porange py-2 px-4 rounded-full transition-colors duration-300"
-      : "font-bold font-inter text-sm text-porange transition-colors duration-200";
+      : "font-bold font-inter text-sm text-blue-800 transition-colors duration-200";
   };
 
   return (
@@ -112,7 +112,7 @@ export default function NavbarCustom() {
           {isDropdownOpen && (
             <div className="absolute left-0 z-10 mt-2 border border-gray-300 rounded-lg shadow-xl top-full bg-base">
               <div
-                className="block px-4 py-2 text-sm font-semibold text-porange hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
+                className="block px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
                 onClick={() => handleNestedDropdownClick("Simoanginangin")}
               >
                 Simoanginangin
@@ -120,7 +120,7 @@ export default function NavbarCustom() {
                   <div className="absolute top-0 z-10 mt-0 border border-gray-300 rounded-lg shadow-lg left-full bg-neutral-50">
                     <Link
                       href="/peta-umkm-simoanginangin"
-                      className="block px-4 py-2 text-sm font-semibold bg-base text-porange hover:text-[#F7BA74] rounded-md transition-colors duration-300"
+                      className="block px-4 py-2 text-sm font-semibold bg-base text-blue-800 hover:text-[#F7BA74] rounded-md transition-colors duration-300"
                       // onClick={() => handleMenuClick("/peta-tematik/pemetaan-umkm")}
                     >
                       Pemetaan UMKM
@@ -129,7 +129,7 @@ export default function NavbarCustom() {
                 )}
               </div>
               <div
-                className="block px-4 py-2 text-sm font-semibold text-porange hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
+                className="block px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
                 onClick={() => handleNestedDropdownClick("Simoketawang")}
               >
                 Simoketawang
@@ -137,7 +137,7 @@ export default function NavbarCustom() {
                   <div className="absolute top-0 z-10 mt-0 border border-gray-300 rounded-lg shadow-lg left-full bg-neutral-50">
                     <Link
                       href="/peta-kelengkeng-simoketawang"
-                      className="block px-4 py-2 text-sm font-semibold bg-base text-porange hover:text-[#F7BA74] rounded-md transition-colors duration-300"
+                      className="block px-4 py-2 text-sm font-semibold bg-base text-blue-800 hover:text-[#F7BA74] rounded-md transition-colors duration-300"
                       // onClick={() => handleMenuClick("/peta-tematik/pemetaan-pemanfaatan-kelengkeng")}
                     >
                       Pemetaan Pemanfaatan Kelengkeng
@@ -146,7 +146,7 @@ export default function NavbarCustom() {
                 )}
               </div>
               <div
-                className="block px-4 py-2 text-sm font-semibold text-porange hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
+                className="block px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
                 onClick={() => handleNestedDropdownClick("Grogol")}
               >
                 Grogol
@@ -154,7 +154,7 @@ export default function NavbarCustom() {
                   <div className="absolute top-0 z-10 mt-0 border border-gray-300 rounded-lg shadow-lg left-full bg-neutral-50">
                     <Link
                       href="/peta-sayuran-grogol"
-                      className="block px-4 py-2 text-sm font-semibold bg-base text-porange hover:text-[#F7BA74] rounded-md transition-colors duration-300"
+                      className="block px-4 py-2 text-sm font-semibold bg-base text-blue-800 hover:text-[#F7BA74] rounded-md transition-colors duration-300"
                       // onClick={() => handleMenuClick("/peta-sayuran-grogol")}
                     >
                       Hortikultura
@@ -163,7 +163,7 @@ export default function NavbarCustom() {
                 )}
               </div>
               <div
-                className="block px-4 py-2 text-sm font-semibold text-porange hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
+                className="block px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-[#f8f9fa] hover:text-[#F7BA74] rounded-md cursor-pointer relative"
                 onClick={() => handleNestedDropdownClick("Sidokepung")}
               >
                 Sidokepung
@@ -171,7 +171,7 @@ export default function NavbarCustom() {
                   <div className="absolute top-0 z-10 mt-0 border border-gray-300 rounded-lg shadow-lg left-full bg-neutral-50">
                     <Link
                       href="/peta-pekerjaan-sidokepung"
-                      className="block px-4 py-2 text-sm font-semibold bg-base text-porange hover:text-[#F7BA74] rounded-md transition-colors duration-300"
+                      className="block px-4 py-2 text-sm font-semibold bg-base text-blue-800 hover:text-[#F7BA74] rounded-md transition-colors duration-300"
                       // onClick={() => handleMenuClick("/peta-pekerjaan-sidokepung")}
                     >
                       Ketenagakerjaan
@@ -233,14 +233,14 @@ export default function NavbarCustom() {
             <div className="mt-3 border border-gray-200 rounded-md shadow-md">
               <Link
                 href="#"
-                className="block px-4 py-2 text-porange hover:bg-gray-200"
+                className="block px-4 py-2 text-blue-800 hover:bg-gray-200"
                 onClick={() => handleMenuClick("/peta-tematik/pemetaan-umkm")}
               >
                 Simoanginangin
               </Link>
               <Link
                 href="#"
-                className="block px-4 py-2 text-porange hover:bg-gray-200"
+                className="block px-4 py-2 text-blue-800 hover:bg-gray-200"
                 onClick={() =>
                   handleMenuClick(
                     "/peta-tematik/pemetaan-pemanfaatan-kelengkeng"
@@ -251,14 +251,14 @@ export default function NavbarCustom() {
               </Link>
               <Link
                 href="#"
-                className="block px-4 py-2 text-porange hover:bg-gray-200"
+                className="block px-4 py-2 text-blue-800 hover:bg-gray-200"
                 onClick={() => handleMenuClick("/peta-tematik/hortikultura")}
               >
                 Grogol
               </Link>
               <Link
                 href="#"
-                className="block px-4 py-2 text-porange hover:bg-gray-200"
+                className="block px-4 py-2 text-blue-800 hover:bg-gray-200"
                 onClick={() => handleMenuClick("/peta-tematik/sebaran-profesi")}
               >
                 Sidokepung

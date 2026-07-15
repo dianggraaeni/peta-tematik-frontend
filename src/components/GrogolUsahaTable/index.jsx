@@ -467,7 +467,7 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
           className="mb-4 w-[50%] grogol-usaha-search"
           placeholder="Ketikkan kata kunci..."
           startContent={
-            <SearchIcon className="mb-0.5 text-pgreen pointer-events-none flex-shrink-0" />
+            <SearchIcon className="mb-0.5 text-blue-800 pointer-events-none flex-shrink-0" />
           }
           value={searchTerm}
           onChange={handleSearchChange}
@@ -554,7 +554,7 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
         selectionBehavior="toggle"
         onRowAction={() => null}
       >
-        <TableHeader columns={columns} className="font-inter text-pgreen">
+        <TableHeader columns={columns} className="font-inter text-blue-800">
           {(column) => (
             <TableColumn
               key={column.uid}

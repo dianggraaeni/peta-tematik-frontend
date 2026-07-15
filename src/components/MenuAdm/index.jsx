@@ -435,7 +435,7 @@ const MenuAdm = () => {
         className="bg-[#f5f5f5]"
       >
         <ModalContent className="rounded-2xl">
-          <ModalHeader className="font-semibold text-orange-500">
+          <ModalHeader className="font-semibold text-blue-600">
             {getFormTitle()}
           </ModalHeader>
           <ModalBody>

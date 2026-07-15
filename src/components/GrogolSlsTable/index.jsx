@@ -25,6 +25,7 @@ import { Bars } from "react-loader-spinner";
 import GeoJSONUploadModal from "./GeoJSONUploadModal";
 import EditRtModal from "./EditRtModal";
 import DetailRtModal from "./DetailRtModal";
+import AddRtModal from "./AddRtModal";
 import { useAsyncList } from "@react-stately/data";
 import api4 from "../../utils/api4";
 
@@ -38,6 +39,13 @@ const GrogolSlsTable = ({ fetchDataAggregate }) => {
     isOpen: isAddModalOpen,
     onOpen: onAddModalOpen,
     onOpenChange: onAddModalOpenChange,
+  } = useDisclosure();
+
+  // State untuk modal tambah manual
+  const {
+    isOpen: isAddRtModalOpen,
+    onOpen: onAddRtModalOpen,
+    onOpenChange: onAddRtModalOpenChange,
   } = useDisclosure();
 
   // State untuk modal edit
@@ -261,14 +269,24 @@ const GrogolSlsTable = ({ fetchDataAggregate }) => {
           onChange={handleSearchChange}
           className="mb-4 w-[50%] grogol-sls-search"
         />
-        <Button
-          color="primary"
-          className="text-[14px] font-semibold text-white"
-          startContent={<FaPlus className="text-[20px] text-white" />}
-          onClick={onAddModalOpen}
-        >
-          Tambah
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            color="primary"
+            className="text-[14px] font-semibold text-white bg-blue-600"
+            startContent={<FaPlus className="text-[16px] text-white" />}
+            onClick={onAddRtModalOpen}
+          >
+            Tambah Manual
+          </Button>
+          <Button
+            color="success"
+            className="text-[14px] font-semibold text-white bg-green-600"
+            startContent={<FaPlus className="text-[16px] text-white" />}
+            onClick={onAddModalOpen}
+          >
+            Upload GeoJSON
+          </Button>
+        </div>
       </div>
       <Table
         aria-label="Example table with custom cells"
@@ -276,7 +294,7 @@ const GrogolSlsTable = ({ fetchDataAggregate }) => {
         className="shadow rounded-xl font-inter"
         classNames={{
           loadingWrapper: "mx-auto",
-          th: ["bg-[#dffec9]", "text-pgreen", "font-inter", "text-[14px]"],
+          th: ["bg-[#dffec9]", "text-blue-800", "font-inter", "text-[14px]"],
           // th: "text-red",
           // td: "bg-pdarkblue",
           // table: "bg-black",
@@ -339,6 +357,13 @@ const GrogolSlsTable = ({ fetchDataAggregate }) => {
         onSuccessCreate={() => {
           fetchData();
         }}
+      />
+
+      <AddRtModal
+        isAddModalOpen={isAddRtModalOpen}
+        onAddModalOpenChange={onAddRtModalOpenChange}
+        fetchData={fetchData}
+        fetchDataAggregate={fetchDataAggregate}
       />
 
       <EditRtModal

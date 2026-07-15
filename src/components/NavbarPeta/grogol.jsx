@@ -34,7 +34,7 @@ export default function NavbarPetaKelengkeng() {
             <NavbarItem>
               <Link
                 to="/login-grogol"
-                className="flex items-center justify-center p-2 bg-pgreen text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 cursor-pointer"
+                className="flex items-center justify-center p-2 bg-blue-600 text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 cursor-pointer"
               >
                 <span className="hidden md:inline">Masuk</span>
                 <span className="md:hidden material-icons">account_circle</span>
@@ -43,7 +43,7 @@ export default function NavbarPetaKelengkeng() {
             <NavbarItem>
             <Link
               to="https://drive.google.com/drive/folders/1bL7iuXakzx2Co9_fbwK7Q3aXJHetMUvr?usp=drive_link"
-              className="flex items-center justify-center p-2 bg-pgreen text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 cursor-pointer mr-2"
+              className="flex items-center justify-center p-2 bg-blue-600 text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 cursor-pointer mr-2"
               target="_blank" // Opens the link in a new tab
               rel="noopener noreferrer" // Provides security benefits
             >

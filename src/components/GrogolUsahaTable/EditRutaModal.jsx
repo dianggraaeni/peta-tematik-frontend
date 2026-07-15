@@ -559,10 +559,10 @@ const EditRutaModal = ({
       isKeyboardDismissDisabled={true}
       hideCloseButton={true}
     >
-      <ModalContent className="font-inter text-pgreen">
+      <ModalContent className="font-inter text-blue-800">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-white bg-pgreen">
+            <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
               Edit Usaha Sayuran
             </ModalHeader>
             <ModalBody className="py-4">
@@ -609,7 +609,7 @@ const EditRutaModal = ({
                 {isValidLatitude(mapPosition[0]) &&
                   isValidLongitude(mapPosition[1]) && (
                     <div className="my-4">
-                      <p className="text-[14px] font-semibold ml-3 my-2 text-pgreen">
+                      <p className="text-[14px] font-semibold ml-3 my-2 text-blue-800">
                         Titik lokasi Usaha Sayuran
                       </p>
                       <MapContainer
@@ -727,7 +727,7 @@ const EditRutaModal = ({
                         daftarTanaman.length > 1 ? "pb-12" : "pb-4"
                       } space-y-4 border-2 rounded-lg border-pgreen`}
                     >
-                      <div className="absolute -top-[30px] left-1 font-semibold text-white bg-pgreen text-[14px] px-2 py-1 rounded-tl-lg rounded-tr-lg">
+                      <div className="absolute -top-[30px] left-1 font-semibold text-white bg-blue-600 text-[14px] px-2 py-1 rounded-tl-lg rounded-tr-lg">
                         Tanaman {index + 1}
                       </div>
                       <Select
@@ -1014,7 +1014,7 @@ const EditRutaModal = ({
                 Tutup
               </Button>
               <Button
-                className="font-semibold text-white bg-pgreen font-inter"
+                className="font-semibold text-white bg-blue-600 font-inter"
                 onPress={handleEditSave}
                 disabled={loading}
               >

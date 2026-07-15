@@ -42,8 +42,8 @@ export default function Desc() {
     <div className="flex items-center justify-center min-h-screen p-8">
       <div className="flex flex-col overflow-hidden bg-white rounded-lg shadow-2xl md:flex-row">
         <div className="flex-1 p-8">
-          <h2 className="text-4xl font-bold text-porange">{data.judul}</h2>
-          <h3 className="mt-3 text-2xl font-semibold text-porange">
+          <h2 className="text-4xl font-bold text-blue-800">{data.judul}</h2>
+          <h3 className="mt-3 text-2xl font-semibold text-blue-800">
             {data.sub_judul}
           </h3>
           {/* Render HTML safely */}

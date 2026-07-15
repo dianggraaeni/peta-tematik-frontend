@@ -19,33 +19,34 @@ const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
     }
   }, [geojsonData, map]);
 
-  // Zoom to selected Desa
-  useEffect(() => {
-    if (selectedDesa && geoJsonRef.current && map) {
-      geoJsonRef.current.eachLayer((layer) => {
-        if ((layer.feature.properties.DESA || layer.feature.properties.KECAMATAN) === selectedDesa) {
-          map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
-          // Optionally open tooltip
-          layer.openTooltip();
-        }
-      });
-    }
-  }, [selectedDesa, map, geoJsonRef]);
+    useEffect(() => {
+      if (selectedDesa && geoJsonRef.current && map) {
+        geoJsonRef.current.eachLayer((layer) => {
+          const layerDesa = (layer.feature.properties.DESA || layer.feature.properties.nmdesa || layer.feature.properties.KECAMATAN || "").toUpperCase();
+          if (layerDesa === selectedDesa) {
+            map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
+            // Optionally open tooltip
+            layer.openTooltip();
+          }
+        });
+      }
+    }, [selectedDesa, map, geoJsonRef]);
 
   return null;
 };
 
 const desaTematikInfo = {
-  "Simoketawang": ["Kelengkeng", "UMKM"],
-  "Grogol": ["Sayuran"],
-  "Simoanginangin": ["UMKM", "Ketenagakerjaan"],
-  "Sidokepung": ["Ketenagakerjaan"]
+  "SIMOKETAWANG": ["Pertanian Pertambangan", "Ekonomi Perdagangan"],
+  "GROGOL": ["Pertanian Pertambangan"],
+  "SIMOANGINANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
+  "SIDOKEPUNG": ["Sosial Kependudukan"]
 };
 
-const filterThemes = ["Kelengkeng", "Sayuran", "UMKM", "Ketenagakerjaan"];
+const filterThemes = ["Sosial Kependudukan", "Ekonomi Perdagangan", "Pertanian Pertambangan"];
 
 const BerandaSidoarjo = () => {
   const [geojsonData, setGeojsonData] = useState(null);
+  const [pendudukData, setPendudukData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -64,11 +65,16 @@ const BerandaSidoarjo = () => {
   }, [selectedDesa]);
 
   useEffect(() => {
-    // Fetch the boundaries GeoJSON from public folder
-    fetch("/data/Administrasi_Desa.geojson")
-      .then((res) => res.json())
-      .then((data) => setGeojsonData(data))
-      .catch((err) => console.error("Error loading boundaries:", err));
+    // Fetch the new boundaries GeoJSON and Population Data
+    Promise.all([
+      fetch("/data/peta_sidoarjo.geojson").then((res) => res.json()),
+      fetch("/data/penduduk.json").then((res) => res.json())
+    ])
+      .then(([geoJson, penduduk]) => {
+        setGeojsonData(geoJson);
+        setPendudukData(penduduk);
+      })
+      .catch((err) => console.error("Error loading data:", err));
   }, []);
 
   // Handle clicking outside the search box to close dropdown
@@ -94,7 +100,7 @@ const BerandaSidoarjo = () => {
     const results = geojsonData.features
       .map((f) => f.properties)
       .filter((props) => {
-        const desa = (props.DESA || props.KECAMATAN || "").toLowerCase();
+        const desa = (props.DESA || props.nmdesa || props.KECAMATAN || "").toLowerCase();
         return desa.includes(term);
       })
       .slice(0, 5); // Limit to 5 results for clean UI
@@ -103,8 +109,9 @@ const BerandaSidoarjo = () => {
     const uniqueResults = [];
     const seen = new Set();
     for (const res of results) {
-      if (!seen.has(res.DESA)) {
-        seen.add(res.DESA);
+      const nm = res.DESA || res.nmdesa;
+      if (!seen.has(nm)) {
+        seen.add(nm);
         uniqueResults.push(res);
       }
     }
@@ -131,30 +138,33 @@ const BerandaSidoarjo = () => {
   };
 
   const getStyle = (feature) => {
-    const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
+    const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
+    const desaName = rawName.toUpperCase();
     const isTematik = desaTematikInfo[desaName] !== undefined;
     const villageThemes = desaTematikInfo[desaName] || [];
-    const isSelected = selectedDesa === desaName;
+    const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
     // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
       : villageThemes.some(t => activeThemes.includes(t));
 
-    return {
-      fillColor: isHighlighted ? "#2563eb" : "#3b82f6", // Highlighted solid blue vs base blue
-      weight: isSelected ? 5 : (isHighlighted ? 2 : 1),
-      opacity: 1,
-      color: "white", // White border
-      fillOpacity: isSelected ? 1 : (isHighlighted ? 0.85 : 0.15),
-    };
+      return {
+        fillColor: isHighlighted ? "#1d4ed8" : "#3b82f6",
+        weight: isSelected ? 5 : 0.5,
+        opacity: 1,
+        color: isSelected ? "#ffffff" : "white",
+        dashArray: isSelected ? "" : "3",
+        fillOpacity: isSelected ? 0.8 : (isHighlighted ? 0.85 : 0.15),
+      };
   };
 
   const getHoverStyle = (feature) => {
-    const desaName = feature.properties.DESA || feature.properties.KECAMATAN;
+    const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
+    const desaName = rawName.toUpperCase();
     const isTematik = desaTematikInfo[desaName] !== undefined;
     const villageThemes = desaTematikInfo[desaName] || [];
-    const isSelected = selectedDesa === desaName;
+    const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
@@ -162,10 +172,11 @@ const BerandaSidoarjo = () => {
 
     return {
       fillColor: isHighlighted ? "#1e40af" : "#2563eb",
-      weight: isSelected ? 5 : 3,
+      weight: isSelected ? 5 : 1.5,
       opacity: 1,
-      color: "white", // White on hover
-      fillOpacity: isHighlighted ? 1 : 0.4,
+      color: isSelected ? "#ffffff" : "white",
+      dashArray: isSelected ? "" : "3",
+      fillOpacity: isSelected ? 0.9 : (isHighlighted ? 0.95 : 0.3),
     };
   };
 
@@ -174,13 +185,13 @@ const BerandaSidoarjo = () => {
     if (geoJsonRef.current) {
       geoJsonRef.current.eachLayer((layer) => {
         layer.setStyle(getStyle(layer.feature));
-        const layerDesa = layer.feature.properties.DESA || layer.feature.properties.KECAMATAN;
+        const layerDesa = layer.feature.properties.DESA || layer.feature.properties.nmdesa || layer.feature.properties.KECAMATAN;
         if (selectedDesa && layerDesa === selectedDesa) {
           layer.bringToFront();
         }
       });
     }
-  }, [selectedDesa, activeThemes]);
+  }, [selectedDesa, activeThemes, pendudukData]);
 
   const MapClickHandler = () => {
     useMapEvents({
@@ -195,17 +206,33 @@ const BerandaSidoarjo = () => {
 
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
-    const desaName = props.DESA || props.KECAMATAN;
+    const rawName = props.DESA || props.nmdesa || props.KECAMATAN || "";
+    const desaName = rawName.toUpperCase();
+    const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+    
+    const iddesa = props.iddesa;
     const villageThemes = desaTematikInfo[desaName] || [];
     const temaString = villageThemes.length > 0 ? villageThemes.join(", ") : null;
+    const pData = pendudukData && pendudukData[iddesa] ? pendudukData[iddesa] : null;
 
-    const tooltipContent = `
+    let tooltipContent = `
       <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
-        <div style="font-weight: bold; font-size: 14px;">${desaName}</div>
-        <div style="font-size: 11px; color: #666;">Kecamatan ${props.KECAMATAN}</div>
-        ${temaString ? `<div style="font-size: 11px; font-weight: bold; color: #1e40af; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Potensi: ${temaString}</div>` : ''}
-      </div>
+        <div style="font-weight: bold; font-size: 14px;">${displayName}</div>
+        <div style="font-size: 11px; color: #666;">Kecamatan ${props.KECAMATAN || props.nmkec || ""}</div>
+        ${temaString ? `<div style="font-size: 11px; font-weight: bold; color: #1e40af; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Tema: ${temaString}</div>` : ''}
     `;
+
+    if (pData) {
+      tooltipContent += `
+        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e5e7eb; font-size: 11px; text-align: left;">
+          <div style="display: flex; justify-content: space-between;"><span>Penduduk:</span> <strong>${pData.total_penduduk.toLocaleString('id-ID')} Jiwa</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>L/P:</span> <strong>${pData.L.toLocaleString('id-ID')} / ${pData.P.toLocaleString('id-ID')}</strong></div>
+          <div style="display: flex; justify-content: space-between;"><span>Jumlah KK:</span> <strong>${pData.total_kk.toLocaleString('id-ID')}</strong></div>
+        </div>
+      `;
+    }
+
+    tooltipContent += `</div>`;
 
     layer.bindTooltip(tooltipContent, {
       permanent: false,
@@ -372,11 +399,11 @@ const BerandaSidoarjo = () => {
                 searchResults.map((result, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleSelectSearch(result.DESA)}
+                    onClick={() => handleSelectSearch(result.DESA || result.nmdesa)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
                   >
-                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA}</div>
-                    <div className="text-xs" style={{ color: "#6b7280" }}>Kecamatan {result.KECAMATAN}</div>
+                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA || result.nmdesa}</div>
+                    <div className="text-xs" style={{ color: "#6b7280" }}>Kecamatan {result.KECAMATAN || result.nmkec}</div>
                   </button>
                 ))
               ) : (

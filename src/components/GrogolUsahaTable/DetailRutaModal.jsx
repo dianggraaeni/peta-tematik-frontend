@@ -74,7 +74,7 @@ const customMarker = L.icon({
 
 const RutaMap = ({ latitude, longitude }) => (
   <div className="my-4">
-    <p className="text-[14px] font-semibold ml-3 my-2 text-pgreen">
+    <p className="text-[14px] font-semibold ml-3 my-2 text-blue-800">
       Titik lokasi Usaha
     </p>
     <MapContainer
@@ -209,10 +209,10 @@ const DetailRutaModal = ({ isOpen, onOpenChange, selectedRuta }) => {
       isKeyboardDismissDisabled={true}
       hideCloseButton={true}
     >
-      <ModalContent className="font-inter text-pgreen">
+      <ModalContent className="font-inter text-blue-800">
         {() => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-white bg-pgreen">
+            <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
               Detail Usaha Tanaman Sayuran
             </ModalHeader>
             <ModalBody className="py-4">
@@ -220,7 +220,7 @@ const DetailRutaModal = ({ isOpen, onOpenChange, selectedRuta }) => {
             </ModalBody>
             <ModalFooter>
               <Button
-                className="font-semibold text-white bg-pgreen font-inter"
+                className="font-semibold text-white bg-blue-600 font-inter"
                 onPress={() => onOpenChange(false)}
               >
                 Tutup

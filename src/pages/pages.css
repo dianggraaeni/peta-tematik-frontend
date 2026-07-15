@@ -16,11 +16,11 @@
 }
 
 .simoketawang-tabs [data-slot="tabContent"] {
-  color: #D4AC2B !important;
+  color: #1e40af !important;
 }
 
 .simoketawang-tabs [data-slot="cursor"] {
-  background-color: #f3fdb2 !important;
+  background-color: #dbeafe !important;
   box-shadow: none !important;
   /* margin: 2px !important; */
 }
@@ -30,11 +30,11 @@
 }
 
 .grogol-tabs [data-slot="tabContent"] {
-  color: #68B92E !important;
+  color: #1e40af !important;
 }
 
 .grogol-tabs [data-slot="cursor"] {
-  background-color: #dffec9 !important;
+  background-color: #dbeafe !important;
   box-shadow: none !important;
   /* margin: 2px !important; */
 }

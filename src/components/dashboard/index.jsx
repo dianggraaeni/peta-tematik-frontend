@@ -281,12 +281,12 @@ const Dashboard = () => {
       type="button"
       disabled={true}
     >
-      <FaImages size={30} className="mx-auto text-pyellow" />
+      <FaImages size={30} className="mx-auto text-blue-800" />
       <div
         style={{
           marginTop: 6,
         }}
-        className="font-semibold text-pyellow"
+        className="font-semibold text-blue-800"
       >
         Upload
       </div>
@@ -359,7 +359,7 @@ const Dashboard = () => {
                       </td>
                       <td>
                         <button
-                          className="text-orange-500 hover:text-orange-600"
+                          className="text-blue-600 hover:text-blue-800"
                           onClick={() => handleEditClick(item)}
                         >
                           <FaEdit />
@@ -387,7 +387,7 @@ const Dashboard = () => {
             {/* Pagination */}
             <div className="flex items-center justify-between mt-5">
               <button
-                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 ${
+                className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
                   currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -395,11 +395,11 @@ const Dashboard = () => {
               >
                 <FaArrowLeft />
               </button>
-              <span className="px-4 py-2 font-semibold text-orange-500 bg-orange-100 rounded-lg">
+              <span className="px-4 py-2 font-semibold text-blue-600 bg-blue-100 rounded-lg">
                 {currentPage} dari {totalPages}
               </span>
               <button
-                className={`px-4 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 ${
+                className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
                   currentPage === totalPages
                     ? "opacity-50 cursor-not-allowed"
                     : ""

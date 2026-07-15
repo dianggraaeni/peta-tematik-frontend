@@ -201,12 +201,12 @@ const AddRutaModal = ({
       type="button"
       disabled={true}
     >
-      <FaImages size={30} className="mx-auto text-pyellow" />
+      <FaImages size={30} className="mx-auto text-blue-800" />
       <div
         style={{
           marginTop: 6,
         }}
-        className="font-semibold text-pyellow"
+        className="font-semibold text-blue-800"
       >
         Upload
       </div>
@@ -710,10 +710,10 @@ const AddRutaModal = ({
       isKeyboardDismissDisabled={true}
       hideCloseButton={true}
     >
-      <ModalContent className="font-inter text-pyellow">
+      <ModalContent className="font-inter text-blue-800">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 text-white bg-pyellow">
+            <ModalHeader className="flex flex-col gap-1 text-white bg-blue-600">
               Tambah Potensi Kelengkeng
             </ModalHeader>
             <ModalBody className="py-4">
@@ -972,7 +972,7 @@ const AddRutaModal = ({
                   {isValidLatitude(mapPosition[0]) &&
                     isValidLongitude(mapPosition[1]) && (
                       <div className="my-4">
-                        <p className="text-[14px] font-semibold ml-3 my-2 text-pyellow">
+                        <p className="text-[14px] font-semibold ml-3 my-2 text-blue-800">
                           Titik lokasi Usaha Kelengkeng
                         </p>
                         <MapContainer
@@ -997,7 +997,7 @@ const AddRutaModal = ({
                         </MapContainer>
                       </div>
                     )}
-                  <p className="text-[14px] font-semibold ml-3 my-2 text-pyellow">
+                  <p className="text-[14px] font-semibold ml-3 my-2 text-blue-800">
                     Foto Pohon Kelengkeng
                   </p>
                   <Upload
@@ -1067,7 +1067,7 @@ const AddRutaModal = ({
                 Tutup
               </Button>
               <Button
-                className="font-semibold text-white bg-pyellow font-inter"
+                className="font-semibold text-white bg-blue-600 font-inter"
                 onPress={handleAddSave}
                 disabled={loading}
               >

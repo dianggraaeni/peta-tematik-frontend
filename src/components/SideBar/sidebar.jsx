@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { FaHome, FaList, FaImages, FaUser, FaChartBar, FaYoutube, FaBook, FaDoorOpen } from 'react-icons/fa';
+import { FaHome, FaList, FaImages, FaUser, FaChartBar, FaYoutube, FaBook, FaDoorOpen, FaMapMarkedAlt } from 'react-icons/fa';
 import styles from './sidebar.module.css';
 
 const Sidebar = () => {
@@ -11,6 +11,7 @@ const Sidebar = () => {
   useEffect(() => {
     const pathToMenuMap = {
       '/admin': 'Desa',
+      '/admin/potensi': 'Potensi Desa',
       '/admin/buletin': 'Buletin',
       '/admin/navbar': 'Menu',
       '/admin/dashboard': 'Beranda',
@@ -38,6 +39,7 @@ const Sidebar = () => {
           { icon: <FaYoutube />, text: 'Deskripsi', path: '/admin/desc' },
           { icon: <FaChartBar />, text: 'Statistik', path: '/admin/stat' },
           { icon: <FaHome />, text: 'Desa', path: '/admin' },
+          { icon: <FaMapMarkedAlt />, text: 'Potensi Desa', path: '/admin/potensi' },
           { icon: <FaBook />, text: 'Buletin', path: '/admin/buletin' },
           { icon: <FaUser />, text: 'Tentang Kami', path: '/admin/us' },
           { icon: <FaDoorOpen />, text: 'Keluar', path: '/logout' },

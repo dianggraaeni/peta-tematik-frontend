@@ -198,12 +198,12 @@ const BerandaAdm = () => {
       type="button"
       disabled={true}
     >
-      <FaImages size={30} className="mx-auto text-pyellow" />
+      <FaImages size={30} className="mx-auto text-blue-800" />
       <div
         style={{
           marginTop: 6,
         }}
-        className="font-semibold text-pyellow"
+        className="font-semibold text-blue-800"
       >
         Upload
       </div>
@@ -238,7 +238,7 @@ const BerandaAdm = () => {
                 <button
                   type="submit"
                   onClick={(e) => handleSubmit(e, field.id)}
-                  className="px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
+                  className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   <FaCheck />
                 </button>
@@ -284,7 +284,7 @@ const BerandaAdm = () => {
               <button
                 type="submit"
                 onClick={(e) => handleSubmit(e, "link_gambar")}
-                className="px-4 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600"
+                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
               >
                 <FaCheck />
               </button>

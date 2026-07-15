@@ -7,7 +7,7 @@ import "./pages.css";
 import api from "../utils/api";
 import { Bars } from "react-loader-spinner";
 import api3 from "../utils/api3";
-import api4 from "../utils/api4";
+import api6 from "../utils/api6";
 
 const TopEllipse = () => {
   return (
@@ -57,7 +57,7 @@ const LoginGeneral = () => {
     }
 
     try {
-      const response = await api4.post("/api/auth/login", {
+      const response = await api6.post("/api/auth/login", {
         username,
         password,
       });
@@ -72,22 +72,15 @@ const LoginGeneral = () => {
         let destination = "/";
         if (returnedUser === "admin_pusat") {
           localStorage.setItem("token-pusat", returnedToken);
-          destination = "/admin-pusat";
-        } else if (returnedUser === "admin_sidokepung") {
-          localStorage.setItem("token-sidokepung", returnedToken);
-          destination = "/admin-sidokepung";
-        } else if (returnedUser === "admin_grogol") {
-          localStorage.setItem("token-grogol", returnedToken);
-          destination = "/admin-grogol";
-        } else if (returnedUser === "admin_simoanginangin") {
-          localStorage.setItem("token-simoanginangin", returnedToken);
-          destination = "/admin-simoanginangin";
-        } else if (returnedUser === "admin_simoketawang" || returnedUser === "admin_ketawang") {
-          localStorage.setItem("token-simoketawang", returnedToken);
-          destination = "/admin-simoketawang";
+          destination = "/admin/pusat";
+        } else if (returnedUser.startsWith("admin_")) {
+          const desaName = returnedUser.replace("admin_", "");
+          localStorage.setItem(`token-${desaName}`, returnedToken);
+          localStorage.setItem("token-desa-cantik", returnedToken); // IMPORTANT FOR PROTECTED ROUTE
+          destination = `/admin/desa/${desaName.toUpperCase()}`;
         } else {
-          localStorage.setItem("token-desa", returnedToken);
-          destination = "/admin-sidokepung"; // fallback
+          localStorage.setItem("token-desa-cantik", returnedToken);
+          destination = "/admin/desa/SIDOKEPUNG"; // fallback
         }
 
         setLoading(false);

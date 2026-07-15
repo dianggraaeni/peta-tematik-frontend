@@ -1,6 +1,6 @@
 .sidebar {
   width: 250px !important;
-  background: linear-gradient(135deg, #f39c12, #e67e22);
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
   /* height: 100%; */
   padding: 15px;
   display: flex;
@@ -46,9 +46,9 @@
 }
 
 .activeMenu {
-  background-color: #d35400;
+  background-color: #1e40af; /* Deep blue for active item */
   color: #ffffff;
-  box-shadow: 0px 4px 15px rgba(211, 84, 0, 0.4);
+  box-shadow: 0px 4px 15px rgba(30, 64, 175, 0.4);
 }
 
 .icon {
