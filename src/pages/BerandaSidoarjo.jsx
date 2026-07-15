@@ -4,6 +4,25 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+const getKepadatanColor = (pop) => {
+  if (pop > 10000) return "#7f1d1d";
+  if (pop > 7000) return "#b91c1c";
+  if (pop > 4000) return "#ef4444";
+  if (pop > 2000) return "#f87171";
+  if (pop > 0) return "#fca5a5";
+  return "#e5e7eb";
+};
+
+const getRasioColor = (l, p) => {
+  if (p === 0) return "#e5e7eb";
+  const rjk = (l / p) * 100;
+  if (rjk > 105) return "#1e3a8a"; 
+  if (rjk > 102) return "#3b82f6";
+  if (rjk > 98) return "#9ca3af"; 
+  if (rjk > 95) return "#ec4899"; 
+  return "#be185d";
+};
+
 // Auto Zoom to fit Sidoarjo or selected Desa
 const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
   const map = useMap();
@@ -54,11 +73,22 @@ const BerandaSidoarjo = () => {
   const [selectedDesa, setSelectedDesa] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
+  const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
+  
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const selectedDesaRef = useRef(null);
   const isFeatureClicked = useRef(false);
   const navigate = useNavigate();
+
+  const sidoarjoAgregat = React.useMemo(() => {
+    if (!pendudukData) return null;
+    let L = 0, P = 0, total = 0, kk = 0;
+    Object.values(pendudukData).forEach(d => {
+      L += d.L; P += d.P; total += d.total_penduduk; kk += d.total_kk;
+    });
+    return { L, P, total, kk };
+  }, [pendudukData]);
 
   useEffect(() => {
     selectedDesaRef.current = selectedDesa;
@@ -140,10 +170,34 @@ const BerandaSidoarjo = () => {
   const getStyle = (feature) => {
     const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
     const desaName = rawName.toUpperCase();
+    const iddesa = feature.properties.iddesa;
     const isTematik = desaTematikInfo[desaName] !== undefined;
     const villageThemes = desaTematikInfo[desaName] || [];
     const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
+    if (mapMode === "kepadatan") {
+      const pData = pendudukData && pendudukData[iddesa];
+      const pop = pData ? pData.total_penduduk : 0;
+      return {
+        fillColor: getKepadatanColor(pop),
+        weight: isSelected ? 4 : 0.5,
+        opacity: 1,
+        color: isSelected ? "#ffffff" : "white",
+        dashArray: isSelected ? "" : "3",
+        fillOpacity: isSelected ? 0.9 : 0.8,
+      };
+    } else if (mapMode === "rasio") {
+      const pData = pendudukData && pendudukData[iddesa];
+      return {
+        fillColor: pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb",
+        weight: isSelected ? 4 : 0.5,
+        opacity: 1,
+        color: isSelected ? "#ffffff" : "white",
+        dashArray: isSelected ? "" : "3",
+        fillOpacity: isSelected ? 0.9 : 0.8,
+      };
+    }
+
     // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
@@ -166,6 +220,14 @@ const BerandaSidoarjo = () => {
     const villageThemes = desaTematikInfo[desaName] || [];
     const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
+    if (mapMode === "kepadatan" || mapMode === "rasio") {
+      return {
+        ...getStyle(feature),
+        weight: isSelected ? 5 : 2,
+        fillOpacity: 0.95
+      };
+    }
+
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
       : villageThemes.some(t => activeThemes.includes(t));
@@ -191,7 +253,7 @@ const BerandaSidoarjo = () => {
         }
       });
     }
-  }, [selectedDesa, activeThemes, pendudukData]);
+  }, [selectedDesa, activeThemes, pendudukData, mapMode]);
 
   const MapClickHandler = () => {
     useMapEvents({
@@ -455,26 +517,49 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Theme Filter Area */}
-      <div className="w-full px-4 md:px-12 flex justify-start md:justify-end items-center mb-4 relative z-[2000] gap-3">
+      <div className="w-full px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mb-4 relative z-[2000] gap-3">
         
-        {/* Active Theme Chips */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar flex-grow md:flex-grow-0 justify-end" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          {activeThemes.map((theme) => (
-            <div key={theme} className="flex items-center gap-1 px-3 py-1.5 bg-[#eff6ff] border-2 border-[#bfdbfe] text-[#1e40af] rounded-full text-xs font-bold shadow-sm whitespace-nowrap">
-              {theme}
-              <button onClick={() => toggleTheme(theme)} className="text-[#1d4ed8] hover:text-[#1e3a8a] ml-1 transition-colors">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
-            </div>
-          ))}
-          <style>{`
-            .overflow-x-auto::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
+        {/* Map Mode Buttons */}
+        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMapMode("tematik"); }}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "tematik" ? "bg-[#2563eb] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            Tematik
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#ef4444] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            Kepadatan
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMapMode("rasio"); }}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            Rasio L/P
+          </button>
         </div>
 
-        {/* Filter Dropdown */}
+        <div className="flex flex-grow justify-end items-center gap-3">
+          {/* Active Theme Chips */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar justify-end" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {activeThemes.map((theme) => (
+              <div key={theme} className="flex items-center gap-1 px-3 py-1.5 bg-[#eff6ff] border-2 border-[#bfdbfe] text-[#1e40af] rounded-full text-xs font-bold shadow-sm whitespace-nowrap">
+                {theme}
+                <button onClick={() => toggleTheme(theme)} className="text-[#1d4ed8] hover:text-[#1e3a8a] ml-1 transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            ))}
+            <style>{`
+              .overflow-x-auto::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+          </div>
+
+          {/* Filter Dropdown */}
         <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -537,6 +622,7 @@ const BerandaSidoarjo = () => {
             </div>
           )}
         </div>
+        </div>
       </div>
 
       {/* Map Container */}
@@ -585,6 +671,55 @@ const BerandaSidoarjo = () => {
         ) : (
           <div className="flex h-full items-center justify-center">
             <div className="animate-pulse text-gray-500 font-semibold text-sm md:text-base">Memuat peta...</div>
+          </div>
+        )}
+
+        {/* Dashboard Ringkasan */}
+        {sidoarjoAgregat && (
+          <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block">
+            <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
+            <div className="flex flex-col gap-2">
+              <div className="bg-blue-50 px-3 py-2 rounded-lg">
+                <div className="text-[10px] text-blue-600 font-bold uppercase">Total Populasi</div>
+                <div className="font-extrabold text-lg text-blue-900">{sidoarjoAgregat.total.toLocaleString('id-ID')} Jiwa</div>
+              </div>
+              <div className="flex gap-2">
+                <div className="bg-sky-50 px-3 py-2 rounded-lg flex-1">
+                  <div className="text-[10px] text-sky-600 font-bold uppercase">Laki-laki</div>
+                  <div className="font-bold text-sm text-sky-900">{sidoarjoAgregat.L.toLocaleString('id-ID')}</div>
+                </div>
+                <div className="bg-pink-50 px-3 py-2 rounded-lg flex-1">
+                  <div className="text-[10px] text-pink-600 font-bold uppercase">Perempuan</div>
+                  <div className="font-bold text-sm text-pink-900">{sidoarjoAgregat.P.toLocaleString('id-ID')}</div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-3 py-2 rounded-lg mt-1">
+                <div className="text-[10px] text-gray-500 font-bold uppercase">Total KK</div>
+                <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Map Legends */}
+        {mapMode === "kepadatan" && (
+          <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
+            <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa)</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#7f1d1d]"></span> &gt; 10.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#b91c1c]"></span> 7.000 - 10.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ef4444]"></span> 4.000 - 7.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#f87171]"></span> 2.000 - 4.000</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#fca5a5]"></span> &lt; 2.000</div>
+          </div>
+        )}
+        {mapMode === "rasio" && (
+          <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
+            <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
           </div>
         )}
         
