@@ -326,10 +326,10 @@ const Dashboard = ({ desaName }) => {
   const enrichedGeojsonData = useMemo(() => {
     if (!geojsonData) return geojsonData;
 
-    const dataForMap =
-      allOriginalData.length > 0 ? allOriginalData : allRawData;
+    const baseData = allOriginalData.length > 0 ? allOriginalData : allRawData;
+    const dataForMap = applyFilters(baseData, activeFilters);
 
-    if (dataForMap.length === 0) return geojsonData;
+    if (baseData.length === 0) return geojsonData;
 
     const areaData = {};
 
@@ -636,6 +636,11 @@ const Dashboard = ({ desaName }) => {
               layer.closePopup();
             }
           });
+
+          // Zoom to the clicked polygon
+          if (clickedLayer.getBounds) {
+            clickedLayer._map.fitBounds(clickedLayer.getBounds(), { padding: [50, 50] });
+          }
 
           clickedLayer.openPopup();
 
