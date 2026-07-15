@@ -503,14 +503,14 @@ const Dashboard = ({ desaName }) => {
           fillColor: fillColor,
           weight: 2,
           color: "#FFFFFF",
-          fillOpacity: 0.8,
+          fillOpacity: 0.55,
         };
       }
       return {
-        fillColor: "#D3D3D3",
+        fillColor: "#e5e7eb",
         weight: 2,
         color: "#fff",
-        fillOpacity: 0.7,
+        fillOpacity: 0.3,
       };
     },
     [employmentColors]
@@ -518,10 +518,10 @@ const Dashboard = ({ desaName }) => {
 
   const getHoverStyle = useCallback(() => {
     return {
-      fillColor: "#FFD700",
-      weight: 4,
+      fillColor: "#facc15",
+      weight: 3,
       color: "#FFFFFF",
-      fillOpacity: 0.9,
+      fillOpacity: 0.8,
     };
   }, []);
 

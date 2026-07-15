@@ -38,11 +38,13 @@ const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
 const LandingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [statsData, setStatsData] = useState([]);
+  const [pendudukData, setPendudukData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [mapMode, setMapMode] = useState("kepadatan"); // "kepadatan" | "rasio"
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const navigate = useNavigate();
@@ -59,6 +61,12 @@ const LandingPage = () => {
       .then((res) => res.json())
       .then((data) => setStatsData(data))
       .catch((err) => console.error("Error loading stats:", err));
+
+    // Fetch demographic data for aggregation
+    fetch("/data/penduduk.json")
+      .then((res) => res.json())
+      .then((data) => setPendudukData(data))
+      .catch((err) => console.error("Error loading penduduk:", err));
   }, []);
 
   // Handle clicking outside the search box to close dropdown
@@ -121,66 +129,133 @@ const LandingPage = () => {
   const totalLuas = statsData.reduce((sum, stat) => sum + stat.luas_wilayah, 0);
   const avgKepadatan = totalLuas > 0 ? (totalPenduduk / totalLuas) : 0;
   
-  // Top 5 Kecamatan
-  const top5Kecamatan = [...statsData]
-    .sort((a, b) => b.jumlah_penduduk - a.jumlah_penduduk)
-    .slice(0, 5);
-  const maxPop = top5Kecamatan.length > 0 ? top5Kecamatan[0].jumlah_penduduk : 1;
+  const sidoarjoAgregat = React.useMemo(() => {
+    if (!pendudukData) return null;
+    let L = 0, P = 0, total = 0, kk = 0;
+    Object.values(pendudukData).forEach((desa) => {
+      L += desa.L;
+      P += desa.P;
+      total += desa.total_penduduk;
+      kk += desa.total_kk || 0;
+    });
+    return { L, P, total, kk };
+  }, [pendudukData]);
 
-  // Choropleth color scale (Light Blue to Dark Blue) based on density
-  const getColor = (density) => {
-    return density > 7000 ? '#08306b' :
-           density > 5000 ? '#08519c' :
-           density > 3500 ? '#2171b5' :
-           density > 2500 ? '#4292c6' :
-           density > 1500 ? '#6baed6' :
-           density > 1000 ? '#9ecae1' :
-           density > 500  ? '#c6dbef' :
-                            '#deebf7';
+  // Choropleth color scale based on map mode
+  const getKepadatanColor = (density) => {
+    return density > 7000 ? '#1e3a8a' :
+           density > 5000 ? '#1d4ed8' :
+           density > 3500 ? '#2563eb' :
+           density > 2500 ? '#3b82f6' :
+           density > 1500 ? '#60a5fa' :
+           density > 1000 ? '#93c5fd' :
+           density > 500  ? '#bfdbfe' :
+                            '#dbeafe';
   };
 
+  const getRasioColor = (l, p) => {
+    if (!p) return "#e5e7eb";
+    const rjk = (l / p) * 100;
+    if (rjk > 105) return "#1e3a8a"; 
+    if (rjk > 102) return "#3b82f6";
+    if (rjk > 98) return "#9ca3af"; 
+    if (rjk > 95) return "#ec4899"; 
+    return "#be185d";
+  };
+
+  const kecamatanDemografi = React.useMemo(() => {
+    if (!pendudukData) return {};
+    const agg = {};
+    Object.values(pendudukData).forEach((desa) => {
+      const kec = (desa.Kecamatan || "").toUpperCase();
+      if (!agg[kec]) {
+        agg[kec] = { L: 0, P: 0, total: 0 };
+      }
+      agg[kec].L += desa.L;
+      agg[kec].P += desa.P;
+      agg[kec].total += desa.total_penduduk;
+    });
+    return agg;
+  }, [pendudukData]);
+
   const getStyle = (feature) => {
-    const stats = getDistrictStats(feature.properties.KECAMATAN);
+    const kecName = feature.properties.KECAMATAN.toUpperCase();
+    const stats = getDistrictStats(kecName);
     const density = stats ? stats.kepadatan_penduduk : 0;
     const isSelected = selectedKecamatan === feature.properties.KECAMATAN;
     
+    let fillColor = "#e5e7eb";
+    if (mapMode === "kepadatan") {
+      fillColor = getKepadatanColor(density);
+    } else if (mapMode === "rasio") {
+      const demo = kecamatanDemografi[kecName];
+      if (demo) fillColor = getRasioColor(demo.L, demo.P);
+    }
+
     return {
-      fillColor: getColor(density),
+      fillColor,
       weight: isSelected ? 5 : 1,
       opacity: 1,
       color: isSelected ? "#ffffff" : "white", // Thick white highlight if selected
       dashArray: isSelected ? "" : "3",
-      fillOpacity: isSelected ? 1 : 0.8,
+      fillOpacity: isSelected ? 0.7 : 0.55,
     };
   };
 
   const getHoverStyle = (feature) => {
-    const stats = getDistrictStats(feature.properties.KECAMATAN);
-    const density = stats ? stats.kepadatan_penduduk : 0;
-    const isSelected = selectedKecamatan === feature.properties.KECAMATAN;
-    
     return {
-      fillColor: getColor(density),
-      weight: isSelected ? 5 : 3,
-      opacity: 1,
-      color: isSelected ? "#ffffff" : "#666", // White highlight if selected, otherwise grey hover
+      ...getStyle(feature),
+      weight: selectedKecamatan === feature.properties.KECAMATAN ? 5 : 3,
+      color: selectedKecamatan === feature.properties.KECAMATAN ? "#ffffff" : "#666",
       dashArray: "",
-      fillOpacity: 1,
+      fillOpacity: 0.8,
     };
   };
 
+  const getStyleRef = useRef(getStyle);
+  const getHoverStyleRef = useRef(getHoverStyle);
+
+  useEffect(() => {
+    getStyleRef.current = getStyle;
+    getHoverStyleRef.current = getHoverStyle;
+  }, [getStyle, getHoverStyle]);
+
+  // Update styles dynamically without unmounting the GeoJSON layer
+  useEffect(() => {
+    if (geoJsonRef.current) {
+      geoJsonRef.current.eachLayer((layer) => {
+        layer.setStyle(getStyle(layer.feature));
+        if (selectedKecamatan && layer.feature.properties.KECAMATAN === selectedKecamatan) {
+          layer.bringToFront();
+        }
+      });
+    }
+  }, [selectedKecamatan, mapMode, kecamatanDemografi, statsData]);
+
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
-    const stats = getDistrictStats(props.KECAMATAN);
+    const kecName = props.KECAMATAN.toUpperCase();
+    const stats = getDistrictStats(kecName);
+    const demo = kecamatanDemografi[kecName];
     
     if (stats) {
-      const tooltipContent = `
+      let tooltipContent = `
         <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
           <div style="font-weight: bold; font-size: 14px;">${props.KECAMATAN}</div>
           <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Kecamatan</div>
           <div style="font-size: 11px; text-align: left;">
-            <p style="margin: 2px 0;"><strong>Penduduk:</strong> ${stats.jumlah_penduduk.toLocaleString('id-ID')} jiwa</p>
+            <p style="margin: 2px 0;"><strong>Total Penduduk:</strong> ${stats.jumlah_penduduk.toLocaleString('id-ID')} jiwa</p>
             <p style="margin: 2px 0;"><strong>Kepadatan:</strong> ${Math.round(stats.kepadatan_penduduk).toLocaleString('id-ID')} jiwa/km²</p>
+      `;
+
+      if (demo && demo.P > 0) {
+        tooltipContent += `
+            <p style="margin: 2px 0;"><strong>L / P:</strong> ${demo.L.toLocaleString('id-ID')} / ${demo.P.toLocaleString('id-ID')}</p>
+            <p style="margin: 2px 0;"><strong>Sex Ratio:</strong> ${((demo.L/demo.P)*100).toFixed(2)}</p>
+        `;
+      }
+
+      tooltipContent += `
             <p style="margin: 2px 0;"><strong>Luas Wilayah:</strong> ${stats.luas_wilayah} km²</p>
             <p style="margin: 2px 0;"><strong>Desa/Kelurahan:</strong> ${stats.jumlah_desa_dan_kelurahan}</p>
           </div>
@@ -198,14 +273,14 @@ const LandingPage = () => {
       layer.on({
         mouseover: (e) => {
           const l = e.target;
-          l.setStyle(getHoverStyle(feature));
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+          l.setStyle(getHoverStyleRef.current(feature));
+          if (selectedKecamatan && props.KECAMATAN === selectedKecamatan) {
             l.bringToFront();
           }
         },
         mouseout: (e) => {
           const l = e.target;
-          l.setStyle(getStyle(feature));
+          l.setStyle(getStyleRef.current(feature));
         },
         click: () => {
           setSelectedKecamatan(props.KECAMATAN);
@@ -393,9 +468,31 @@ const LandingPage = () => {
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none animate-color-shift cursor-default">
           Peta Statistik Kabupaten Sidoarjo
         </h1>
-        <p className="italic text-xs sm:text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
-          Kepadatan Penduduk Sidoarjo (jiwa/km²)
+        <p className="italic text-xs sm:text-sm md:text-base font-medium m-0 mb-4" style={{ color: "black", opacity: 1 }}>
+          {mapMode === "kepadatan" ? "Kepadatan Penduduk Sidoarjo (jiwa/km²)" : "Rasio Jenis Kelamin (Sex Ratio) Kecamatan"}
         </p>
+
+        {/* Map Mode Buttons */}
+        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200 w-fit mx-auto relative z-[2000]">
+          <button 
+            onClick={(e) => { navigate('/peta-tematik') }}
+            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all text-gray-500 hover:bg-amber-100 hover:text-amber-700`}
+          >
+            Tematik
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
+            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            Kepadatan
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMapMode("rasio"); }}
+            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+          >
+            Rasio L/P
+          </button>
+        </div>
       </div>
 
       {/* Map Container */}
@@ -441,101 +538,57 @@ const LandingPage = () => {
             </div>
           )}
 
-          {/* Interactive Bottom-Left Panel */}
-          <div className="absolute top-6 bottom-6 left-6 z-[1000] flex items-end gap-4 pointer-events-none">
-            {/* Toggle Button */}
-            <button 
-              onClick={() => setIsPanelOpen(!isPanelOpen)}
-              className="bg-white/95 backdrop-blur-md text-gray-800 w-12 h-12 flex items-center justify-center shadow-xl rounded-2xl transition-all duration-300 hover:bg-white hover:scale-105 active:scale-95 z-20 shrink-0 pointer-events-auto"
-              title={isPanelOpen ? "Tutup Info Statistik" : "Buka Info Statistik"}
-            >
-              {isPanelOpen ? (
-                // Double Left Arrow (Close)
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="13 17 8 12 13 7"></polyline>
-                  <polyline points="18 17 13 12 18 7"></polyline>
-                </svg>
-              ) : (
-                // Legend / List Icon (Open)
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="4" height="4" rx="1"></rect>
-                  <circle cx="5" cy="12" r="2"></circle>
-                  <path d="M3 18l2-2 2 2z"></path>
-                  <line x1="10" y1="6" x2="21" y2="6"></line>
-                  <line x1="10" y1="12" x2="21" y2="12"></line>
-                  <line x1="10" y1="18" x2="21" y2="18"></line>
-                </svg>
-              )}
-            </button>
-
-            {/* Panel Content (Slides out to the right) */}
-            <div 
-              className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden flex flex-col h-full pointer-events-auto ${
-                isPanelOpen ? "w-[320px] opacity-100 translate-x-0" : "w-0 opacity-0 -translate-x-10 pointer-events-none"
-              }`}
-            >
-              <div className="p-5 w-[320px] h-full flex flex-col justify-between">
-                {/* Header */}
-                <div>
-                  <h3 className="font-bold text-lg text-gray-800">Statistik Sidoarjo</h3>
-                  <p className="text-xs text-gray-500">Ringkasan agregat wilayah</p>
+          {/* Dashboard Ringkasan */}
+          {sidoarjoAgregat && (
+            <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block">
+              <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
+              <div className="flex flex-col gap-2">
+                <div className="bg-blue-50 px-3 py-2 rounded-lg">
+                  <div className="text-[10px] text-blue-600 font-bold uppercase">Total Populasi</div>
+                  <div className="font-extrabold text-lg text-blue-900">{sidoarjoAgregat.total.toLocaleString('id-ID')} Jiwa</div>
                 </div>
-
-                {/* General Stats */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                    <div className="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-1">Total Penduduk</div>
-                    <div className="font-extrabold text-gray-800 text-lg leading-none">{totalPenduduk.toLocaleString('id-ID')}</div>
-                    <div className="text-[10px] text-gray-500 mt-1">Jiwa</div>
+                <div className="flex gap-2">
+                  <div className="bg-sky-50 px-3 py-2 rounded-lg flex-1">
+                    <div className="text-[10px] text-sky-600 font-bold uppercase">Laki-laki</div>
+                    <div className="font-bold text-sm text-sky-900">{sidoarjoAgregat.L.toLocaleString('id-ID')}</div>
                   </div>
-                  <div className="bg-green-50 p-3 rounded-lg border border-green-100">
-                    <div className="text-[10px] text-green-600 font-bold uppercase tracking-wider mb-1">Kepadatan Rata²</div>
-                    <div className="font-extrabold text-gray-800 text-lg leading-none">{Math.round(avgKepadatan).toLocaleString('id-ID')}</div>
-                    <div className="text-[10px] text-gray-500 mt-1">Jiwa/km²</div>
+                  <div className="bg-pink-50 px-3 py-2 rounded-lg flex-1">
+                    <div className="text-[10px] text-pink-600 font-bold uppercase">Perempuan</div>
+                    <div className="font-bold text-sm text-pink-900">{sidoarjoAgregat.P.toLocaleString('id-ID')}</div>
                   </div>
                 </div>
-
-                {/* Bar Chart - Top 5 Kecamatan */}
-                <div>
-                  <h4 className="font-bold text-xs text-gray-700 mb-3 border-b pb-1">Top 5 Penduduk Terbanyak</h4>
-                  <div className="flex flex-col gap-3">
-                    {top5Kecamatan.map((kec, idx) => {
-                      const widthPercent = (kec.jumlah_penduduk / maxPop) * 100;
-                      return (
-                        <div key={idx} className="relative">
-                          <div className="flex justify-between text-[10px] mb-1 font-medium">
-                            <span className="text-gray-700">{kec.kecamatan}</span>
-                            <span className="text-gray-900 font-bold">{kec.jumlah_penduduk.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                            <div 
-                              className="bg-gradient-to-r from-blue-400 to-blue-600 h-full rounded-full transition-all duration-1000 ease-out" 
-                              style={{ width: `${widthPercent}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Legend (Original) */}
-                <div className="pt-2 border-t border-gray-100">
-                  <h4 className="font-bold text-xs text-gray-700 mb-2">Legenda Kepadatan (jiwa/km²)</h4>
-                  <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-[10px] text-gray-600 font-medium">
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#08306b]"></span> &gt; 7000</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#08519c]"></span> 5000 - 7000</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#2171b5]"></span> 3500 - 5000</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#4292c6]"></span> 2500 - 3500</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#6baed6]"></span> 1500 - 2500</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#9ecae1]"></span> 1000 - 1500</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#c6dbef]"></span> 500 - 1000</div>
-                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm inline-block shadow-sm bg-[#deebf7]"></span> &lt; 500</div>
-                  </div>
+                <div className="bg-gray-50 px-3 py-2 rounded-lg mt-1">
+                  <div className="text-[10px] text-gray-500 font-bold uppercase">Total KK</div>
+                  <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Map Legends */}
+          {mapMode === "kepadatan" && (
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
+              <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#2563eb]"></span> 3.500 - 5.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 2.500 - 3.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 1.500 - 2.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> 1.000 - 1.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#bfdbfe]"></span> 500 - 1.000</div>
+              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
+            </div>
+          )}
+          {mapMode === "rasio" && (
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
+              <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
+              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
+            </div>
+          )}
         </div>
       </div>
     </div>

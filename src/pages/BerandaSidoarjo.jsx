@@ -5,11 +5,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const getKepadatanColor = (pop) => {
-  if (pop > 10000) return "#7f1d1d";
-  if (pop > 7000) return "#b91c1c";
-  if (pop > 4000) return "#ef4444";
-  if (pop > 2000) return "#f87171";
-  if (pop > 0) return "#fca5a5";
+  if (pop > 10000) return "#1e3a8a";
+  if (pop > 7000) return "#1d4ed8";
+  if (pop > 4000) return "#3b82f6";
+  if (pop > 2000) return "#60a5fa";
+  if (pop > 0) return "#93c5fd";
   return "#e5e7eb";
 };
 
@@ -178,24 +178,24 @@ const BerandaSidoarjo = () => {
     if (mapMode === "kepadatan") {
       const pData = pendudukData && pendudukData[iddesa];
       const pop = pData ? pData.total_penduduk : 0;
-      return {
-        fillColor: getKepadatanColor(pop),
-        weight: isSelected ? 4 : 0.5,
-        opacity: 1,
-        color: isSelected ? "#ffffff" : "white",
-        dashArray: isSelected ? "" : "3",
-        fillOpacity: isSelected ? 0.9 : 0.8,
-      };
+        return {
+          fillColor: getKepadatanColor(pop),
+          weight: isSelected ? 4 : 0.5,
+          opacity: 1,
+          color: isSelected ? "#ffffff" : "white",
+          dashArray: isSelected ? "" : "3",
+          fillOpacity: isSelected ? 0.7 : 0.55,
+        };
     } else if (mapMode === "rasio") {
       const pData = pendudukData && pendudukData[iddesa];
-      return {
-        fillColor: pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb",
-        weight: isSelected ? 4 : 0.5,
-        opacity: 1,
-        color: isSelected ? "#ffffff" : "white",
-        dashArray: isSelected ? "" : "3",
-        fillOpacity: isSelected ? 0.9 : 0.8,
-      };
+        return {
+          fillColor: pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb",
+          weight: isSelected ? 4 : 0.5,
+          opacity: 1,
+          color: isSelected ? "#ffffff" : "white",
+          dashArray: isSelected ? "" : "3",
+          fillOpacity: isSelected ? 0.7 : 0.55,
+        };
     }
 
     // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
@@ -204,12 +204,12 @@ const BerandaSidoarjo = () => {
       : villageThemes.some(t => activeThemes.includes(t));
 
       return {
-        fillColor: isHighlighted ? "#1d4ed8" : "#3b82f6",
+        fillColor: isHighlighted ? "#fbbf24" : "#fef08a",
         weight: isSelected ? 5 : 0.5,
         opacity: 1,
         color: isSelected ? "#ffffff" : "white",
         dashArray: isSelected ? "" : "3",
-        fillOpacity: isSelected ? 0.8 : (isHighlighted ? 0.85 : 0.15),
+        fillOpacity: isSelected ? 0.8 : (isHighlighted ? 0.7 : 0.3),
       };
   };
 
@@ -221,26 +221,34 @@ const BerandaSidoarjo = () => {
     const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
     if (mapMode === "kepadatan" || mapMode === "rasio") {
-      return {
-        ...getStyle(feature),
-        weight: isSelected ? 5 : 2,
-        fillOpacity: 0.95
-      };
-    }
+        return {
+          ...getStyle(feature),
+          weight: isSelected ? 5 : 2,
+          fillOpacity: 0.8
+        };
+      }
 
     const isHighlighted = activeThemes.length === 0 
       ? isTematik 
       : villageThemes.some(t => activeThemes.includes(t));
 
     return {
-      fillColor: isHighlighted ? "#1e40af" : "#2563eb",
+      fillColor: isHighlighted ? "#eab308" : "#facc15",
       weight: isSelected ? 5 : 1.5,
       opacity: 1,
       color: isSelected ? "#ffffff" : "white",
       dashArray: isSelected ? "" : "3",
-      fillOpacity: isSelected ? 0.9 : (isHighlighted ? 0.95 : 0.3),
+      fillOpacity: isSelected ? 0.85 : (isHighlighted ? 0.8 : 0.4),
     };
   };
+
+  const getStyleRef = useRef(getStyle);
+  const getHoverStyleRef = useRef(getHoverStyle);
+
+  useEffect(() => {
+    getStyleRef.current = getStyle;
+    getHoverStyleRef.current = getHoverStyle;
+  }, [getStyle, getHoverStyle]);
 
   // Update styles dynamically without unmounting the GeoJSON layer
   useEffect(() => {
@@ -307,12 +315,12 @@ const BerandaSidoarjo = () => {
     layer.on({
       mouseover: (e) => {
         const l = e.target;
-        l.setStyle(getHoverStyle(feature));
+        l.setStyle(getHoverStyleRef.current(feature));
         l.bringToFront();
       },
       mouseout: (e) => {
         const l = e.target;
-        l.setStyle(getStyle(feature));
+        l.setStyle(getStyleRef.current(feature));
       },
       click: (e) => {
         isFeatureClicked.current = true;
@@ -523,13 +531,13 @@ const BerandaSidoarjo = () => {
         <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
           <button 
             onClick={(e) => { e.stopPropagation(); setMapMode("tematik"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "tematik" ? "bg-[#2563eb] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "tematik" ? "bg-[#eab308] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
           >
             Tematik
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#ef4444] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
           >
             Kepadatan
           </button>
@@ -702,14 +710,27 @@ const BerandaSidoarjo = () => {
         )}
 
         {/* Map Legends */}
+        {mapMode === "tematik" && (
+          <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
+            <div className="font-bold text-gray-700 mb-2">Keterangan Peta Tematik</div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-4 h-4 rounded bg-[#fbbf24] border border-[#f59e0b]"></span> 
+              <span>Desa Tematik</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded bg-[#e5e7eb] border border-gray-300"></span> 
+              <span>Belum Dipetakan</span>
+            </div>
+          </div>
+        )}
         {mapMode === "kepadatan" && (
           <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block">
             <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa)</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#7f1d1d]"></span> &gt; 10.000</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#b91c1c]"></span> 7.000 - 10.000</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ef4444]"></span> 4.000 - 7.000</div>
-            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#f87171]"></span> 2.000 - 4.000</div>
-            <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#fca5a5]"></span> &lt; 2.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 10.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 7.000 - 10.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 4.000 - 7.000</div>
+            <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 2.000 - 4.000</div>
+            <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> &lt; 2.000</div>
           </div>
         )}
         {mapMode === "rasio" && (
