@@ -510,14 +510,14 @@ const Dashboard = ({ desaName }) => {
 
         return {
           fillColor: fillColor,
-          weight: isSelected ? 4 : (isSpotlightActive ? 1 : 2),
+          weight: isSelected ? 2 : 1,
           color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#FFFFFF"),
           fillOpacity: isSelected ? 0.85 : (isSpotlightActive ? 0.4 : 0.7),
         };
       }
       return {
         fillColor: "#e5e7eb",
-        weight: isSelected ? 4 : (isSpotlightActive ? 1 : 2),
+        weight: isSelected ? 2 : 1,
         color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#fff"),
         fillOpacity: isSelected ? 0.8 : (isSpotlightActive ? 0.3 : 0.5),
       };
@@ -528,9 +528,9 @@ const Dashboard = ({ desaName }) => {
   const getHoverStyle = useCallback(() => {
     return {
       fillColor: "#facc15",
-      weight: 3,
+      weight: 2,
       color: "#FFFFFF",
-      fillOpacity: 0.8,
+      fillOpacity: 0.9,
     };
   }, []);
 
@@ -703,7 +703,7 @@ const Dashboard = ({ desaName }) => {
 
   return (
     <div
-      className="relative h-screen w-full overflow-hidden"
+      className="relative h-full w-full overflow-hidden"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <style jsx global>{`
