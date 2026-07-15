@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useMemo, useCallback } from "react";
+import { useState, useEffect, memo, useMemo, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import CountUp from "react-countup";
@@ -41,6 +41,8 @@ const Dashboard = ({ desaName }) => {
   const [selectedAreaTitle, setSelectedAreaTitle] = useState("Seluruh Sidoarjo");
   const [isTableVisible, setTableVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState({ rt: null, rw: null, nmdesa: null });
+  const selectedAreaRef = useRef({ rt: null, rw: null, nmdesa: null });
+  const geoJsonRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
@@ -67,8 +69,8 @@ const Dashboard = ({ desaName }) => {
   ];
 
   const employmentColors = {
-    "tidak bekerja": "#87CEEB", // Light blue
-    bekerja: "#00008B", // Dark blue
+    "tidak bekerja": "#60a5fa", // Lighter blue
+    bekerja: "#2563eb", // Vibrant Blue
   };
 
   const blueGradient = [
@@ -495,22 +497,29 @@ const Dashboard = ({ desaName }) => {
       const totalPopulation = props.totalPopulation || 0;
       const dominantEmployment = props.dominantEmployment;
 
+      const currentSelected = selectedAreaRef.current;
+      const rt = props.RT || props.rt;
+      const rw = props.RW || props.rw;
+      
+      const isSelected = currentSelected.rt == rt && currentSelected.rw == rw;
+      const isSpotlightActive = currentSelected.rt !== null;
+
       if (totalPopulation > 0 && dominantEmployment) {
         // Use the new two-color scheme
         const fillColor = employmentColors[dominantEmployment] || "#D3D3D3";
 
         return {
           fillColor: fillColor,
-          weight: 2,
-          color: "#FFFFFF",
-          fillOpacity: 0.55,
+          weight: isSelected ? 4 : (isSpotlightActive ? 1 : 2),
+          color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#FFFFFF"),
+          fillOpacity: isSelected ? 0.85 : (isSpotlightActive ? 0.4 : 0.7),
         };
       }
       return {
         fillColor: "#e5e7eb",
-        weight: 2,
-        color: "#fff",
-        fillOpacity: 0.3,
+        weight: isSelected ? 4 : (isSpotlightActive ? 1 : 2),
+        color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#fff"),
+        fillOpacity: isSelected ? 0.8 : (isSpotlightActive ? 0.3 : 0.5),
       };
     },
     [employmentColors]
@@ -610,6 +619,7 @@ const Dashboard = ({ desaName }) => {
         closeButton: true,
         autoClose: false,
         closeOnClick: false,
+        autoPan: false,
       });
 
       const originalStyle = getMapStyle(props);
@@ -631,23 +641,32 @@ const Dashboard = ({ desaName }) => {
           const clickedLayer = e.target;
           const { RT, RW, nmdesa } = clickedLayer.feature.properties;
 
-          clickedLayer._map.eachLayer((layer) => {
-            if (layer.getPopup && layer.getPopup()) {
-              layer.closePopup();
-            }
-          });
-
-          // Zoom to the clicked polygon
-          if (clickedLayer.getBounds) {
-            clickedLayer._map.fitBounds(clickedLayer.getBounds(), { padding: [50, 50] });
-          }
-
-          clickedLayer.openPopup();
-
           if (RT && RW) {
             setSelectedAreaTitle(`${nmdesa || 'Desa'} - RT ${RT}/RW ${RW}`);
             setSelectedArea({ rt: RT, rw: RW, nmdesa });
+            selectedAreaRef.current = { rt: RT, rw: RW, nmdesa }; // Update ref immediately
           }
+
+          clickedLayer._map.eachLayer((layer) => {
+            if (layer.getPopup && layer.getPopup() && layer !== clickedLayer) {
+              layer.closePopup();
+            }
+            if (layer.feature && layer.feature.properties && layer.setStyle) {
+              layer.setStyle(getMapStyle(layer.feature.properties)); // Apply spotlight
+            }
+          });
+
+          // Zoom to the clicked polygon smoothly, offset for the left panel
+          if (clickedLayer.getBounds) {
+            clickedLayer._map.flyToBounds(clickedLayer.getBounds(), { 
+              paddingTopLeft: [380, 50], // Offset for the left panel
+              paddingBottomRight: [50, 50],
+              duration: 1.5,
+              easeLinearity: 0.25
+            });
+          }
+
+          clickedLayer.openPopup();
         },
       });
     },
@@ -656,6 +675,7 @@ const Dashboard = ({ desaName }) => {
 
   const handleResetView = () => {
     setSelectedArea({ rt: null, rw: null, nmdesa: null });
+    selectedAreaRef.current = { rt: null, rw: null, nmdesa: null };
     setSelectedAreaTitle(desaName === "SIDOARJO" ? "Seluruh Sidoarjo" : `Seluruh Desa ${desaName}`);
     setActiveFilters({
       gender: "",
@@ -663,6 +683,18 @@ const Dashboard = ({ desaName }) => {
       employment: "",
       workField: "",
     });
+
+    // Refresh layer styles manually
+    if (geoJsonRef.current) {
+      geoJsonRef.current.eachLayer((layer) => {
+        if (layer.feature && layer.feature.properties && layer.setStyle) {
+          layer.setStyle(getMapStyle(layer.feature.properties));
+        }
+        if (layer.getPopup && layer.getPopup()) {
+          layer.closePopup();
+        }
+      });
+    }
   };
 
   const handleFilterChange = (filters) => {
@@ -804,10 +836,11 @@ const Dashboard = ({ desaName }) => {
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               attribution="Tiles &copy; Esri"
             />
-            <AutoZoom geojsonData={enrichedGeojsonData} />
+            <AutoZoom geojsonData={geojsonData} />
             {enrichedGeojsonData && (
               <GeoJSON
-                key={`geojson-${allOriginalData.length}`}
+                ref={geoJsonRef}
+                key={`geojson-${allOriginalData.length}-${JSON.stringify(activeFilters)}`}
                 data={enrichedGeojsonData}
                 style={(feature) => getMapStyle(feature.properties)}
                 onEachFeature={onEachFeature}
