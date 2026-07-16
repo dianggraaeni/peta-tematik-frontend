@@ -5,6 +5,7 @@ import CountUp from "react-countup";
 import { BeatLoader } from "react-spinners";
 import DemographicsChart from "./DemographicsChart";
 import FilterPanel from "./FilterPanel";
+import AIInsightBox from "../AIInsightBox";
 import L from "leaflet";
 
 import api6 from "../../utils/api6.js";
@@ -38,7 +39,7 @@ const Dashboard = ({ desaName }) => {
   const [allOriginalData, setAllOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [currentDataKey, setCurrentDataKey] = useState("jenisKelamin");
-  const [selectedAreaTitle, setSelectedAreaTitle] = useState("Seluruh Sidoarjo");
+  const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName || "Sidoarjo"}`);
   const [isTableVisible, setTableVisible] = useState(false);
   const [selectedArea, setSelectedArea] = useState({ rt: null, rw: null, nmdesa: null });
   const selectedAreaRef = useRef({ rt: null, rw: null, nmdesa: null });
@@ -676,7 +677,7 @@ const Dashboard = ({ desaName }) => {
   const handleResetView = () => {
     setSelectedArea({ rt: null, rw: null, nmdesa: null });
     selectedAreaRef.current = { rt: null, rw: null, nmdesa: null };
-    setSelectedAreaTitle(desaName === "SIDOARJO" ? "Seluruh Sidoarjo" : `Seluruh Desa ${desaName}`);
+    setSelectedAreaTitle(`Seluruh ${desaName || "Sidoarjo"}`);
     setActiveFilters({
       gender: "",
       ageGroup: "",
@@ -1128,6 +1129,26 @@ const Dashboard = ({ desaName }) => {
           </div>
         </div>
       </div>
+      {/* AI Insight Box at the bottom middle */}
+      <AIInsightBox 
+        featureName={selectedAreaTitle}
+        contextType="pekerjaan"
+        data={{
+          totalPenduduk: filteredData.length,
+          dominanPekerjaan: filteredData.length > 0 
+            ? (Object.entries(
+                filteredData.reduce((acc, curr) => {
+                  const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama);
+                  acc[status] = (acc[status] || 0) + 1;
+                  return acc;
+                }, {})
+              ).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
+            : "Tidak ada data",
+          lakiLaki: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "laki-laki").length,
+          perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
+        }}
+      />
+
     </div>
   );
 };

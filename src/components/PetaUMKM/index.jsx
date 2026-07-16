@@ -5,6 +5,7 @@ import CountUp from "react-countup";
 import { BeatLoader } from "react-spinners";
 import UmkmCharts from "./UmkmCharts";
 import FilterPanelUmkm from "./FilterPanelUmkm";
+import AIInsightBox from "../AIInsightBox";
 import L from "leaflet";
 
 import api6 from "../../utils/api6.js";
@@ -37,9 +38,9 @@ const Dashboard = ({ initialDesaName }) => {
   const [allRawData, setAllRawData] = useState([]);
   const [allOriginalData, setAllOriginalData] = useState([]);
   const [currentDataKey, setCurrentDataKey] = useState("jenisKelamin");
-  const [selectedAreaTitle, setSelectedAreaTitle] = useState("Seluruh Sidoarjo");
-  const [isTableVisible, setTableVisible] = useState(false);
   const [desaName, setDesaName] = useState(initialDesaName || "");
+  const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName || "Sidoarjo"}`);
+  const [isTableVisible, setTableVisible] = useState(false);
   const [activeKbliFilter, setActiveKbliFilter] = useState("");
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
@@ -493,7 +494,7 @@ const Dashboard = ({ initialDesaName }) => {
   const handleResetView = () => {
     setSelectedArea({ rt: null, rw: null, nmdesa: null });
     selectedAreaRef.current = { rt: null, rw: null, nmdesa: null };
-    setSelectedAreaTitle(desaName === "SIDOARJO" ? "Seluruh Sidoarjo" : `Seluruh Desa ${desaName}`);
+    setSelectedAreaTitle(`Desa ${desaName || "Sidoarjo"}`);
 
 
     // Refresh layer styles manually
@@ -814,6 +815,16 @@ const Dashboard = ({ initialDesaName }) => {
           )}
         </div>
       </div>
+
+      {/* AI Insight Box at the bottom middle */}
+      <AIInsightBox 
+        featureName={selectedAreaTitle}
+        contextType="umkm"
+        data={{
+          totalUmkm: processedData.totalUmkm,
+          dominanKbli: getKbliName(processedData.dominantKbli)
+        }}
+      />
     </div>
   );
 };
