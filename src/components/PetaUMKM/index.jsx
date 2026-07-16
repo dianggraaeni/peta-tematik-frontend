@@ -1,5 +1,6 @@
 import { useState, useEffect, memo, useMemo, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import CountUp from "react-countup";
 import { BeatLoader } from "react-spinners";
@@ -42,8 +43,10 @@ const Dashboard = ({ initialDesaName }) => {
   const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName || "Sidoarjo"}`);
   const [isTableVisible, setTableVisible] = useState(false);
   const [activeKbliFilter, setActiveKbliFilter] = useState("");
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeBasemap, setActiveBasemap] = useBasemap();
 
+  const mapCenter = [-7.4612266, 112.658755]; // Default center (Simoanginangin)
   const [selectedArea, setSelectedArea] = useState({
     rt: null,
     rw: null,
@@ -335,16 +338,16 @@ const Dashboard = ({ initialDesaName }) => {
 
         return {
           fillColor: fillColor,
-          weight: isSelected ? 2 : 1,
-          color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#FFFFFF"),
-          fillOpacity: isSelected ? 0.85 : (isSpotlightActive ? 0.4 : 0.7),
+          weight: isSelected ? 3 : 2,
+          color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
+          fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.4 : 0.5),
         };
       }
       return {
         fillColor: "#e5e7eb",
-        weight: isSelected ? 2 : 1,
-        color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(255,255,255,0.4)" : "#fff"),
-        fillOpacity: isSelected ? 0.8 : (isSpotlightActive ? 0.3 : 0.5),
+        weight: isSelected ? 3 : 2,
+        color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
+        fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.3 : 0.4),
       };
     },
     [kbliColors]
@@ -353,9 +356,9 @@ const Dashboard = ({ initialDesaName }) => {
   const getHoverStyle = useCallback(() => {
     return {
       fillColor: "#facc15",
-      weight: 2,
-      color: "#FFFFFF",
-      fillOpacity: 0.9,
+      weight: 3,
+      color: "#0f172a",
+      fillOpacity: 0.7,
     };
   }, []);
 
@@ -641,12 +644,14 @@ const Dashboard = ({ initialDesaName }) => {
             zoom={13}
             style={{ height: "100%", width: "100%" }}
             doubleClickZoom={true}
-            zoomControl={true}
+            zoomControl={false}
           >
             <TileLayer
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              attribution="Tiles &copy; Esri"
+              url={activeBasemap.url}
+              attribution={activeBasemap.attribution}
+              maxZoom={activeBasemap.maxZoom}
             />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
             <AutoZoom geojsonData={geojsonData} />
             {enrichedGeojsonData && (
               <GeoJSON

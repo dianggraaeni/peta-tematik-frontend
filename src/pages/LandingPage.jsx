@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, LayersControl, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
+import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
 
@@ -43,6 +44,8 @@ const LandingPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showDataKecamatan, setShowDataKecamatan] = useState(false);
+  const [activeBasemap, setActiveBasemap] = useBasemap();
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [mapMode, setMapMode] = useState("kepadatan"); // "kepadatan" | "rasio"
@@ -195,22 +198,22 @@ const LandingPage = () => {
     }
 
     return {
-      fillColor,
-      weight: isSelected ? 5 : 1,
+      fillColor: fillColor,
+      weight: isSelected ? 3 : 2,
       opacity: 1,
-      color: isSelected ? "#ffffff" : "white", // Thick white highlight if selected
+      color: isSelected ? "#ffffff" : "#475569", // Thinner and slightly lighter dark border
       dashArray: isSelected ? "" : "3",
-      fillOpacity: isSelected ? 0.7 : 0.55,
+      fillOpacity: isSelected ? 0.7 : 0.5, // Higher opacity for visibility
     };
   };
 
   const getHoverStyle = (feature) => {
     return {
-      ...getStyle(feature),
-      weight: selectedKecamatan === feature.properties.KECAMATAN ? 5 : 3,
-      color: selectedKecamatan === feature.properties.KECAMATAN ? "#ffffff" : "#666",
+      fillColor: "#facc15", // bright yellow for hover
+      weight: selectedKecamatan === feature.properties.KECAMATAN ? 3 : 2,
+      color: selectedKecamatan === feature.properties.KECAMATAN ? "#ffffff" : "#1e293b",
       dashArray: "",
-      fillOpacity: 0.8,
+      fillOpacity: 0.7,
     };
   };
 
@@ -530,11 +533,11 @@ const LandingPage = () => {
               doubleClickZoom={true}
             >
               <TileLayer
-                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                attribution="Tiles &copy; Esri &mdash; Source: Esri"
-                maxZoom={17}
+                url={activeBasemap.url}
+                attribution={activeBasemap.attribution}
+                maxZoom={activeBasemap.maxZoom}
               />
-              <ZoomControl position="bottomright" />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
               <MapController 
                 geojsonData={geojsonData} 
                 selectedKecamatan={selectedKecamatan} 

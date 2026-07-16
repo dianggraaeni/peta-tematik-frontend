@@ -10,7 +10,9 @@ import {
   LayersControl,
   Marker,
   Popup,
+  useMap,
 } from "react-leaflet";
+import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
@@ -25,6 +27,8 @@ export default function MapSection() {
   const [selectedtUsaha, setSelectedtUsaha] = useState("all");
   const [selectedJenisPupuk, setSelectedJenisPupuk] = useState("all");
   const [mapInstance, setMapInstance] = useState(null);
+  const [isDataOpen, setIsDataOpen] = useState(false);
+  const [activeBasemap, setActiveBasemap] = useBasemap();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
@@ -130,9 +134,9 @@ export default function MapSection() {
       fillColor: getColor(density),
       weight: 2,
       opacity: 1,
-      color: "white",
-      dashArray: "3",
-      fillOpacity: 0.3,
+      color: "#1e293b",
+      dashArray: "",
+      fillOpacity: 0.5,
     };
   };
 
@@ -174,11 +178,11 @@ export default function MapSection() {
         const layer = e.target;
         if (layer !== selectedLayer) {
           layer.setStyle({
-            weight: 4,
-            color: "#fff",
-            dashArray: "",
-            fillOpacity: 0.8,
-          });
+          weight: 4,
+          color: "#1e293b",
+          dashArray: "",
+          fillOpacity: 0.7,
+        });
         }
 
         const keysLayer = ["RT", "RW", "Dusun", "Jumlah Usaha Sayuran"];
@@ -208,9 +212,9 @@ export default function MapSection() {
         if (layer !== selectedLayer) {
           layer.setStyle({
             weight: 2,
-            color: "white",
-            dashArray: "3",
-            fillOpacity: 0.3,
+            color: "#1e293b",
+            dashArray: "",
+            fillOpacity: 0.5,
           });
         }
         layer.closePopup();
@@ -223,9 +227,9 @@ export default function MapSection() {
         if (selectedLayer) {
           selectedLayer.setStyle({
             weight: 2,
-            color: "white",
-            dashArray: "3",
-            fillOpacity: 0.3,
+            color: "#1e293b",
+            dashArray: "",
+            fillOpacity: 0.5,
           });
         }
 
@@ -238,9 +242,9 @@ export default function MapSection() {
           setSelectedRT(feature.properties.kode);
           layer.setStyle({
             weight: 4,
-            color: "#fff",
+            color: "#1e293b",
             dashArray: "",
-            fillOpacity: 0.8, // Ensure opacity is set to 0.8 when clicked
+            fillOpacity: 0.7, // Ensure opacity is set to 0.7 when clicked
           });
         }
       },
@@ -578,27 +582,15 @@ export default function MapSection() {
           className="w-full h-full"
           touchZoom={true}
           whenCreated={setMapInstance}
+          zoomControl={false}
+          doubleClickZoom={true}
         >
-          <LayersControl position="bottomleft">
-            <LayersControl.BaseLayer checked name="Google Sattelite">
-              <TileLayer
-                url="https://mt.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                attribution='&copy; <a href="https://www.google.com/maps">Google Maps</a>'
-              />
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Google Street">
-              <TileLayer
-                url="https://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-                attribution='&copy; <a href="https://www.google.com/maps">Google Maps</a>'
-              />
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="OpenStreetMap">
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-            </LayersControl.BaseLayer>
-          </LayersControl>
+          <TileLayer
+            url={activeBasemap.url}
+            attribution={activeBasemap.attribution}
+            maxZoom={activeBasemap.maxZoom}
+          />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (

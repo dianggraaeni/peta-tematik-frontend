@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
+import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 
 const getKepadatanColor = (pop) => {
@@ -76,6 +77,7 @@ const BerandaSidoarjo = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
+  const [activeBasemap, setActiveBasemap] = useBasemap();
   
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
@@ -182,46 +184,37 @@ const BerandaSidoarjo = () => {
     const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
     const desaName = rawName.toUpperCase();
     const iddesa = feature.properties.iddesa;
-    const isTematik = desaTematikInfo[desaName] !== undefined;
-    const villageThemes = desaTematikInfo[desaName] || [];
     const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
+    let fillColor;
     if (mapMode === "kepadatan") {
       const pData = pendudukData && pendudukData[iddesa];
-      const pop = pData ? pData.total_penduduk : 0;
-        return {
-          fillColor: getKepadatanColor(pop),
-          weight: isSelected ? 4 : 0.5,
-          opacity: 1,
-          color: isSelected ? "#ffffff" : "white",
-          dashArray: isSelected ? "" : "3",
-          fillOpacity: isSelected ? 0.7 : 0.55,
-        };
+      fillColor = getKepadatanColor(pData ? pData.total_penduduk : 0);
     } else if (mapMode === "rasio") {
       const pData = pendudukData && pendudukData[iddesa];
-        return {
-          fillColor: pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb",
-          weight: isSelected ? 4 : 0.5,
-          opacity: 1,
-          color: isSelected ? "#ffffff" : "white",
-          dashArray: isSelected ? "" : "3",
-          fillOpacity: isSelected ? 0.7 : 0.55,
-        };
+      fillColor = pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb";
+    } else {
+      const isTematik = desaTematikInfo[desaName] !== undefined;
+      const villageThemes = desaTematikInfo[desaName] || [];
+      const isHighlighted = activeThemes.length === 0 
+        ? isTematik 
+        : villageThemes.some(t => activeThemes.includes(t));
+      
+      if (activeThemes.length > 0) {
+        fillColor = isHighlighted ? "#f59e0b" : "#e5e7eb"; // Amber for matching, grey for others
+      } else {
+        fillColor = isTematik ? "#fbbf24" : "#e5e7eb";
+      }
     }
 
-    // Highlight if no themes selected (show all thematic) OR if village has any of the selected themes
-    const isHighlighted = activeThemes.length === 0 
-      ? isTematik 
-      : villageThemes.some(t => activeThemes.includes(t));
-
-      return {
-        fillColor: isHighlighted ? "#fbbf24" : "#fef08a",
-        weight: isSelected ? 5 : 0.5,
-        opacity: 1,
-        color: isSelected ? "#ffffff" : "white",
-        dashArray: isSelected ? "" : "3",
-        fillOpacity: isSelected ? 0.8 : (isHighlighted ? 0.7 : 0.3),
-      };
+    return {
+      fillColor,
+      opacity: 1,
+      color: isSelected ? "#ffffff" : "#475569", // Slate dark grey
+      weight: isSelected ? 3 : 2,
+      dashArray: isSelected ? "" : "3",
+      fillOpacity: (mapMode === "tematik" && activeThemes.length > 0 && !fillColor.includes("f59e0b")) ? 0.3 : (isSelected ? 0.7 : 0.5),
+    };
   };
 
   const getHoverStyle = (feature) => {
@@ -234,8 +227,10 @@ const BerandaSidoarjo = () => {
     if (mapMode === "kepadatan" || mapMode === "rasio") {
         return {
           ...getStyle(feature),
-          weight: isSelected ? 5 : 2,
-          fillOpacity: 0.8
+          weight: isSelected ? 3 : 2,
+          color: isSelected ? "#ffffff" : "#1e293b",
+          dashArray: "",
+          fillOpacity: 0.7
         };
       }
 
@@ -243,13 +238,17 @@ const BerandaSidoarjo = () => {
       ? isTematik 
       : villageThemes.some(t => activeThemes.includes(t));
 
+    const fillColor = (activeThemes.length > 0) 
+      ? (isHighlighted ? "#d97706" : "#cbd5e1")
+      : (isHighlighted ? "#eab308" : "#cbd5e1");
+
     return {
-      fillColor: isHighlighted ? "#eab308" : "#facc15",
-      weight: isSelected ? 5 : 1.5,
-      opacity: 1,
-      color: isSelected ? "#ffffff" : "white",
-      dashArray: isSelected ? "" : "3",
-      fillOpacity: isSelected ? 0.85 : (isHighlighted ? 0.8 : 0.4),
+      ...getStyle(feature),
+      fillColor: fillColor,
+      weight: isSelected ? 3 : 2,
+      color: isSelected ? "#ffffff" : "#1e293b",
+      dashArray: "",
+      fillOpacity: 0.8,
     };
   };
 
@@ -670,11 +669,11 @@ const BerandaSidoarjo = () => {
               doubleClickZoom={true}
             >
             <TileLayer
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-              maxZoom={17}
+              url={activeBasemap.url}
+              attribution={activeBasemap.attribution}
+              maxZoom={activeBasemap.maxZoom}
             />
-            <ZoomControl position="bottomright" />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
             <MapController 
               geojsonData={geojsonData} 
               selectedDesa={selectedDesa} 
