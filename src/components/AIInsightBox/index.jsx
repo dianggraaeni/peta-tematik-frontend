@@ -3,12 +3,32 @@ import { Card, CardBody } from "@nextui-org/react";
 import { AiOutlineRobot } from "react-icons/ai";
 import api6 from "../../utils/api6"; // Use centralized backend axios instance
 
-const AIInsightBox = ({ featureName, data, contextType }) => {
+// Create a simple module-level cache so it persists across renders
+const insightCache = {};
+
+const AIInsightBox = ({ featureName, data, contextType, customClass, requireClick = false }) => {
   const [insight, setInsight] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hasClicked, setHasClicked] = useState(false);
+
+  const dataString = JSON.stringify(data);
+
+  // Reset hasClicked state when featureName changes
+  useEffect(() => {
+    setHasClicked(false);
+    setInsight("");
+  }, [featureName]);
 
   useEffect(() => {
     if (!featureName || !data) return;
+    if (requireClick && !hasClicked) return;
+
+    const cacheKey = `${contextType}_${featureName}`;
+    if (insightCache[cacheKey]) {
+      setInsight(insightCache[cacheKey]);
+      setLoading(false);
+      return;
+    }
 
     const fetchInsight = async () => {
       setLoading(true);
@@ -19,10 +39,16 @@ const AIInsightBox = ({ featureName, data, contextType }) => {
           data,
           contextType,
         });
-        setInsight(response.data.insight);
+        const fetchedInsight = response.data.insight;
+        insightCache[cacheKey] = fetchedInsight;
+        setInsight(fetchedInsight);
       } catch (error) {
         console.error("Error fetching AI insight:", error);
-        setInsight("Gagal memuat insight dari AI.");
+        if (error.response && error.response.status === 429) {
+          setInsight(error.response.data.error || "Terlalu banyak permintaan ke AI. Silakan coba lagi nanti (Limit API).");
+        } else {
+          setInsight("Gagal memuat insight dari AI.");
+        }
       } finally {
         setLoading(false);
       }
@@ -34,26 +60,37 @@ const AIInsightBox = ({ featureName, data, contextType }) => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [featureName, data, contextType]);
+  }, [featureName, dataString, contextType, requireClick, hasClicked]);
 
   if (!featureName) return null;
 
   return (
-    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[1000] w-[95%] max-w-6xl animate-fade-in-up">
+    <div className={`absolute left-1/2 transform -translate-x-1/2 z-[1000] w-[95%] max-w-6xl animate-fade-in-up ${customClass || "bottom-6"}`}>
       <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-bl-sm shadow-2xl border border-gray-200 p-5 relative">
         <div className="absolute -left-4 -bottom-4 bg-blue-500 rounded-full p-3 shadow-lg z-10 animate-pulse border-4 border-white">
           <AiOutlineRobot className="text-white text-2xl" />
         </div>
         
         <div className="pl-4">
-          <div className="flex justify-between items-center mb-1">
-            <h4 className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-              AI Insight • {featureName}
+          <div className="flex items-center gap-2 mb-2">
+            <h4 className="font-bold text-gray-800">
+              AI Insight &bull; {contextType === "statistik_kecamatan" ? "Kecamatan " : ""}<span className="capitalize">{featureName?.toLowerCase()}</span>
             </h4>
-            <span className="text-[9px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">BETA</span>
+            <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">BETA</span>
+            {loading && <span className="text-xs text-blue-500 animate-pulse ml-2">Sedang menganalisis...</span>}
           </div>
           
-          {loading ? (
+          {requireClick && !hasClicked ? (
+            <div className="flex flex-col items-center justify-center my-4 space-y-2">
+               <button 
+                 onClick={() => setHasClicked(true)}
+                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer z-50 pointer-events-auto"
+               >
+                 <AiOutlineRobot className="text-xl" /> Tampilkan Insight AI
+               </button>
+               <p className="text-[10px] text-gray-400">Klik untuk melihat analisis AI mengenai wilayah ini</p>
+            </div>
+          ) : loading ? (
             <div className="flex space-x-1 items-center h-5 my-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>

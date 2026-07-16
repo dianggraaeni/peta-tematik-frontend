@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer } from "react-leaflet";
+import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import AIInsightBox from "../components/AIInsightBox";
 
 // Auto Zoom to fit Sidoarjo or selected Kecamatan
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
@@ -47,6 +48,7 @@ const LandingPage = () => {
   const [mapMode, setMapMode] = useState("kepadatan"); // "kepadatan" | "rasio"
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
+  const isFeatureClicked = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -232,6 +234,17 @@ const LandingPage = () => {
     }
   }, [selectedKecamatan, mapMode, kecamatanDemografi, statsData]);
 
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: () => {
+        if (!isFeatureClicked.current) {
+          setSelectedKecamatan(null);
+        }
+      },
+    });
+    return null;
+  };
+
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
     const kecName = props.KECAMATAN.toUpperCase();
@@ -282,8 +295,10 @@ const LandingPage = () => {
           const l = e.target;
           l.setStyle(getStyleRef.current(feature));
         },
-        click: () => {
+        click: (e) => {
+          isFeatureClicked.current = true;
           setSelectedKecamatan(props.KECAMATAN);
+          setTimeout(() => { isFeatureClicked.current = false; }, 50);
         }
       });
     }
@@ -525,6 +540,7 @@ const LandingPage = () => {
                 selectedKecamatan={selectedKecamatan} 
                 geoJsonRef={geoJsonRef} 
               />
+              <MapClickHandler />
               <GeoJSON
                 ref={geoJsonRef}
                 data={geojsonData}
@@ -590,6 +606,15 @@ const LandingPage = () => {
             </div>
           )}
         </div>
+
+        {/* AI Insight Overlay */}
+        <AIInsightBox 
+          featureName={selectedKecamatan} 
+          data={selectedKecamatan && statsData ? statsData.find(s => (s.kecamatan || s.KECAMATAN || "").toUpperCase() === selectedKecamatan.toUpperCase()) : {}} 
+          contextType="statistik_kecamatan" 
+          requireClick={true}
+          customClass="bottom-6" 
+        />
       </div>
     </div>
   );

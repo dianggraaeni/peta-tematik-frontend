@@ -72,6 +72,7 @@ const BerandaSidoarjo = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeThemes, setActiveThemes] = useState([]);
   const [selectedDesa, setSelectedDesa] = useState(null);
+  const [selectedDesaId, setSelectedDesaId] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
@@ -278,6 +279,7 @@ const BerandaSidoarjo = () => {
       click: () => {
         if (!isFeatureClicked.current) {
           setSelectedDesa(null);
+          setSelectedDesaId(null);
         }
       },
     });
@@ -338,6 +340,7 @@ const BerandaSidoarjo = () => {
           handleNavigateDetail(desaName);
         } else {
           setSelectedDesa(desaName);
+          setSelectedDesaId(iddesa);
         }
         setTimeout(() => { isFeatureClicked.current = false; }, 50);
       },
