@@ -700,9 +700,9 @@ const Dashboard = ({ initialDesaName }) => {
 
       {/* Filter Panel */}
       <div className="absolute top-4 right-4 z-[1000]">
-        {!isFilterPanelOpen ? (
+        {!isFilterOpen ? (
           <button
-            onClick={() => setIsFilterPanelOpen(true)}
+            onClick={() => setIsFilterOpen(true)}
             className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
           >
             <svg
@@ -730,7 +730,7 @@ const Dashboard = ({ initialDesaName }) => {
         ) : (
           <div className="relative">
             <button
-              onClick={() => setIsFilterPanelOpen(false)}
+              onClick={() => setIsFilterOpen(false)}
               className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full shadow-md transition-all duration-200"
               style={{ width: "24px", height: "24px" }}
             >
