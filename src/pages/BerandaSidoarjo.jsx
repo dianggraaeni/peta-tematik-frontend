@@ -532,9 +532,9 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 mt-4 md:mt-8 mb-2 md:mb-4 flex flex-col items-center px-4">
+      <div className="text-center z-10 mt-2 md:mt-4 mb-2 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="text-blue-900 font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text-custom">
+          <p className="font-extrabold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#1e3a8a", opacity: 1, textShadow: "0px 0px 1px rgba(30,58,138,0.5)" }}>
             Jelajahi
           </p>
         </div>
@@ -657,7 +657,7 @@ const BerandaSidoarjo = () => {
 
       {/* Map Container */}
       <div 
-        className="flex-1 w-full relative z-0 min-h-0 px-4 md:px-12 pb-6 md:pb-10" 
+        className="flex-1 w-full relative z-0 min-h-0 px-4 md:px-12 pb-4" 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
