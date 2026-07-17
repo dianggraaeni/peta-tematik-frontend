@@ -657,8 +657,7 @@ const BerandaSidoarjo = () => {
 
       {/* Map Container */}
       <div 
-        className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" 
-        style={{ height: "70vh", minHeight: "500px" }}
+        className="flex-1 w-full relative z-0 min-h-0 px-4 md:px-12 pb-6 md:pb-10" 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">

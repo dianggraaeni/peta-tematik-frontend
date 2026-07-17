@@ -486,9 +486,9 @@ const LandingPage = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 mt-6 md:mt-10 mb-2 md:mb-4 flex flex-col items-center px-4">
+      <div className="text-center z-10 mt-12 md:mt-20 mb-2 md:mb-4 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="text-[#1e3a8a] font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text-custom">
+          <p className="text-blue-900 font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text-custom">
             Jelajahi
           </p>
         </div>
@@ -523,7 +523,7 @@ const LandingPage = () => {
       </div>
 
       {/* Map Container */}
-      <div className="w-full flex-grow relative pb-6 md:pb-10 px-4 md:px-12" style={{ height: "70vh", minHeight: "500px" }}>
+      <div className="flex-1 w-full relative z-0 min-h-0 px-4 md:px-12 pb-6 md:pb-10">
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
