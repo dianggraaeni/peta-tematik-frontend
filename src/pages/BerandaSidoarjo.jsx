@@ -348,7 +348,7 @@ const BerandaSidoarjo = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col relative overflow-x-hidden" onClick={() => setSelectedDesa(null)}>
+    <div className="w-full h-[100dvh] overflow-hidden bg-[#e0f2fe] flex flex-col relative" onClick={() => setSelectedDesa(null)}>
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -438,11 +438,11 @@ const BerandaSidoarjo = () => {
           animation: float 3s ease-in-out infinite;
           display: inline-block;
         }
-        .typewriter-text {
+        .typewriter-text-custom {
           display: inline-block;
           overflow: hidden;
           white-space: nowrap;
-          border-right: 3px solid #2563eb;
+          border-right: 3px solid #1e3a8a;
           animation: typing 2s steps(20, end) forwards, blink 0.75s step-end infinite;
           max-width: 0;
           padding-right: 4px;
@@ -532,9 +532,9 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 mt-10 md:mt-16 mb-4 md:mb-6 flex flex-col items-center px-4">
+      <div className="text-center z-10 mt-6 md:mt-10 mb-2 md:mb-4 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text">
+          <p className="text-[#1e3a8a] font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text-custom">
             Jelajahi
           </p>
         </div>
