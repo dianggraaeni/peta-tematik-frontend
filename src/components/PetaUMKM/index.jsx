@@ -671,7 +671,7 @@ const Dashboard = ({ initialDesaName }) => {
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-100 z-[1000] min-w-[200px] transition-all duration-300">
+      <div className="absolute bottom-6 left-4 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-100 z-[1000] min-w-[200px] transition-all duration-300">
             <h4 className="font-bold text-gray-800 mb-3 text-sm flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500"></span>
@@ -699,7 +699,7 @@ const Dashboard = ({ initialDesaName }) => {
           </div>
 
       {/* Filter Panel */}
-      <div className="absolute top-4 right-4 z-[1000]">
+      <div className="absolute top-4 right-[4.5rem] md:right-[5.5rem] z-[1000]">
         {!isFilterOpen ? (
           <button
             onClick={() => setIsFilterOpen(true)}
