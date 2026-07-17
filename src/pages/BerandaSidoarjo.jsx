@@ -450,11 +450,11 @@ const BerandaSidoarjo = () => {
       `}</style>
 
       {/* Top Navigation Bar - Responsive */}
-      <div className="w-full shrink-0 flex flex-col sm:flex-row justify-between items-center px-4 py-3 md:px-8 md:py-4 gap-4 sm:gap-0 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
+      <div className="w-full shrink-0 flex flex-wrap sm:flex-nowrap justify-between items-center px-4 py-3 md:px-8 md:py-4 gap-3 md:gap-4 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
         
         {/* Search Bar */}
-        <div ref={searchRef} className="w-full sm:w-1/3 flex justify-start relative order-2 sm:order-1" onClick={(e) => e.stopPropagation()}>
-          <div className="relative w-full sm:w-72 md:w-80">
+        <div ref={searchRef} className="w-full sm:w-auto flex-1 min-w-[150px] max-w-xs flex justify-start relative order-2 sm:order-1" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full">
           <div className="relative">
             <input
               type="text"
@@ -715,60 +715,57 @@ const BerandaSidoarjo = () => {
           </div>
         )}
 
-          {/* Left Side Overlays */}
-          <div className="absolute top-4 bottom-6 left-4 z-[1000] flex flex-col gap-4 pointer-events-none overflow-y-auto no-scrollbar w-fit max-w-[280px] md:max-w-[320px]">
-            {/* Dashboard Ringkasan */}
-            {sidoarjoAgregat && (
-              <div className="pointer-events-auto bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:flex flex-col shrink-0">
-                <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
-                <div className="flex flex-col gap-2">
-                  <div className="bg-blue-50 px-3 py-2 rounded-lg">
-                    <div className="text-[10px] text-blue-600 font-bold uppercase">Total Populasi</div>
-                    <div className="font-extrabold text-lg text-blue-900">{sidoarjoAgregat.total.toLocaleString('id-ID')} Jiwa</div>
+          {/* Dashboard Ringkasan */}
+          {sidoarjoAgregat && (
+            <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+              <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
+              <div className="flex flex-col gap-2">
+                <div className="bg-blue-50 px-3 py-2 rounded-lg">
+                  <div className="text-[10px] text-blue-600 font-bold uppercase">Total Populasi</div>
+                  <div className="font-extrabold text-lg text-blue-900">{sidoarjoAgregat.total.toLocaleString('id-ID')} Jiwa</div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="bg-sky-50 px-3 py-2 rounded-lg flex-1">
+                    <div className="text-[10px] text-sky-600 font-bold uppercase">Laki-laki</div>
+                    <div className="font-bold text-sm text-sky-900">{sidoarjoAgregat.L.toLocaleString('id-ID')}</div>
                   </div>
-                  <div className="flex gap-2">
-                    <div className="bg-sky-50 px-3 py-2 rounded-lg flex-1">
-                      <div className="text-[10px] text-sky-600 font-bold uppercase">Laki-laki</div>
-                      <div className="font-bold text-sm text-sky-900">{sidoarjoAgregat.L.toLocaleString('id-ID')}</div>
-                    </div>
-                    <div className="bg-pink-50 px-3 py-2 rounded-lg flex-1">
-                      <div className="text-[10px] text-pink-600 font-bold uppercase">Perempuan</div>
-                      <div className="font-bold text-sm text-pink-900">{sidoarjoAgregat.P.toLocaleString('id-ID')}</div>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 px-3 py-2 rounded-lg mt-1">
-                    <div className="text-[10px] text-gray-500 font-bold uppercase">Total KK</div>
-                    <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
+                  <div className="bg-pink-50 px-3 py-2 rounded-lg flex-1">
+                    <div className="text-[10px] text-pink-600 font-bold uppercase">Perempuan</div>
+                    <div className="font-bold text-sm text-pink-900">{sidoarjoAgregat.P.toLocaleString('id-ID')}</div>
                   </div>
                 </div>
+                <div className="bg-gray-50 px-3 py-2 rounded-lg mt-1">
+                  <div className="text-[10px] text-gray-500 font-bold uppercase">Total KK</div>
+                  <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
+                </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Map Legends */}
-            {mapMode === "kepadatan" && (
-              <div className="pointer-events-auto bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block shrink-0">
-                <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#2563eb]"></span> 3.500 - 5.000</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 2.500 - 3.500</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 1.500 - 2.500</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> 1.000 - 1.500</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#bfdbfe]"></span> 500 - 1.000</div>
-                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
-              </div>
-            )}
-            {mapMode === "rasio" && (
-              <div className="pointer-events-auto bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block shrink-0">
-                <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
-                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
-                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
-              </div>
-            )}
-          </div>
+          {/* Map Legends */}
+          {mapMode === "kepadatan" && (
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+              <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#2563eb]"></span> 3.500 - 5.000</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 2.500 - 3.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 1.500 - 2.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> 1.000 - 1.500</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#bfdbfe]"></span> 500 - 1.000</div>
+              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
+            </div>
+          )}
+          {mapMode === "rasio" && (
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+              <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
+              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
+              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
+            </div>
+          )}
         
         {/* Selected Village Action Card */}
         <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${selectedDesa ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
