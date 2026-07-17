@@ -532,7 +532,7 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 mb-4 md:mb-6 mt-2 flex flex-col items-center px-4">
+      <div className="text-center z-10 my-6 md:my-10 flex flex-col items-center px-4">
         <div className="animate-float">
           <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-2 typewriter-text">
             Jelajahi
