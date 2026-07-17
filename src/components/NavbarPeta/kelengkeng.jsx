@@ -44,7 +44,7 @@ export default function NavbarPetaKelengkeng() {
                 onClick={() => navigate('/')}
                 className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-2 shrink-0 h-10"
               >
-                <span className="font-extrabold text-lg -mt-1">&laquo;</span> Peta Statistik
+                <span className="font-extrabold text-lg -mt-1">&laquo;</span> Peta Tematik
               </button>
             </NavbarItem>
             <NavbarItem>

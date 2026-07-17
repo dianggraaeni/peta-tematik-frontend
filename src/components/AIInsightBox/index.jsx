@@ -87,7 +87,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
           
           <div className="mb-2">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {contextType === "statistik_kecamatan" ? "Kecamatan " : "Desa "} {featureName?.toLowerCase()}
+              {featureName}
             </span>
           </div>
           
