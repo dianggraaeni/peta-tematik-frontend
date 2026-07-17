@@ -68,46 +68,46 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
     <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-6 right-6"}`}>
       {/* The Chat Panel */}
       {isExpanded && (
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-br-sm shadow-2xl border border-gray-200 p-4 mb-4 w-[280px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
-          <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <h4 className="font-bold text-gray-800 flex items-center gap-2">
-                <AiOutlineAlignLeft className="text-blue-500 text-xl" />
+        <div className="bg-white/95 backdrop-blur-md rounded-xl rounded-br-sm shadow-2xl border border-gray-200 p-3 mb-4 w-[250px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
+          <div className="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100">
+            <div className="flex items-center gap-1.5">
+              <h4 className="font-bold text-gray-800 flex items-center gap-1.5 text-sm">
+                <AiOutlineAlignLeft className="text-blue-500 text-lg" />
                 AI Insight
               </h4>
-              <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">BETA</span>
+              <span className="text-[9px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-bold">BETA</span>
             </div>
             <button 
               onClick={() => setIsExpanded(false)}
               className="text-gray-400 hover:text-red-500 transition-colors"
             >
-              <AiOutlineClose size={18} />
+              <AiOutlineClose size={16} />
             </button>
           </div>
           
-          <div className="mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          <div className="mb-1.5">
+            <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
               {featureName}
             </span>
           </div>
           
-          <div className="max-h-[220px] overflow-y-auto pr-1 no-scrollbar text-xs">
+          <div className="max-h-[130px] overflow-y-auto pr-1 no-scrollbar text-[11px] leading-snug">
             {loading ? (
-              <div className="flex space-x-1 items-center h-8 my-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+              <div className="flex space-x-1 items-center h-6 my-1">
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
               </div>
             ) : (
-              <p className="text-gray-700 leading-relaxed font-medium">
+              <p className="text-gray-700 font-medium">
                 {insight}
               </p>
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-dashed border-gray-200">
-            <p className="text-[10px] text-gray-400 italic leading-tight">
-              *Disclaimer: Ini adalah ringkasan otomatis dari AI berdasarkan data yang ada dan belum tentu 100% akurat.
+          <div className="mt-2 pt-2 border-t border-dashed border-gray-200">
+            <p className="text-[9px] text-gray-400 italic leading-tight">
+              *Disclaimer: Ringkasan otomatis AI. Belum tentu 100% akurat.
             </p>
           </div>
         </div>
