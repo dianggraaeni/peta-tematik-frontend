@@ -450,11 +450,11 @@ const BerandaSidoarjo = () => {
       `}</style>
 
       {/* Top Navigation Bar - Responsive */}
-      <div className="w-full shrink-0 flex flex-wrap sm:flex-nowrap justify-between items-center px-4 py-3 md:px-8 md:py-4 gap-3 md:gap-4 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
+      <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-3 items-center px-4 py-3 md:px-8 md:py-4 gap-3 md:gap-4 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
         
         {/* Search Bar */}
-        <div ref={searchRef} className="w-full sm:w-auto flex-1 min-w-[150px] max-w-xs flex justify-start relative order-2 sm:order-1" onClick={(e) => e.stopPropagation()}>
-          <div className="relative w-full">
+        <div ref={searchRef} className="w-full flex justify-center sm:justify-start relative order-2 sm:order-1" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full max-w-[280px]">
           <div className="relative">
             <input
               type="text"
@@ -501,14 +501,14 @@ const BerandaSidoarjo = () => {
         </div>
 
         {/* Center Logos */}
-        <div className="w-full sm:w-1/3 flex justify-center items-center gap-4 sm:gap-6 order-1 sm:order-2">
+        <div className="w-full flex justify-center items-center gap-3 sm:gap-6 order-1 sm:order-2 shrink-0">
           <img src="/pict/logo_sidoarjo.png" alt="Sidoarjo" className="h-10 md:h-12 object-contain" />
           <img src="/pict/logo_bps.png" alt="BPS" className="h-10 md:h-12 object-contain" />
           <img src="/pict/logo_dc.png" alt="Desa Cantik" className="h-10 md:h-12 object-contain" />
         </div>
 
         {/* Action Buttons */}
-        <div className="w-full sm:w-1/3 flex gap-2 justify-end order-3 items-center">
+        <div className="w-full flex gap-2 justify-center sm:justify-end order-3 items-center shrink-0">
           <button 
             onClick={() => navigate('/bantuan')}
             className="w-11 h-11 bg-white text-[#2563eb] rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center shrink-0"
@@ -675,13 +675,13 @@ const BerandaSidoarjo = () => {
         <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
-              center={[-7.45, 112.7]}
+              center={[-7.4478, 112.7183]}
               zoom={11}
               minZoom={11}
-              maxZoom={14}
+              maxZoom={16}
               zoomSnap={0.5}
               zoomDelta={0.5}
-              maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
+              maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
               maxBoundsViscosity={1.0}
               style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
               zoomControl={false}
