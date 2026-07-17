@@ -923,7 +923,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
 
       {/*Panel Overlay*/}
       <div
-        className={`absolute top-4 left-14 z-10 transition-all duration-300 ${
+        className={`absolute top-4 left-4 z-10 transition-all duration-300 ${
           isPanelMinimized ? "w-16" : "w-80"
         }`}
       >
@@ -1071,7 +1071,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
       </div>
 
       {/* Updated Legend Peta */}
-      <div className="absolute bottom-6 left-14 z-[1000]">
+      <div className="absolute bottom-6 left-4 z-[1000]">
         <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-2 max-w-[240px] overflow-hidden transition-all duration-300 hover:shadow-3xl">
           <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-2">
             <div

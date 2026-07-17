@@ -671,7 +671,7 @@ const Dashboard = ({ initialDesaName }) => {
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-6 left-4 sm:left-14 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-100 z-[1000] min-w-[200px] transition-all duration-300">
+      <div className="absolute bottom-6 left-4 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-100 z-[1000] min-w-[200px] transition-all duration-300">
             <h4 className="font-bold text-gray-800 mb-3 text-sm flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500"></span>
@@ -763,7 +763,7 @@ const Dashboard = ({ initialDesaName }) => {
 
       {/*Panel Overlay*/}
       <div
-        className={`absolute top-4 left-4 sm:left-14 z-10 transition-all duration-300 ${
+        className={`absolute top-4 left-4 z-10 transition-all duration-300 ${
           isPanelMinimized ? "w-16 h-12" : "w-80 max-h-[calc(100vh-130px)] flex flex-col"
         }`}
       >

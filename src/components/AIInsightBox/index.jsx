@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardBody } from "@nextui-org/react";
-import { AiOutlineRobot } from "react-icons/ai";
+import { AiOutlineRobot, AiOutlineClose } from "react-icons/ai";
 import api6 from "../../utils/api6"; // Use centralized backend axios instance
 
 // Create a simple module-level cache so it persists across renders
@@ -9,19 +8,20 @@ const insightCache = {};
 const AIInsightBox = ({ featureName, data, contextType, customClass, requireClick = false }) => {
   const [insight, setInsight] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasClicked, setHasClicked] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const dataString = JSON.stringify(data);
 
-  // Reset hasClicked state when featureName changes
+  // Reset state when featureName changes
   useEffect(() => {
-    setHasClicked(false);
+    setIsExpanded(false);
     setInsight("");
   }, [featureName]);
 
   useEffect(() => {
     if (!featureName || !data) return;
-    if (requireClick && !hasClicked) return;
+    if (requireClick && !isExpanded) return; // Don't fetch until expanded if requireClick is true
+    if (!isExpanded && insight) return; // Already fetched
 
     const cacheKey = `${contextType}_${featureName}`;
     if (insightCache[cacheKey]) {
@@ -60,58 +60,73 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [featureName, dataString, contextType, requireClick, hasClicked]);
+  }, [featureName, dataString, contextType, requireClick, isExpanded, insight]);
 
   if (!featureName) return null;
 
   return (
-    <div className={`absolute left-1/2 transform -translate-x-1/2 z-[1000] w-[95%] max-w-6xl animate-fade-in-up ${customClass || "bottom-6"}`}>
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-bl-sm shadow-2xl border border-gray-200 p-5 relative">
-        <div className="absolute -left-4 -bottom-4 bg-blue-500 rounded-full p-3 shadow-lg z-10 animate-pulse border-4 border-white">
-          <AiOutlineRobot className="text-white text-2xl" />
-        </div>
-        
-        <div className="pl-4">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-bold text-gray-800">
-              AI Insight &bull; {contextType === "statistik_kecamatan" ? "Kecamatan " : ""}<span className="capitalize">{featureName?.toLowerCase()}</span>
-            </h4>
-            <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">BETA</span>
-            {loading && <span className="text-xs text-blue-500 animate-pulse ml-2">Sedang menganalisis...</span>}
+    <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-start ${customClass || "bottom-6 left-[18rem]"}`}>
+      {/* The Chat Panel */}
+      {isExpanded && (
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-bl-sm shadow-2xl border border-gray-200 p-5 mb-4 w-[350px] max-w-[90vw] animate-fade-in-up relative origin-bottom-left">
+          <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                <AiOutlineRobot className="text-blue-500 text-xl" />
+                AI Insight
+              </h4>
+              <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">BETA</span>
+            </div>
+            <button 
+              onClick={() => setIsExpanded(false)}
+              className="text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <AiOutlineClose size={18} />
+            </button>
           </div>
           
-          {requireClick && !hasClicked ? (
-            <div className="flex flex-col items-center justify-center my-4 space-y-2">
-               <button 
-                 onClick={() => setHasClicked(true)}
-                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer z-50 pointer-events-auto"
-               >
-                 <AiOutlineRobot className="text-xl" /> Tampilkan Insight AI
-               </button>
-               <p className="text-[10px] text-gray-400">Klik untuk melihat analisis AI mengenai wilayah ini</p>
-            </div>
-          ) : loading ? (
-            <div className="flex space-x-1 items-center h-5 my-2">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
-            </div>
-          ) : (
-            <p className="text-base text-gray-800 leading-relaxed font-medium">
-              {insight}
-            </p>
-          )}
+          <div className="mb-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              {contextType === "statistik_kecamatan" ? "Kecamatan " : "Desa "} {featureName?.toLowerCase()}
+            </span>
+          </div>
+          
+          <div className="max-h-[300px] overflow-y-auto pr-1 no-scrollbar text-sm">
+            {loading ? (
+              <div className="flex space-x-1 items-center h-8 my-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+              </div>
+            ) : (
+              <p className="text-gray-700 leading-relaxed font-medium">
+                {insight}
+              </p>
+            )}
+          </div>
 
-          <div className="mt-3 pt-2 border-t border-dashed border-gray-200">
-            <p className="text-xs text-gray-400 italic leading-tight">
+          <div className="mt-4 pt-3 border-t border-dashed border-gray-200">
+            <p className="text-[10px] text-gray-400 italic leading-tight">
               *Disclaimer: Ini adalah ringkasan otomatis dari AI berdasarkan data yang ada dan belum tentu 100% akurat.
             </p>
           </div>
         </div>
-        
-        {/* Chat bubble tail */}
-        <div className="absolute -left-2 bottom-0 w-6 h-6 bg-white border-l border-b border-gray-200 transform rotate-45 translate-y-1/2 translate-x-1/2 z-0 hidden"></div>
-      </div>
+      )}
+
+      {/* The Floating Button */}
+      {!isExpanded && (
+        <button 
+          onClick={() => setIsExpanded(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-white transform transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center relative animate-fade-in-up"
+          title="Tampilkan Insight AI"
+        >
+          <AiOutlineRobot className="text-3xl" />
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 border border-white"></span>
+          </span>
+        </button>
+      )}
     </div>
   );
 };
