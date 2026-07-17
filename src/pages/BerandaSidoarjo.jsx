@@ -683,7 +683,7 @@ const BerandaSidoarjo = () => {
               zoomDelta={0.5}
               maxBounds={[[-7.7, 112.4], [-7.2, 113.0]]}
               maxBoundsViscosity={1.0}
-              style={{ height: "100%", width: "100%", background: "transparent" }}
+              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
               zoomControl={false}
               dragging={true}
               scrollWheelZoom={true}
