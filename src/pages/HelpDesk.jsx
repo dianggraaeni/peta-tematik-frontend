@@ -41,15 +41,31 @@ const HelpDesk = () => {
     },
     {
       question: "Dari mana sumber data yang ditampilkan pada peta ini?",
-      answer: "Sumber data yang ditampilkan adalah data riil yang terhubung dengan basis data kami. Ke depannya, aplikasi ini juga akan dilengkapi dengan insight otomatis berbasis AI untuk memberikan analisis yang lebih detail."
+      answer: "Sumber data yang ditampilkan adalah data riil yang terhubung dengan basis data kami. Aplikasi ini juga sudah dilengkapi dengan insight otomatis berbasis AI untuk memberikan analisis yang lebih detail dan akurat."
     },
     {
       question: "Apakah saya bisa melihat data spesifik tingkat desa?",
       answer: "Tentu! Anda bisa masuk ke halaman 'Peta Tematik' melalui tombol navigasi di layar, kemudian memilih tema yang diinginkan melalui tombol menu. Anda juga bisa mencari desa tertentu melalui kolom pencarian di bagian atas."
     },
     {
-      question: "Bagaimana cara mengakses Dasbor Admin?",
-      answer: "Tekan tombol 'Masuk Admin' di pojok kanan atas layar utama. Sistem login kami terpusat, sehingga Anda cukup memasukkan kredensial admin yang Anda miliki."
+      question: "Bagaimana cara menggunakan fitur pencarian desa?",
+      answer: "Di halaman Peta Tematik, terdapat kolom pencarian di bagian atas. Anda cukup mengetikkan nama desa yang ingin dicari, lalu pilih dari daftar yang muncul. Peta akan otomatis mengarahkan dan memperbesar area (zoom) ke desa tersebut."
+    },
+    {
+      question: "Apa fungsi dari mode peta 'Tematik', 'Kepadatan', dan 'Rasio L/P'?",
+      answer: "Mode 'Tematik' menampilkan data spesifik potensi desa. Mode 'Kepadatan' memberikan visualisasi kepadatan penduduk berdasarkan gradasi warna. Sedangkan mode 'Rasio L/P' menampilkan perbandingan jumlah penduduk Laki-laki dan Perempuan per kecamatan."
+    },
+    {
+      question: "Mengapa beberapa wilayah memiliki warna yang lebih gelap di peta?",
+      answer: "Warna yang lebih gelap menunjukkan nilai intensitas atau kepadatan yang lebih tinggi dari data yang sedang divisualisasikan. Anda bisa melihat keterangan lebih lanjut (legenda) di layar jika tersedia, atau mengklik wilayah tersebut untuk melihat angka pastinya."
+    },
+    {
+      question: "Apakah ada batasan wilayah yang bisa diakses?",
+      answer: "Saat ini, peta mencakup seluruh wilayah kecamatan dan desa di Kabupaten Sidoarjo. Peta ini memang difokuskan untuk pengelolaan data dan potensi wilayah di lingkup Sidoarjo."
+    },
+    {
+      question: "Bagaimana jika saya menemukan data yang kurang sesuai?",
+      answer: "Data ini dikelola langsung secara terpusat. Jika terdapat ketidaksesuaian, silakan laporkan melalui jalur komunikasi resmi (Helpdesk internal atau Admin Pusat) untuk dilakukan penyesuaian di basis data."
     }
   ];
 
@@ -60,17 +76,17 @@ const HelpDesk = () => {
       <div className="absolute top-0 left-0 w-full h-64 bg-[#bae6fd] -z-10 rounded-b-[3rem] shadow-sm"></div>
 
       {/* Header / Back Button */}
-      <div className="w-full px-4 md:px-12 flex justify-start items-center mb-6 relative z-10">
+      <div className="w-full px-4 md:px-12 flex justify-start items-center mb-2 relative z-10">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white rounded-full font-bold shadow-sm border border-blue-100 hover:bg-blue-50 hover:-translate-x-1 transition-all"
+          className="flex items-center gap-2 px-4 py-2 text-blue-700 font-bold hover:bg-blue-100/50 rounded-lg transition-all"
           style={{ color: "#1d4ed8" }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
-          Kembali
+          <span className="text-lg">Kembali</span>
         </button>
       </div>
 
