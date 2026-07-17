@@ -128,11 +128,11 @@ export default function MapSection() {
   }, [isFetched]);
 
   // Function to determine style based on feature properties
-  const getStyle = (data) => {
-    const density = data.features[0].properties.total_usaha_sayuran || 0;
+  const getStyle = (feature) => {
+    const density = feature.properties.total_usaha_sayuran || 0;
     return {
       fillColor: getColor(density),
-      weight: 2,
+      weight: 1,
       opacity: 1,
       color: "#1e293b",
       dashArray: "",
@@ -178,7 +178,7 @@ export default function MapSection() {
         const layer = e.target;
         if (layer !== selectedLayer) {
           layer.setStyle({
-          weight: 4,
+          weight: 2,
           color: "#1e293b",
           dashArray: "",
           fillOpacity: 0.7,
@@ -211,7 +211,7 @@ export default function MapSection() {
         const layer = e.target;
         if (layer !== selectedLayer) {
           layer.setStyle({
-            weight: 2,
+            weight: 1,
             color: "#1e293b",
             dashArray: "",
             fillOpacity: 0.5,
@@ -226,7 +226,7 @@ export default function MapSection() {
         // Reset previous selected layer style
         if (selectedLayer) {
           selectedLayer.setStyle({
-            weight: 2,
+            weight: 1,
             color: "#1e293b",
             dashArray: "",
             fillOpacity: 0.5,
@@ -241,7 +241,7 @@ export default function MapSection() {
           selectedLayer = layer;
           setSelectedRT(feature.properties.kode);
           layer.setStyle({
-            weight: 4,
+            weight: 2,
             color: "#1e293b",
             dashArray: "",
             fillOpacity: 0.7, // Ensure opacity is set to 0.7 when clicked

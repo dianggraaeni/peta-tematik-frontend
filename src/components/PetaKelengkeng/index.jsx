@@ -132,7 +132,7 @@ export default function MapSection() {
     const density = data.features[0].properties.jml_unit_usaha_klengkeng || 0;
     return {
       fillColor: getColor(density),
-      weight: 2,
+      weight: 1,
       opacity: 1,
       color: "#1e293b",
       dashArray: "",
@@ -185,7 +185,7 @@ export default function MapSection() {
         const layer = e.target;
         if (layer !== selectedLayer) {
           layer.setStyle({
-            weight: 4,
+            weight: 2,
             color: "#1e293b",
             dashArray: "",
             fillOpacity: 0.7,
@@ -218,7 +218,7 @@ export default function MapSection() {
         const layer = e.target;
         if (layer !== selectedLayer) {
           layer.setStyle({
-            weight: 2,
+            weight: 1,
             color: "#1e293b",
             dashArray: "",
             fillOpacity: 0.5,

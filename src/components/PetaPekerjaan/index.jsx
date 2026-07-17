@@ -514,14 +514,14 @@ const Dashboard = ({ desaName: propsDesaName }) => {
 
         return {
           fillColor: fillColor,
-          weight: isSelected ? 3 : 2,
+          weight: isSelected ? 2 : 1,
           color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
           fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.4 : 0.5),
         };
       }
       return {
         fillColor: "#e5e7eb",
-        weight: isSelected ? 3 : 2,
+        weight: isSelected ? 2 : 1,
         color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
         fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.3 : 0.4),
       };
@@ -533,7 +533,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
     return {
       fillColor: "#facc15",
       opacity: 1,
-      weight: 3,
+      weight: 2,
       color: "#0f172a",
       dashArray: "",
       fillOpacity: 0.7,
