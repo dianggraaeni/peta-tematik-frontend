@@ -532,16 +532,16 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 my-6 md:my-10 flex flex-col items-center px-4">
+      <div className="text-center z-10 mt-10 md:mt-16 mb-4 md:mb-6 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-xs md:text-sm mb-2 typewriter-text">
+          <p className="text-[#2563eb] font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text">
             Jelajahi
           </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none animate-color-shift cursor-default">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
           Peta Tematik Desa Kabupaten Sidoarjo
         </h1>
-        <p className="italic text-xs sm:text-sm md:text-base font-medium m-0" style={{ color: "black", opacity: 1 }}>
+        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
           Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
