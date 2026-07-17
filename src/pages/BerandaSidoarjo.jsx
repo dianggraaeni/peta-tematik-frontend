@@ -725,7 +725,7 @@ const BerandaSidoarjo = () => {
 
           {/* Dashboard Ringkasan */}
           {sidoarjoAgregat && showInfoPanel && (
-            <div className="absolute top-16 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+            <div className="absolute top-16 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
               <div className="flex flex-col gap-2">
                 <div className="bg-blue-50 px-3 py-2 rounded-lg">
@@ -752,7 +752,7 @@ const BerandaSidoarjo = () => {
 
           {/* Map Legends */}
           {mapMode === "kepadatan" && showInfoPanel && (
-            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
@@ -765,7 +765,7 @@ const BerandaSidoarjo = () => {
             </div>
           )}
           {mapMode === "rasio" && showInfoPanel && (
-            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
