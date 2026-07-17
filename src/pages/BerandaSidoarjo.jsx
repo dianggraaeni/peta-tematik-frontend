@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
+import AIInsightBox from "../components/AIInsightBox";
+import NavbarUtama from "../components/NavbarUtama";
 
 const getKepadatanColor = (pop) => {
   if (pop > 10000) return "#1e3a8a";
@@ -347,7 +349,8 @@ const BerandaSidoarjo = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col" onClick={() => setSelectedDesa(null)}>
+    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col relative overflow-x-hidden" onClick={() => setSelectedDesa(null)}>
+      <NavbarUtama title="PETA TEMATIK" subtitle="KABUPATEN SIDOARJO" />
       <style>{`
         .beranda-tooltip {
           background: white !important;

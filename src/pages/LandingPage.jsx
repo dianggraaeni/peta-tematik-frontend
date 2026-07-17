@@ -5,6 +5,7 @@ import L from "leaflet";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
+import NavbarUtama from "../components/NavbarUtama";
 
 // Auto Zoom to fit Sidoarjo or selected Kecamatan
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
@@ -309,6 +310,7 @@ const LandingPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
+      <NavbarUtama title="PETA STATISTIK" subtitle="KABUPATEN SIDOARJO" />
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -619,7 +621,8 @@ const LandingPage = () => {
           customClass="bottom-6" 
         />
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
