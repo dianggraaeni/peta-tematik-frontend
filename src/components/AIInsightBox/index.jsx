@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AiOutlineFileText, AiOutlineClose } from "react-icons/ai";
+import { AiOutlineAlignLeft, AiOutlineClose } from "react-icons/ai";
 import api6 from "../../utils/api6"; // Use centralized backend axios instance
 
 // Create a simple module-level cache so it persists across renders
@@ -68,11 +68,11 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
     <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-6 right-6"}`}>
       {/* The Chat Panel */}
       {isExpanded && (
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-br-sm shadow-2xl border border-gray-200 p-5 mb-4 w-[350px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl rounded-br-sm shadow-2xl border border-gray-200 p-4 mb-4 w-[280px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
           <div className="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
             <div className="flex items-center gap-2">
               <h4 className="font-bold text-gray-800 flex items-center gap-2">
-                <AiOutlineFileText className="text-blue-500 text-xl" />
+                <AiOutlineAlignLeft className="text-blue-500 text-xl" />
                 AI Insight
               </h4>
               <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">BETA</span>
@@ -91,7 +91,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
             </span>
           </div>
           
-          <div className="max-h-[300px] overflow-y-auto pr-1 no-scrollbar text-sm">
+          <div className="max-h-[220px] overflow-y-auto pr-1 no-scrollbar text-xs">
             {loading ? (
               <div className="flex space-x-1 items-center h-8 my-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
@@ -120,7 +120,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-2 border-white transform transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center relative animate-fade-in-up"
           title="Tampilkan Insight AI"
         >
-          <AiOutlineFileText className="text-3xl" />
+          <AiOutlineAlignLeft className="text-3xl" />
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500 border border-white"></span>
