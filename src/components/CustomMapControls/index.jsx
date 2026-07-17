@@ -52,7 +52,7 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
       {/* Basemap Dropdown */}
       <div className="relative pointer-events-auto">
          {isOpen && (
-           <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 overflow-hidden transform origin-top-right transition-all">
+           <div className="absolute top-0 right-full mr-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 overflow-hidden transform origin-top-right transition-all">
              <div className="p-2 space-y-1">
                <div className="px-3 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 border-b border-gray-100 pb-2">
                  Pilih Peta Dasar
