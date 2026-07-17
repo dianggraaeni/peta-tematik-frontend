@@ -500,7 +500,7 @@ const LandingPage = () => {
         </p>
 
         {/* Map Mode Buttons */}
-        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200 w-fit mx-auto relative z-[2000]">
+        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200 w-fit mx-auto relative z-[2000] mb-4 md:mb-6">
           <button 
             onClick={(e) => { navigate('/peta-tematik') }}
             className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all text-gray-500 hover:bg-amber-100 hover:text-amber-700`}
