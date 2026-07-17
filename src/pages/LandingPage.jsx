@@ -10,16 +10,13 @@ import AIInsightBox from "../components/AIInsightBox";
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
   const map = useMap();
   
-  // Initial zoom to fit Sidoarjo
+  // Initial zoom to fit Sidoarjo or reset when selection cleared
   useEffect(() => {
     if (geojsonData && map && !selectedKecamatan) {
-      const tempLayer = L.geoJSON(geojsonData);
-      const bounds = tempLayer.getBounds();
-      if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [5, 5] });
-      }
+      // Fixed view to prevent zooming out too far on wide screens
+      map.setView([-7.4478, 112.7183], 11);
     }
-  }, [geojsonData, map]);
+  }, [geojsonData, map, selectedKecamatan]);
 
   // Zoom to selected Kecamatan
   useEffect(() => {
