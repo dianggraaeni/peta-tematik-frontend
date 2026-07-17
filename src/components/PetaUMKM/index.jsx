@@ -699,7 +699,7 @@ const Dashboard = ({ initialDesaName }) => {
           </div>
 
       {/* Filter Panel */}
-      <div className="absolute top-44 right-4 z-[1000]">
+      <div className="absolute top-48 right-4 z-[1000]">
         {!isFilterOpen ? (
           <button
             onClick={() => setIsFilterOpen(true)}
