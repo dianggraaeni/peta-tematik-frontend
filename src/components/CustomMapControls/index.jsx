@@ -42,12 +42,12 @@ export const useBasemap = () => {
   return [activeBasemap, setActiveBasemap];
 };
 
-const CustomMapControls = ({ activeBasemap, setActiveBasemap, customClass }) => {
+const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
   const map = useMap();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`z-[1000] flex flex-col items-end gap-3 pointer-events-none ${customClass || "absolute top-4 right-4"}`}>
+    <div className="absolute top-4 right-4 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
       
       {/* Basemap Dropdown */}
       <div className="relative pointer-events-auto">

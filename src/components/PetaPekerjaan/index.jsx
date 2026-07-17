@@ -854,90 +854,6 @@ const Dashboard = ({ desaName: propsDesaName }) => {
                 onEachFeature={onEachFeature}
               />
             )}
-
-            {/* Right Side Controls Container */}
-            <div className="absolute right-4 top-4 bottom-6 z-[2000] flex flex-col items-end gap-3 pointer-events-none overflow-y-auto no-scrollbar w-[350px] max-w-[90vw]">
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} customClass="static pointer-events-auto" />
-
-              {/* Filter Panel */}
-              <div className="pointer-events-auto w-full flex justify-end relative">
-                {!isFilterPanelOpen ? (
-                  <button
-                    onClick={() => setIsFilterPanelOpen(true)}
-                    className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
-                  >
-                    <svg
-                      className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
-                      />
-                    </svg>
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-                      Filter Data
-                    </span>
-                    <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-                      {filteredData.length > 0
-                        ? filteredData.length
-                        : allRawData.length}
-                    </div>
-                  </button>
-                ) : (
-                  <div className="relative w-full">
-                    <button
-                      onClick={() => setIsFilterPanelOpen(false)}
-                      className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full shadow-md transition-all duration-200"
-                      style={{ width: "24px", height: "24px" }}
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                    <FilterPanel
-                      onFilterChange={handleFilterChange}
-                      filteredCount={filteredData.length}
-                      totalCount={allRawData.length}
-                    />
-                  </div>
-                )}
-              </div>
-              
-              <AIInsightBox 
-                featureName={selectedAreaTitle}
-                contextType="pekerjaan"
-                customClass="static mt-auto"
-                data={{
-                  totalPenduduk: filteredData.length,
-                  dominanPekerjaan: filteredData.length > 0 
-                    ? (Object.entries(
-                        filteredData.reduce((acc, curr) => {
-                          const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama);
-                          acc[status] = (acc[status] || 0) + 1;
-                          return acc;
-                        }, {})
-                      ).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
-                    : "Tidak ada data",
-                  lakiLaki: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "laki-laki").length,
-                  perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
-                }}
-              />
-            </div>
           </MapContainer>
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-100">
@@ -946,7 +862,64 @@ const Dashboard = ({ desaName: propsDesaName }) => {
         )}
       </div>
 
-
+        {/*Filter Panel*/}
+        <div className="absolute top-48 right-4 z-[1000]">
+          {!isFilterPanelOpen ? (
+            <button
+              onClick={() => setIsFilterPanelOpen(true)}
+              className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
+            >
+              <svg
+                className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
+              />
+              </svg>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                Filter Data
+              </span>
+              <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+              {filteredData.length > 0
+                ? filteredData.length
+                : allRawData.length}
+            </div>
+          </button>
+        ) : (
+          <div className="relative">
+            <button
+              onClick={() => setIsFilterPanelOpen(false)}
+              className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full shadow-md transition-all duration-200"
+              style={{ width: "24px", height: "24px" }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <FilterPanel
+              onFilterChange={handleFilterChange}
+              filteredCount={filteredData.length}
+              totalCount={allRawData.length}
+            />
+          </div>
+        )}
+      </div>
 
       {/*Panel Overlay*/}
       <div
@@ -1168,6 +1141,18 @@ const Dashboard = ({ desaName: propsDesaName }) => {
           </div>
         </div>
       </div>
+      {/* AI Insight Box at the bottom middle */}
+      <AIInsightBox 
+        featureName={selectedAreaTitle}
+        contextType="pekerjaan"
+        data={{
+          totalPenduduk: filteredData.length,
+          dominanPekerjaan: filteredData.length > 0 
+            ? (Object.entries(
+                filteredData.reduce((acc, curr) => {
+                  const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama);
+                  acc[status] = (acc[status] || 0) + 1;
+                  return acc;
                 }, {})
               ).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
             : "Tidak ada data",

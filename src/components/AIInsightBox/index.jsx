@@ -65,7 +65,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
   if (!featureName) return null;
 
   return (
-    <div className={`z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "absolute bottom-6 right-6"}`}>
+    <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-6 right-6"}`}>
       {/* The Chat Panel */}
       {isExpanded && (
         <div className="bg-white/95 backdrop-blur-md rounded-xl rounded-br-sm shadow-2xl border border-gray-200 p-3 mb-4 w-[320px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
