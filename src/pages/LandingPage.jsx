@@ -308,7 +308,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="w-full h-[100dvh] overflow-hidden bg-[#e0f2fe] flex flex-col">
+    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -535,7 +535,7 @@ const LandingPage = () => {
       </div>
 
       {/* Map Container */}
-      <div className="flex-1 w-full relative z-0 min-h-0 px-4 md:px-12 pb-4">
+      <div className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4">
         <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
