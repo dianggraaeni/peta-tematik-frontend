@@ -49,6 +49,13 @@ export default function NavbarPetaKelengkeng({ desaName = "SIDOARJO" }) {
         </button>
 
         <button 
+          onClick={() => navigate('/')}
+          className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-2 shrink-0"
+        >
+          <span className="font-extrabold text-lg -mt-1">&laquo;</span> Peta Statistik
+        </button>
+
+        <button 
           onClick={() => navigate('/login-sidokepung')}
           className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center"
           style={{ color: "#1f2937" }}
