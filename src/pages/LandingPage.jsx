@@ -5,7 +5,6 @@ import L from "leaflet";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
-import NavbarUtama from "../components/NavbarUtama";
 
 // Auto Zoom to fit Sidoarjo or selected Kecamatan
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
@@ -310,7 +309,6 @@ const LandingPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
-      <NavbarUtama title="PETA STATISTIK" subtitle="KABUPATEN SIDOARJO" />
       <style>{`
         .beranda-tooltip {
           background: white !important;
@@ -406,10 +404,11 @@ const LandingPage = () => {
       `}</style>
 
       {/* Top Navigation Bar - Responsive */}
-      <div className="w-full flex flex-col sm:flex-row justify-between items-center px-4 py-4 md:px-8 md:pt-6 gap-4 sm:gap-0 z-[1000]">
+      <div className="w-full flex flex-col sm:flex-row justify-between items-center px-4 py-3 md:px-8 md:py-4 gap-4 sm:gap-0 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
         
         {/* Search Bar */}
-        <div ref={searchRef} className="w-full sm:w-72 md:w-80 relative order-2 sm:order-1">
+        <div ref={searchRef} className="w-full sm:w-1/3 flex justify-start relative order-2 sm:order-1">
+          <div className="relative w-full sm:w-72 md:w-80">
           <div className="relative">
             <input
               type="text"
@@ -452,10 +451,18 @@ const LandingPage = () => {
               )}
             </div>
           )}
+          </div>
+        </div>
+
+        {/* Center Logos */}
+        <div className="w-full sm:w-1/3 flex justify-center items-center gap-4 sm:gap-6 order-1 sm:order-2">
+          <img src="/pict/logo_sidoarjo.png" alt="Sidoarjo" className="h-10 md:h-12 object-contain" />
+          <img src="/pict/logo_bps.png" alt="BPS" className="h-10 md:h-12 object-contain" />
+          <img src="/pict/logo_dc.png" alt="Desa Cantik" className="h-10 md:h-12 object-contain" />
         </div>
 
         {/* Action Buttons */}
-        <div className="w-full sm:w-auto flex gap-3 justify-end order-1 sm:order-2">
+        <div className="w-full sm:w-1/3 flex gap-3 justify-end order-3">
           <button 
             onClick={() => navigate('/peta-tematik')}
             className="w-full sm:w-auto pl-5 pr-1.5 py-1.5 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-[#1d4ed8] hover:border-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-3"
