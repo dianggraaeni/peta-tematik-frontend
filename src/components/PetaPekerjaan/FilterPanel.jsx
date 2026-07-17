@@ -188,7 +188,7 @@ const FilterPanel = ({ onFilterChange, filteredCount, totalCount }) => {
       {/* Collapsible content */}
       <div
         className={`transition-all duration-300 ${
-          isMinimized ? "h-0 overflow-hidden" : "h-auto"
+          isMinimized ? "h-0 overflow-hidden" : "max-h-[40vh] overflow-y-auto custom-scrollbar"
         }`}
       >
         <div className="p-3 space-y-3">
