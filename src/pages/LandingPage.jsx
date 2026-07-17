@@ -46,6 +46,7 @@ const LandingPage = () => {
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [mapMode, setMapMode] = useState("kepadatan"); // "kepadatan" | "rasio"
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const isFeatureClicked = useRef(false);
@@ -573,9 +574,20 @@ const LandingPage = () => {
             </div>
           )}
 
+          {/* Info Toggle Button */}
+          <button
+            onClick={() => setShowInfoPanel(!showInfoPanel)}
+            className={`absolute top-4 left-4 z-[1000] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all border-2 ${showInfoPanel ? 'bg-white text-blue-600 border-white hover:bg-gray-50' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'}`}
+            title="Toggle Informasi Peta"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+
           {/* Dashboard Ringkasan */}
-          {sidoarjoAgregat && (
-            <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
+          {sidoarjoAgregat && showInfoPanel && (
+            <div className="absolute top-16 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 hidden md:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
               <div className="flex flex-col gap-2">
                 <div className="bg-blue-50 px-3 py-2 rounded-lg">
@@ -601,7 +613,7 @@ const LandingPage = () => {
           )}
 
           {/* Map Legends */}
-          {mapMode === "kepadatan" && (
+          {mapMode === "kepadatan" && showInfoPanel && (
             <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
@@ -614,7 +626,7 @@ const LandingPage = () => {
               <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
             </div>
           )}
-          {mapMode === "rasio" && (
+          {mapMode === "rasio" && showInfoPanel && (
             <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs hidden sm:block max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
               <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
               <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
