@@ -541,7 +541,7 @@ const LandingPage = () => {
             <MapContainer
               center={[-7.45, 112.7]}
               zoom={11}
-              minZoom={10}
+              minZoom={11}
               maxZoom={14}
               zoomSnap={0.5}
               zoomDelta={0.5}
