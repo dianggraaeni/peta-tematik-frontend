@@ -17,6 +17,7 @@ import { NextUIProvider } from "@nextui-org/system";
 import Logout from "./components/Logout";
 import ProtectedRoute from "./hooks/ProtectedRoute";
 import NotFoundPage from "./pages/notFoundPage";
+import HelpDesk from "./pages/HelpDesk";
 
 function App() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function App() {
     <NextUIProvider navigate={navigate}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/bantuan" element={<HelpDesk />} />
         
         {/* Thematic Map Route */}
         <Route path="/peta-tematik" element={<BerandaSidoarjo />} />

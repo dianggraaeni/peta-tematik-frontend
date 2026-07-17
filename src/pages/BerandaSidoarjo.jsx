@@ -508,7 +508,20 @@ const BerandaSidoarjo = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="w-full sm:w-1/3 flex gap-3 justify-end order-3">
+        <div className="w-full sm:w-1/3 flex gap-2 justify-end order-3">
+          <button 
+            onClick={() => navigate('/bantuan')}
+            className="w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white text-[#2563eb] rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-2"
+            title="Pusat Bantuan & Panduan"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span className="hidden sm:inline">Bantuan</span>
+          </button>
+          
           <button 
             onClick={() => navigate('/')}
             className="w-full sm:w-auto pr-5 pl-1.5 py-1.5 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-[#1d4ed8] hover:border-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-3"
