@@ -621,8 +621,7 @@ const LandingPage = () => {
           customClass="bottom-6" 
         />
       </div>
-      </div>
-    </>
+    </div>
   );
 };
 
