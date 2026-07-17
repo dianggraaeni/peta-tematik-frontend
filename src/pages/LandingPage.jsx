@@ -486,7 +486,7 @@ const LandingPage = () => {
       </div>
 
       {/* Header Info */}
-      <div className="text-center z-10 mt-12 md:mt-20 mb-2 md:mb-4 flex flex-col items-center px-4">
+      <div className="text-center z-10 mt-4 md:mt-8 mb-2 md:mb-4 flex flex-col items-center px-4">
         <div className="animate-float">
           <p className="text-blue-900 font-bold tracking-[0.3em] uppercase text-sm md:text-base mb-2 typewriter-text-custom">
             Jelajahi
