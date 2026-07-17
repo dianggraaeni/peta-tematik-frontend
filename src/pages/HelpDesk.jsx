@@ -78,14 +78,15 @@ const HelpDesk = () => {
         <div className="flex-1 flex justify-start">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-5 py-2 bg-white rounded-full font-bold shadow-sm border-[3px] border-blue-200 hover:border-[#2563eb] hover:-translate-y-0.5 transition-all"
-            style={{ color: "#1e3a8a" }}
+            className="flex items-center gap-3 pl-1.5 pr-6 py-1.5 bg-[#2563eb] rounded-full font-bold shadow-md border-[3px] border-[#2563eb] hover:bg-[#1d4ed8] hover:border-[#1d4ed8] hover:-translate-y-0.5 transition-all"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            <span className="text-base font-extrabold" style={{ color: "#1e3a8a" }}>Kembali</span>
+            <div className="w-8 h-8 md:w-9 md:h-9 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="11 17 6 12 11 7"></polyline>
+                <polyline points="18 17 13 12 18 7"></polyline>
+              </svg>
+            </div>
+            <span className="text-base md:text-lg font-extrabold text-white" style={{ color: "white" }}>Kembali</span>
           </button>
         </div>
 
