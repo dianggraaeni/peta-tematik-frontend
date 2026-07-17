@@ -534,7 +534,7 @@ const BerandaSidoarjo = () => {
       {/* Header Info */}
       <div className="text-center z-10 mt-2 md:mt-4 mb-2 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="font-extrabold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#1e3a8a", opacity: 1, textShadow: "0px 0px 1px rgba(30,58,138,0.5)" }}>
+          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
             Jelajahi
           </p>
         </div>

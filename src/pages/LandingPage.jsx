@@ -488,7 +488,7 @@ const LandingPage = () => {
       {/* Header Info */}
       <div className="text-center z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
         <div className="animate-float">
-          <p className="font-extrabold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#1e3a8a", opacity: 1, textShadow: "0px 0px 1px rgba(30,58,138,0.5)" }}>
+          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
             Jelajahi
           </p>
         </div>
@@ -503,19 +503,19 @@ const LandingPage = () => {
         <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200 w-fit mx-auto relative z-[2000]">
           <button 
             onClick={(e) => { navigate('/peta-tematik') }}
-            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all text-gray-500 hover:bg-amber-100 hover:text-amber-700`}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all text-gray-500 hover:bg-amber-100 hover:text-amber-700`}
           >
             Tematik
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
-            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
           >
             Kepadatan
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setMapMode("rasio"); }}
-            className={`px-4 py-2 md:px-6 md:py-2.5 text-sm md:text-base font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
           >
             Rasio L/P
           </button>
