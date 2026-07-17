@@ -68,7 +68,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
     <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-6 right-6"}`}>
       {/* The Chat Panel */}
       {isExpanded && (
-        <div className="bg-white/95 backdrop-blur-md rounded-xl rounded-br-sm shadow-2xl border border-gray-200 p-3 mb-4 w-[250px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
+        <div className="bg-white/95 backdrop-blur-md rounded-xl rounded-br-sm shadow-2xl border border-gray-200 p-3 mb-4 w-[320px] max-w-[90vw] animate-fade-in-up relative origin-bottom-right">
           <div className="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100">
             <div className="flex items-center gap-1.5">
               <h4 className="font-bold text-gray-800 flex items-center gap-1.5 text-sm">
@@ -91,7 +91,7 @@ const AIInsightBox = ({ featureName, data, contextType, customClass, requireClic
             </span>
           </div>
           
-          <div className="max-h-[130px] overflow-y-auto pr-1 no-scrollbar text-[11px] leading-snug">
+          <div className="max-h-[100px] overflow-y-auto pr-1 no-scrollbar text-[11px] leading-snug">
             {loading ? (
               <div className="flex space-x-1 items-center h-6 my-1">
                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
