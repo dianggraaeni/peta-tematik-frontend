@@ -1,72 +1,61 @@
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-} from "@nextui-org/react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function NavbarPetaKelengkeng({ desaName = "SIDOARJO" }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="sticky top-0 z-50">
-      <Navbar maxWidth="full" className="bg-[page] h-[11vh] p-3 sm:p-2 flex shadow-lg w-full">
-        <NavbarBrand justify="left">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Coat_of_Arms_of_Sidoarjo_Regency.png/664px-Coat_of_Arms_of_Sidoarjo_Regency.png"
-            alt="Sidoarjo Coat of Arms"
-            width={48}
-            height={48}
-          />
-          <img
-            className="ml-1"
-            src="/pict/logo_dc.png"
-            alt="Desa Cantik Logo"
-            width={48}
-            height={48}
-          />
-          <img
-            className="ml-1"
-            src="/pict/Ketenagakerjaan_Sidokepung.png"
-            alt="Ketenagakerjaan"
-            width={75}
-            height={50}
-          />
-          <div className="ml-3">
-            <p className="font-sfProDisplay font-semibold text-[#0F1820] leading-tight">
-              PETA KETENAGAKERJAAN
-              <br />
-              <span className="text-[1.2rem] font-bold font-sfProDisplay uppercase">
-                {desaName !== "SIDOARJO" ? `DESA ${desaName}` : "SIDOARJO"}
-              </span>
-            </p>
-          </div>
-        </NavbarBrand>
-        <NavbarContent className="hidden gap-4 sm:flex" justify="center">
-          {/* Add other NavbarItems if needed */}
-        </NavbarContent>
-        <NavbarContent justify="end">
-          <NavbarItem>
-            <Link
-              to="/login-sidokepung"
-              className="flex items-center justify-center p-2 bg-[black] text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 md:text-base cursor-pointer"
-            >
-              <span className="hidden md:inline">Masuk</span>
-              <span className="md:hidden material-icons">account_circle</span>
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link
-              to="https://drive.google.com/drive/folders/1BRi8Bhm6BzYQksJNKAoWkcAoN96uk2ZZ?usp=drive_link"
-              className="flex items-center justify-center p-2 bg-[black] text-white font-medium rounded-xl md:rounded-full md:px-4 md:py-2 md:text-base cursor-pointer mr-2"
-              target="_blank" // Opens the link in a new tab
-              rel="noopener noreferrer" // Provides security benefits
-            >
-              <span className="hidden md:inline material-icons">folder</span>
-              <span className="md:hidden material-icons">folder</span>
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
+    <div className="w-full bg-[#bae6fd] px-4 py-2 sm:px-6 md:px-12 md:py-4 flex flex-col sm:flex-row justify-between items-center z-50 border-b-2 border-white/50 shadow-sm gap-3 sm:gap-0 sticky top-0">
+      
+      {/* Left side: Logos and Title */}
+      <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Coat_of_Arms_of_Sidoarjo_Regency.png/664px-Coat_of_Arms_of_Sidoarjo_Regency.png"
+          alt="Sidoarjo Coat of Arms"
+          className="h-10 md:h-12 w-auto object-contain drop-shadow-sm"
+        />
+        <img
+          src="/pict/logo_dc.png"
+          alt="Desa Cantik Logo"
+          className="h-10 md:h-12 w-auto object-contain drop-shadow-sm"
+        />
+        <img
+          src="/pict/Ketenagakerjaan_Sidokepung.png"
+          alt="Ketenagakerjaan"
+          className="h-8 md:h-10 w-auto object-contain drop-shadow-sm ml-1"
+        />
+        <div className="ml-2 md:ml-3 flex flex-col justify-center">
+          <p className="font-semibold text-blue-900 leading-tight text-xs md:text-sm tracking-wide">
+            PETA KETENAGAKERJAAN
+          </p>
+          <p className="text-base md:text-lg font-extrabold text-blue-900 leading-tight uppercase">
+            {desaName !== "SIDOARJO" ? `DESA ${desaName}` : "SIDOARJO"}
+          </p>
+        </div>
+      </div>
+
+      {/* Right side: Action Buttons */}
+      <div className="w-full sm:w-auto flex gap-2 justify-end items-center mt-2 sm:mt-0">
+        <button 
+          onClick={() => navigate('/bantuan')}
+          className="w-11 h-11 bg-white text-[#2563eb] rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center shrink-0"
+          title="Pusat Bantuan & Panduan"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+
+        <button 
+          onClick={() => navigate('/login-sidokepung')}
+          className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center"
+          style={{ color: "#1f2937" }}
+        >
+          Masuk Admin
+        </button>
+      </div>
     </div>
   );
 }

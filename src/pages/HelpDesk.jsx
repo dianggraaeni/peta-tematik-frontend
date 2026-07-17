@@ -70,30 +70,41 @@ const HelpDesk = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col items-center py-8 px-4 font-sans relative">
+    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col items-center pb-8 font-sans relative">
       
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-64 bg-[#bae6fd] -z-10 rounded-b-[3rem] shadow-sm"></div>
+      {/* Header Bar */}
+      <div className="w-full bg-[#bae6fd] px-4 py-2 sm:px-6 md:px-12 md:py-4 flex flex-col sm:flex-row justify-between items-center z-50 border-b-2 border-white/50 shadow-sm gap-3 sm:gap-0 sticky top-0">
+        {/* Back Button (Left) */}
+        <div className="flex-1 flex justify-start">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-5 py-2 bg-white rounded-full font-bold shadow-sm border-[3px] border-white hover:border-[#2563eb] hover:-translate-y-0.5 transition-all text-[#2563eb]"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span className="text-base">Kembali</span>
+          </button>
+        </div>
 
-      {/* Header / Back Button */}
-      <div className="w-full px-4 md:px-12 flex justify-start items-center mb-6 relative z-10">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-white rounded-full font-bold shadow-sm border border-blue-100 hover:bg-blue-50 hover:-translate-x-1 transition-all"
-          style={{ color: "#1d4ed8" }}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          <span className="text-lg">Kembali</span>
-        </button>
+        {/* Title (Center, visible only on desktop or large screens if needed, but we'll leave it in the main body) */}
+        <div className="flex-1 hidden md:flex justify-center">
+          <span className="font-extrabold text-[#1e3a8a] text-lg tracking-wider uppercase">Pusat Bantuan</span>
+        </div>
+
+        {/* Logos (Right) */}
+        <div className="flex-1 flex justify-center sm:justify-end items-center gap-3 md:gap-5">
+          <img src="/logo kabupaten sidoarjo.png" alt="Logo Sidoarjo" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
+          <img src="/logo bps sda.png" alt="Logo BPS Sidoarjo" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
+          <img src="/pict/logo_dc.png" alt="Logo Desa Cantik" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
+        </div>
       </div>
 
-      <div className="w-full px-4 md:px-12 flex-1 flex flex-col z-10">
-        <div className="text-center mb-12 mt-4">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 tracking-tight" style={{ color: "#1e3a8a" }}>Pusat Bantuan</h1>
-          <p className="text-lg md:text-xl opacity-90" style={{ color: "#1e40af" }}>Temukan panduan penggunaan dan jawaban atas pertanyaan umum di sini.</p>
+      <div className="w-full px-4 md:px-12 flex-1 flex flex-col z-10 max-w-7xl mx-auto">
+        <div className="text-center mb-10 mt-8 md:mt-12">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight" style={{ color: "#1e3a8a" }}>Pusat Bantuan</h1>
+          <p className="text-base md:text-xl opacity-90" style={{ color: "#1e40af" }}>Temukan panduan penggunaan dan jawaban atas pertanyaan umum di sini.</p>
         </div>
 
         {/* Panduan Section */}
