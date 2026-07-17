@@ -535,8 +535,8 @@ const LandingPage = () => {
       </div>
 
       {/* Map Container */}
-      <div className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4">
-        <div className="w-full h-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+      <div className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col">
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           {geojsonData ? (
             <MapContainer
               center={[-7.45, 112.7]}
