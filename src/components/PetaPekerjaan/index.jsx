@@ -864,13 +864,13 @@ const Dashboard = ({ desaName: propsDesaName }) => {
 
         {/*Filter Panel*/}
         <div className="absolute top-48 right-4 z-[1000]">
-        {!isFilterPanelOpen ? (
-          <button
-            onClick={() => setIsFilterPanelOpen(true)}
-            className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
-          >
-            <svg
-              className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
+          {!isFilterPanelOpen ? (
+            <button
+              onClick={() => setIsFilterPanelOpen(true)}
+              className="bg-white rounded-lg shadow-lg border border-gray-200 p-2 md:p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-1.5 md:space-x-2 group"
+            >
+              <svg
+                className="w-4 h-4 md:w-5 md:h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -881,11 +881,11 @@ const Dashboard = ({ desaName: propsDesaName }) => {
                 strokeWidth={2}
                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
               />
-            </svg>
-            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-              Filter Data
-            </span>
-            <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+              </svg>
+              <span className="text-xs md:text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                Filter Data
+              </span>
+              <div className="bg-blue-100 text-blue-800 text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full font-medium">
               {filteredData.length > 0
                 ? filteredData.length
                 : allRawData.length}

@@ -83,26 +83,25 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
            </div>
          )}
          <button 
-           onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-           title={`Peta Aktif: ${activeBasemap.name}`}
-           className="w-10 h-10 bg-white/95 backdrop-blur-xl hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-100 flex items-center justify-center transition-all hover:shadow-xl active:scale-95"
-         >
-           <span className="material-icons text-blue-600">layers</span>
-         </button>
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-8 h-8 lg:w-10 lg:h-10 bg-white/95 backdrop-blur-xl hover:bg-white text-gray-700 rounded-lg lg:rounded-xl shadow-lg border border-gray-100 flex items-center justify-center transition-all hover:shadow-xl active:scale-95"
+        >
+          <span className="material-icons text-blue-600 text-lg lg:text-2xl">layers</span>
+        </button>
       </div>
 
       {/* Zoom Controls */}
-      <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-gray-100 pointer-events-auto mt-4">
+      <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-lg lg:rounded-xl shadow-lg overflow-hidden border border-gray-100 pointer-events-auto mt-4">
         <button 
           onClick={(e) => { e.stopPropagation(); map.zoomIn(); }} 
-          className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors border-b border-gray-200 font-bold text-xl"
+          className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors border-b border-gray-200 font-bold text-lg lg:text-xl"
           title="Zoom In"
         >
           +
         </button>
         <button 
           onClick={(e) => { e.stopPropagation(); map.zoomOut(); }} 
-          className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors font-bold text-2xl leading-none pb-1"
+          className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors font-bold text-xl lg:text-2xl leading-none pb-1"
           title="Zoom Out"
         >
           -
