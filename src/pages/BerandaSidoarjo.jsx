@@ -797,6 +797,16 @@ const BerandaSidoarjo = () => {
             </div>
           </div>
 
+          {/* ── AI INSIGHT — inside map, bottom right */}
+          <AIInsightBox 
+            desaName={selectedDesa || "SIDOARJO"}
+            featureName={selectedDesa ? `Desa ${selectedDesa}` : "Kabupaten Sidoarjo"}
+            contextType="demografi"
+            requireClick={true}
+            customClass="bottom-6 right-4"
+            data={sidoarjoAgregat}
+          />
+
         </div>
       </div>
     </div>

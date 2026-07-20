@@ -42,7 +42,7 @@ export const useBasemap = () => {
   return [activeBasemap, setActiveBasemap];
 };
 
-const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
+const CustomMapControls = ({ activeBasemap, setActiveBasemap, children }) => {
   const map = useMap();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -91,7 +91,7 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
       </div>
 
       {/* Zoom Controls */}
-      <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-gray-100 pointer-events-auto mt-4">
+      <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-gray-100 pointer-events-auto">
         <button 
           onClick={(e) => { e.stopPropagation(); map.zoomIn(); }} 
           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors border-b border-gray-200 font-bold text-xl"
@@ -107,6 +107,9 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap }) => {
           -
         </button>
       </div>
+
+      {/* Children elements (e.g. Filter button) stacked here */}
+      {children}
     </div>
   );
 };

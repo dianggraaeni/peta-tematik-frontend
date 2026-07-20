@@ -708,10 +708,21 @@ const Dashboard = ({ desaName: propsDesaName }) => {
   };
 
   return (
-    <div
-      className="relative h-full w-full overflow-hidden"
-      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-    >
+    <div className="min-h-screen bg-slate-50 flex flex-col font-inter overflow-x-hidden">
+      {/* Header Info */}
+      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
+        <div className="animate-float">
+          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
+            Jelajahi
+          </p>
+        </div>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
+          Peta Pekerjaan Desa {desaName || "Sidoarjo"}
+        </h1>
+        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
+          Arahkan kursor ke wilayah untuk melihat informasi singkat
+        </p>
+      </div>
       <style jsx global>{`
         * {
           scrollbar-width: none;
@@ -828,339 +839,178 @@ const Dashboard = ({ desaName: propsDesaName }) => {
         }
       `}</style>
 
-      {/* Peta Fullscreen */}
-      <div className="absolute inset-0 z-0">
-        {geojsonData ? (
-          <MapContainer
-            center={[-7.379, 112.73]}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-            doubleClickZoom={true}
-            zoomControl={false}
-          >
-            <TileLayer
-              url={activeBasemap.url}
-              attribution={activeBasemap.attribution}
-              maxZoom={activeBasemap.maxZoom}
-            />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
-            <AutoZoom geojsonData={geojsonData} />
-            {enrichedGeojsonData && (
-              <GeoJSON
-                ref={geoJsonRef}
-                key={`geojson-${allOriginalData.length}-${JSON.stringify(activeFilters)}`}
-                data={enrichedGeojsonData}
-                style={(feature) => getMapStyle(feature.properties)}
-                onEachFeature={onEachFeature}
-              />
-            )}
-          </MapContainer>
-        ) : (
-          <div className="flex items-center justify-center h-full bg-gray-100">
-            <BeatLoader color="#4A90E2" size={10} />
-          </div>
-        )}
-      </div>
-
-        {/*Filter Panel*/}
-        <div className="absolute top-48 right-4 z-[1000]">
-          {!isFilterPanelOpen ? (
-            <button
-              onClick={() => setIsFilterPanelOpen(true)}
-              className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
-            >
-              <svg
-                className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
-              />
-              </svg>
-              <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-                Filter Data
-              </span>
-              <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-              {filteredData.length > 0
-                ? filteredData.length
-                : allRawData.length}
-            </div>
-          </button>
-        ) : (
-          <div className="relative">
-            <button
-              onClick={() => setIsFilterPanelOpen(false)}
-              className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full shadow-md transition-all duration-200"
-              style={{ width: "24px", height: "24px" }}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <FilterPanel
-              onFilterChange={handleFilterChange}
-              filteredCount={filteredData.length}
-              totalCount={allRawData.length}
-            />
-          </div>
-        )}
-      </div>
-
-      {/*Panel Overlay*/}
-      <div
-        className={`absolute top-4 left-4 z-10 transition-all duration-300 ${
-          isPanelMinimized ? "w-16" : "w-80"
-        }`}
+      {/* Map Container — same classes and responsive structure as LandingPage */}
+      <div 
+        className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6" 
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden">
-          <div
-            className="bg-blue-600 text-white p-3 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors duration-200"
-            onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-          >
-            <h2
-              className={`font-medium text-sm ${
-                isPanelMinimized ? "hidden" : "block"
-              }`}
+        {/* Outer frame of map */}
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+          {geojsonData ? (
+            <MapContainer
+              center={[-7.379, 112.73]}
+              zoom={13}
+              minZoom={12}
+              maxZoom={18}
+              zoomSnap={0.5}
+              zoomDelta={0.5}
+              maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+              maxBoundsViscosity={1.0}
+              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
+              doubleClickZoom={true}
+              zoomControl={false}
+              scrollWheelZoom={true}
             >
-              {selectedAreaTitle}
-            </h2>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsPanelMinimized(!isPanelMinimized);
-              }}
-              className="text-white hover:text-gray-200 transition-colors p-1"
-              title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
-            >
-              {isPanelMinimized ? (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              ) : (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+              <AutoZoom geojsonData={geojsonData} />
+              {enrichedGeojsonData && (
+                <GeoJSON
+                  ref={geoJsonRef}
+                  key={`geojson-${allOriginalData.length}-${JSON.stringify(activeFilters)}`}
+                  data={enrichedGeojsonData}
+                  style={(feature) => getMapStyle(feature.properties)}
+                  onEachFeature={onEachFeature}
+                />
               )}
-            </button>
-          </div>
+            </MapContainer>
+          ) : (
+            <div className="flex items-center justify-center h-full bg-gray-100">
+              <BeatLoader color="#4A90E2" size={10} />
+            </div>
+          )}
 
-          {!isPanelMinimized && (
-            <>
-              <div className="p-3 border-b border-gray-200">
-                <button
-                  onClick={handleResetView}
-                  className="w-full bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 transition-all duration-200 font-medium text-sm"
-                >
-                  Reset Tampilan
+          {/* ── LEFT PANEL — inside map, top left, scrollable, made narrower (w-44) */}
+          <div
+            className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${
+              isPanelMinimized ? "w-10 h-10" : "w-44"
+            }`}
+            style={!isPanelMinimized ? { maxHeight: "calc(100% - 2rem)" } : {}}
+          >
+            <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
+              <div
+                className="bg-blue-600 text-white px-2.5 py-2 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
+                onClick={() => setIsPanelMinimized(!isPanelMinimized)}
+              >
+                <h2 className={`font-medium text-xs truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
+                <button onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} className="text-white hover:text-gray-200 shrink-0 ml-1" title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}>
+                  {isPanelMinimized ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                  )}
                 </button>
               </div>
-
-              <div className="p-2 border-b border-gray-200">
-                <h3 className="font-medium text-gray-800 mb-1.5 text-xs">
-                  Data Pekerjaan
-                </h3>
-                {loading ? (
-                  <div className="flex justify-center items-center h-12">
-                    <BeatLoader color="#4A90E2" size={8} />
+              {!isPanelMinimized && (
+                <div className="overflow-y-auto" style={{ maxHeight: "calc(100% - 38px)" }}>
+                  <div className="p-2 border-b border-gray-200">
+                    <button onClick={handleResetView} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 px-2.5 rounded-lg transition-all font-medium text-xs">
+                      Reset Tampilan
+                    </button>
                   </div>
-                ) : (
-                  <div className="text-center">
-                    <div className="bg-blue-50 p-1 rounded-lg transition-all duration-300 hover:bg-blue-100">
-                      <p className="text-xs text-gray-600 mb-1">
-                        Total Penduduk 15-64 Tahun
-                      </p>
-                      <p className="text-xl font-bold text-blue-600">
-                        <CountUp
-                          end={processedData.totalPenduduk || 0}
-                          duration={1.5}
-                        />
-                      </p>
-                      {filteredData.length > 0 && (
-                        <p className="text-xs text-gray-500">
-                          dari {allRawData.length} total
-                        </p>
-                      )}
+                  <div className="p-2 border-b border-gray-200">
+                    <h3 className="font-medium text-gray-800 mb-1 text-[10px]">Data Pekerjaan</h3>
+                    {loading ? (
+                      <div className="flex justify-center items-center h-10"><BeatLoader color="#4A90E2" size={6} /></div>
+                    ) : (
+                      <div className="bg-blue-50 p-1.5 rounded-lg text-center">
+                        <p className="text-[10px] text-gray-600 mb-0.5">Total Penduduk 15-64 Thn</p>
+                        <p className="text-lg font-bold text-blue-600"><CountUp end={processedData.totalPenduduk || 0} duration={1.5} /></p>
+                        {filteredData.length > 0 && <p className="text-[9px] text-gray-500">dari {allRawData.length} total</p>}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-2 border-b border-gray-200">
+                    <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
+                      {["jenisKelamin","statusPekerjaan","umur"].map(key => (
+                        <button key={key} onClick={() => setCurrentDataKey(key)} className={`px-1 py-1 text-[9px] font-medium rounded-md transition-all ${currentDataKey === key ? "bg-blue-600 text-white shadow-md" : "text-gray-600 hover:bg-gray-200"}`}>
+                          {key === "jenisKelamin" ? "J. Kelamin" : key === "statusPekerjaan" ? "Pekerjaan" : "Umur"}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                )}
-              </div>
-
-              <div className="p-2 border-b border-gray-200">
-                <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
-                  <button
-                    onClick={() => setCurrentDataKey("jenisKelamin")}
-                    className={`px-2 py-2 text-xs font-medium rounded-md transition-all duration-300 ${
-                      currentDataKey === "jenisKelamin"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-                    }`}
-                  >
-                    Jenis Kelamin
-                  </button>
-                  <button
-                    onClick={() => setCurrentDataKey("statusPekerjaan")}
-                    className={`px-2 py-2 text-xs font-medium rounded-md transition-all duration-300 ${
-                      currentDataKey === "statusPekerjaan"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-                    }`}
-                  >
-                    Pekerjaan
-                  </button>
-                  <button
-                    onClick={() => setCurrentDataKey("umur")}
-                    className={`px-2 py-2 text-xs font-medium rounded-md transition-all duration-300 ${
-                      currentDataKey === "umur"
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-                    }`}
-                  >
-                    Umur
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-2 border-b border-gray-200">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setChartType("bar")}
-                    className={`py-2 px-3 rounded-lg text-xs font-medium transition-all duration-300 ${
-                      chartType === "bar"
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
-                    }`}
-                  >
-                    Batang
-                  </button>
-                  <button
-                    onClick={() => setChartType("doughnut")}
-                    className={`py-2 px-3 rounded-lg text-xs font-medium transition-all duration-300 ${
-                      chartType === "doughnut"
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
-                    }`}
-                  >
-                    Lingkaran
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-3">
-                <div className="h-56 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 shadow-inner border border-blue-100 transition-all duration-300 hover:shadow-lg">
-                  {loading ? (
-                    <div className="flex justify-center items-center h-full">
-                      <BeatLoader color="#4A90E2" size={8} />
+                  <div className="p-2 border-b border-gray-200">
+                    <div className="grid grid-cols-2 gap-1">
+                      {["bar","doughnut"].map(type => (
+                        <button key={type} onClick={() => setChartType(type)} className={`py-1 px-1.5 rounded-lg text-[9px] font-medium transition-all ${chartType === type ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+                          {type === "bar" ? "Batang" : "Lingkaran"}
+                        </button>
+                      ))}
                     </div>
-                  ) : (
-                    <DemographicsChart
-                      chartData={processedData[currentDataKey]}
-                      chartType={chartType}
-                    />
-                  )}
+                  </div>
+                  <div className="p-2">
+                    <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
+                      {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Updated Legend Peta */}
-      <div className="absolute bottom-6 left-4 z-[1000]">
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-2 max-w-[240px] overflow-hidden transition-all duration-300 hover:shadow-3xl">
-          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-2">
-            <div
-              className="flex justify-between items-center mb-2 cursor-pointer hover:bg-indigo-100 rounded p-1 transition-colors duration-200"
-              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-            >
-              <h4 className="text-xs font-semibold text-gray-800 flex items-center">
-                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mr-2"></span>
-                Legend
-              </h4>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsLegendMinimized(!isLegendMinimized);
-                }}
-                className="text-gray-500 hover:text-gray-800 text-sm transition-colors hover:bg-gray-200 rounded px-1"
-              >
-                {isLegendMinimized ? "▲" : "▼"}
-              </button>
+              )}
             </div>
+          </div>
 
+          {/* ── LEGEND — inside map, bottom left, smaller max-w */}
+          <div className="absolute bottom-4 left-4 z-[1000] bg-white rounded-lg shadow-lg border border-gray-200 p-2 max-w-[140px] pointer-events-auto">
+            <div className="flex justify-between items-center mb-1 cursor-pointer" onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
+              <h4 className="text-[9px] font-semibold text-gray-800 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Legend
+              </h4>
+              <button onClick={(e) => { e.stopPropagation(); setIsLegendMinimized(!isLegendMinimized); }} className="text-gray-500 text-xs ml-2">{isLegendMinimized ? "▲" : "▼"}</button>
+            </div>
             {!isLegendMinimized && (
-              <div className="space-y-2">
-                {/* Updated legend with only two colors */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className="w-4 h-4 rounded border border-gray-300"
-                      style={{
-                        backgroundColor: employmentColors["tidak bekerja"],
-                      }}
-                    ></div>
-                    <span className="text-xs text-gray-700">Tidak Bekerja</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className="w-4 h-4 rounded border border-gray-300"
-                      style={{ backgroundColor: employmentColors["bekerja"] }}
-                    ></div>
-                    <span className="text-xs text-gray-700">Bekerja</span>
-                  </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded border border-gray-300 shrink-0" style={{ backgroundColor: employmentColors["tidak bekerja"] }}></div>
+                  <span className="text-[9px] text-gray-700">Tidak Bekerja</span>
                 </div>
-
-                <div className="bg-blue-50 rounded p-2 border border-blue-200 mt-3">
-                  <div className="text-xs">
-                    <div className="flex justify-between mb-1">
-                      <span className="text-gray-600">Area:</span>
-                      <span className="font-medium text-blue-700 truncate ml-1">
-                        {selectedAreaTitle}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Data:</span>
-                      <span className="font-medium text-blue-700">
-                        {processedData.totalPenduduk || 0}
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded border border-gray-300 shrink-0" style={{ backgroundColor: employmentColors["bekerja"] }}></div>
+                  <span className="text-[9px] text-gray-700">Bekerja</span>
+                </div>
+                <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-1 text-[9px]">
+                  <div className="flex justify-between"><span className="text-gray-600">Area:</span><span className="font-medium text-blue-700 truncate ml-1 max-w-[60px]">{selectedAreaTitle}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-600">Data:</span><span className="font-medium text-blue-700">{processedData.totalPenduduk || 0}</span></div>
                 </div>
               </div>
             )}
           </div>
+
+          {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
+          <div className="absolute top-[160px] right-4 z-[1000] pointer-events-auto flex flex-col items-end gap-2">
+            {!isFilterPanelOpen ? (
+              <button onClick={() => setIsFilterPanelOpen(true)} className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-100 w-10 h-10 hover:shadow-xl transition-all flex items-center justify-center group" title="Filter Data">
+                <svg className="w-4 h-4 text-gray-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                </svg>
+              </button>
+            ) : (
+              <div className="relative">
+                <button onClick={() => setIsFilterPanelOpen(false)} className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 p-1 rounded-full shadow-md" style={{ width: "22px", height: "22px" }}>
+                  <svg className="w-3.5 h-3.5 m-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
+              </div>
+            )}
+          </div>
+
+          {/* ── AI INSIGHT — inside map, bottom right */}
+          <AIInsightBox 
+            desaName={desaName}
+            featureName={selectedAreaTitle}
+            contextType="pekerjaan"
+            requireClick={true}
+            customClass="bottom-4 right-4"
+            data={{
+              totalPenduduk: filteredData.length,
+              dominanPekerjaan: filteredData.length > 0 
+                ? (Object.entries(filteredData.reduce((acc, curr) => { const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama); acc[status] = (acc[status] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
+                : "Tidak ada data",
+              lakiLaki: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "laki-laki").length,
+              perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
+            }}
+          />
+
         </div>
       </div>
-      {/* AI Insight Box at the bottom middle */}
-      <AIInsightBox 
-        featureName={selectedAreaTitle}
-        contextType="pekerjaan"
-        data={{
-          totalPenduduk: filteredData.length,
-          dominanPekerjaan: filteredData.length > 0 
-            ? (Object.entries(
-                filteredData.reduce((acc, curr) => {
-                  const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama);
-                  acc[status] = (acc[status] || 0) + 1;
-                  return acc;
-                }, {})
-              ).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
-            : "Tidak ada data",
-          lakiLaki: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "laki-laki").length,
-          perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
-        }}
-      />
-
     </div>
   );
 };

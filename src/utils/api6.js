@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api6 = axios.create({
-  baseURL: "https://peta-tematik-backend.vercel.app",
+  baseURL: "http://localhost:5003",
 });
 
 // Add a request interceptor

@@ -13,6 +13,7 @@ import GrogolUsahaTable from "../../components/GrogolUsahaTable";
 import RtTable from "../../components/RtTable"; 
 import RutaTable from "../../components/RutaTable"; 
 import SummaryTab from "./SummaryTab";
+import InsightManagementTab from "./InsightManagementTab";
 
 const VillageAdmin = () => {
   const { nama_desa } = useParams();
@@ -73,6 +74,11 @@ const VillageAdmin = () => {
       id: "ringkasan",
       label: isMobile ? "Ringkasan" : "Ringkasan Statistik",
       content: <SummaryTab nama_desa={nama_desa} />,
+    },
+    {
+      id: "insight",
+      label: isMobile ? "Insight" : "Manajemen Insight",
+      content: <InsightManagementTab nama_desa={nama_desa} />,
     }
   ];
 

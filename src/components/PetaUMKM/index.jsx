@@ -1,633 +1,251 @@
-import { useState, useEffect, memo, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
-import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import "leaflet/dist/leaflet.css";
-import CountUp from "react-countup";
-import { BeatLoader } from "react-spinners";
-import UmkmCharts from "./UmkmCharts";
-import FilterPanelUmkm from "./FilterPanelUmkm";
-import AIInsightBox from "../AIInsightBox";
 import L from "leaflet";
+import BeatLoader from "react-spinners/BeatLoader";
+import CountUp from "react-countup";
+import CustomMapControls from "../CustomMapControls";
+import UmkmCharts from "./UmkmCharts";
+import AIInsightBox from "../AIInsightBox";
+import FilterPanelUmkm from "./FilterPanelUmkm";
+import api6 from "../../utils/api6";
 
-import api6 from "../../utils/api6.js";
-import { message } from "antd";
+// Get KBLI Category Name
+const getKbliName = (kbli) => {
+  const mapping = {
+    "A": "Pertanian, Kehutanan & Perikanan",
+    "C": "Industri Pengolahan / Kerajinan",
+    "G": "Perdagangan Eceran & Grosir",
+    "I": "Penyediaan Akomodasi & Kuliner",
+    "S": "Jasa Lainnya (Salon, Bengkel, dll)",
+  };
+  return mapping[kbli] || "Kategori Lainnya";
+};
 
-// Auto Zoom
+// Dominant KBLI extraction
+const getDominantKbli = (item) => {
+  const counts = {
+    A: item.kbli_a || 0,
+    C: item.kbli_c || 0,
+    G: item.kbli_g || 0,
+    I: item.kbli_i || 0,
+    S: item.kbli_s || 0,
+  };
+  let maxKbli = "Lainnya";
+  let maxVal = 0;
+  Object.entries(counts).forEach(([k, v]) => {
+    if (v > maxVal) {
+      maxVal = v;
+      maxKbli = k;
+    }
+  });
+  return { kbli: maxKbli, count: maxVal };
+};
+
+const kbliColors = {
+  A: "#10b981", // Emerald green
+  C: "#f59e0b", // Amber
+  G: "#3b82f6", // Blue
+  I: "#ef4444", // Red
+  S: "#8b5cf6", // Purple
+};
+
 const AutoZoom = ({ geojsonData }) => {
   const map = useMap();
-
   useEffect(() => {
-    if (geojsonData && map) {
-      const tempLayer = L.geoJSON(geojsonData);
-      const bounds = tempLayer.getBounds();
-
-      if (bounds.isValid()) {
-        map.fitBounds(bounds, {
-          padding: [20, 20],
-          maxZoom: 16,
-        });
+    if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
+      try {
+        const bounds = L.geoJSON(geojsonData).getBounds();
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, { padding: [30, 30] });
+        }
+      } catch (e) {
+        console.error("AutoZoom error:", e);
       }
     }
   }, [geojsonData, map]);
-
   return null;
 };
 
 const Dashboard = ({ initialDesaName }) => {
-  // === STATE ===
+  const [desaName] = useState(initialDesaName || "SIMOANGINANGIN");
   const [geojsonData, setGeojsonData] = useState(null);
   const [allRawData, setAllRawData] = useState([]);
   const [allOriginalData, setAllOriginalData] = useState([]);
-  const [currentDataKey, setCurrentDataKey] = useState("jenisKelamin");
-  const [desaName, setDesaName] = useState(initialDesaName || "");
-  const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName || "Sidoarjo"}`);
-  const [isTableVisible, setTableVisible] = useState(false);
-  const [activeKbliFilter, setActiveKbliFilter] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeBasemap, setActiveBasemap] = useBasemap();
-
-  const mapCenter = [-7.4612266, 112.658755]; // Default center (Simoanginangin)
-  const [selectedArea, setSelectedArea] = useState({
-    rt: null,
-    rw: null,
-    nmdesa: desaName || "",
+  const [activeKbliFilter, setActiveKbliFilter] = useState(null);
+  const [selectedArea, setSelectedArea] = useState({ rt: "", rw: "" });
+  const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName}`);
+  
+  const [activeBasemap, setActiveBasemap] = useState({
+    name: "Satelit",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
   });
-  const selectedAreaRef = useRef({ rt: null, rw: null, nmdesa: null });
-  const geoJsonRef = useRef(null);
-  const [loading, setLoading] = useState(true);
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
-
-
-  const chartColors = [
-    "#0052D4",
-    "#4361ee",
-    "#7400b8",
-    "#65C7F7",
-    "#560bad",
-    "#4895ef",
-    "#f72585",
-    "#b5179e",
-  ];
-
-  // Define KBLI categories for coloring
-  const kbliColors = {
-    A: "#22c55e", // Pertanian
-    C: "#f97316", // Industri Pengolahan
-    G: "#3b82f6", // Perdagangan
-    I: "#eab308", // Akomodasi/Makan
-    Lainnya: "#94a3b8" // Default
-  };
-
-  const getKbliName = (code) => {
-    switch (code) {
-      case 'A': return "Pertanian";
-      case 'C': return "Industri Pengolahan";
-      case 'G': return "Perdagangan";
-      case 'I': return "Warung / Akomodasi";
-      default: return "Sektor Lainnya";
-    }
-  };
-
-  const getDominantKbli = (areaInfo) => {
-    let maxVal = 0;
-    let maxKbli = 'Lainnya';
-    ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u'].forEach(letter => {
-      const val = areaInfo[`jml_umkm_kbli_${letter}`] || 0;
-      if (val > maxVal) {
-        maxVal = val;
-        maxKbli = letter.toUpperCase();
-      }
-    });
-    return { kbli: maxKbli, count: maxVal };
-  };
-
-  const blueGradient = [
-    "#90EE90",
-    "#87ceeb",
-    "#6495ed",
-    "#4682b4",
-    "#1e90ff",
-    "#0000cd",
-    "#00008b",
-    "#00005a",
-  ];
-
-  const categorizeEmploymentStatus = useCallback((status) => {
-    if (!status) return "tidak bekerja";
-
-    const normalizedStatus = status.toLowerCase().trim();
-
-    // Group working categories
-    const workingStatuses = [
-      "buruh/karyawan/pegawai",
-      "pekerja bebas",
-      "berusaha sendiri",
-      "pekerja keluarga",
-    ];
-
-    const isWorking = workingStatuses.some((workStatus) =>
-      normalizedStatus.includes(workStatus)
-    );
-
-    return isWorking ? "bekerja" : "tidak bekerja";
-  }, []);
-
-  const getWorkFieldValue = useCallback((item) => {
-    const possibleFields = ["bidang_pekerjaan"];
-
-    for (const field of possibleFields) {
-      if (item[field] && item[field].toString().trim() !== "") {
-        return item[field].toString().trim();
-      }
-    }
-
-    return "";
-  }, []);
-
-
-
-  // === FUNGSI LOGIKA (Memoized) ===
-  const highlightMostFrequent = useCallback(
-    (counts) => {
-      let maxCount = 0;
-      let mostFrequentLabel = "";
-      for (const label in counts) {
-        if (counts[label] > maxCount) {
-          maxCount = counts[label];
-          mostFrequentLabel = label;
-        }
-      }
-      return Object.keys(counts).map((label, index) => {
-        if (
-          label.toLowerCase() === mostFrequentLabel.toLowerCase() &&
-          maxCount > 0
-        ) {
-          return "#8B0000";
-        }
-        return chartColors[index % chartColors.length];
-      });
-    },
-    [chartColors]
-  );
-
-  const processedData = useMemo(() => {
-    const dataToProcess = activeKbliFilter 
-      ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter)
-      : allRawData;
-    if (dataToProcess.length === 0) return { totalPenduduk: 0 };
-    return {
-      totalPenduduk: dataToProcess.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)
-    };
-  }, [allRawData, activeKbliFilter]);
-
-  const enrichedGeojsonData = useMemo(() => {
-    if (!geojsonData) return geojsonData;
-
-    let baseData = allOriginalData.length > 0 ? allOriginalData : allRawData;
-    if (activeKbliFilter) {
-      baseData = baseData.filter(item => getDominantKbli(item).kbli === activeKbliFilter);
-    }
-    if (baseData.length === 0) return geojsonData;
-
-    const areaData = {};
-
-    baseData.forEach((item) => {
-      const rt = item.RT || item.rt || item.Rt || item.rT;
-      const rw = item.RW || item.rw || item.Rw || item.rW;
-      if (!rt || !rw) return;
-
-      const formattedRT = rt.toString().padStart(3, "0");
-      const formattedRW = rw.toString().padStart(3, "0");
-      const key = `${formattedRT}-${formattedRW}`;
-      
-      areaData[key] = item;
-    });
-
-    const newGeojson = { ...geojsonData };
-    newGeojson.features = newGeojson.features.map((feature) => {
-      const rt = feature.properties?.RT || feature.properties?.rt;
-      const rw = feature.properties?.RW || feature.properties?.rw;
-      
-      const rt_formatted = rt?.toString().padStart(3, "0");
-      const rw_formatted = rw?.toString().padStart(3, "0");
-        
-      const possibleKeys = [
-        `${rt_formatted}-${rw_formatted}`,
-        `${rt}-${rw}`,
-        `${rt?.toString()}-${rw?.toString()}`,
-          `${rt?.toString().padStart(2, "0")}-${rw
-            ?.toString()
-            .padStart(2, "0")}`,
-        ];
-
-        let areaInfo = null;
-        for (const key of possibleKeys) {
-          if (areaData[key]) {
-            areaInfo = areaData[key];
-            break;
-          }
-        }
-
-        if (areaInfo) {
-          const domKbli = getDominantKbli(areaInfo);
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              totalUmkm: areaInfo.jml_umkm || 0,
-              totalRuta: areaInfo.jml_ruta || 0,
-              dominantKbli: domKbli.kbli,
-              kbliCount: domKbli.count,
-              rt: rt_formatted,
-              rw: rw_formatted
-            },
-          };
-        } else {
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              totalUmkm: 0,
-              totalRuta: 0,
-              dominantKbli: 'Lainnya',
-              kbliCount: 0,
-              rt: rt_formatted,
-              rw: rw_formatted
-            }
-          };
-        }
-      });
-
-    return newGeojson;
-  }, [geojsonData, allOriginalData, allRawData, activeKbliFilter]);
-
-  // === FETCH DATA ===
-  useEffect(() => {
-    const fetchGeoData = async () => {
-      try {
-        const url = desaName && desaName !== "SIDOARJO" 
-          ? `/api/peta?nmdesa=${encodeURIComponent(desaName)}` 
-          : "/api/peta";
-        const res = await api6.get(url);
-        setGeojsonData(res.data);
-      } catch (err) {
-        message.error("Gagal memuat data peta geografis.");
-        console.error("Fetch GeoJSON error:", err);
-      }
-    };
-    fetchGeoData();
-  }, [desaName]);
-
-  useEffect(() => {
-    const fetchOriginalData = async () => {
-      try {
-        const url = desaName && desaName !== "SIDOARJO" 
-          ? `/api/umkm?nmdesa=${encodeURIComponent(desaName)}` 
-          : "/api/umkm";
-        const res = await api6.get(url);
-        setAllOriginalData(res.data);
-      } catch (err) {
-        console.error("Fetch original data error:", err);
-      }
-    };
-    fetchOriginalData();
-  }, [desaName]);
+  const geoJsonRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      const { rt, rw, nmdesa } = selectedArea;
-      let apiUrl = "/api/umkm";
-      if (rt && rw) {
-        apiUrl += `?rt=${rt}&rw=${rw}`;
-        if (desaName && desaName !== "SIDOARJO") {
-          apiUrl += `&nmdesa=${encodeURIComponent(desaName)}`;
-        }
-      } else if (desaName && desaName !== "SIDOARJO") {
-        apiUrl += `?nmdesa=${encodeURIComponent(desaName)}`;
-      }
       try {
-        const res = await api6.get(apiUrl);
-        setAllRawData(res.data);
+        const geoRes = await api6.get(`/api/geojson/umkm?desa=${desaName.toUpperCase()}`);
+        setGeojsonData(geoRes.data);
+
+        const dataRes = await api6.get(`/api/umkm/data?desa=${desaName.toUpperCase()}`);
+        setAllRawData(dataRes.data);
+        setAllOriginalData(dataRes.data);
       } catch (err) {
-        message.error(`Gagal memuat data untuk area yang dipilih.`);
-        console.error("Fetch area data error:", err);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching UMKM data:", err);
       }
     };
     fetchData();
-  }, [selectedArea]);
+  }, [desaName]);
 
-  // === MAP LOGIC ===
-  const getMapStyle = useCallback(
-    (props) => {
-      const totalUmkm = props.totalUmkm || 0;
-      const dominantKbli = props.dominantKbli || "Lainnya";
-
-      const currentSelected = selectedAreaRef.current;
-      const rt = props.RT || props.rt;
-      const rw = props.RW || props.rw;
-      
-      const isSelected = currentSelected.rt != null && currentSelected.rt == rt && currentSelected.rw == rw;
-      const isSpotlightActive = currentSelected.rt !== null;
-
-      if (totalUmkm > 0) {
-        const fillColor = kbliColors[dominantKbli] || "#94a3b8";
-
-        return {
-          fillColor: fillColor,
-          weight: isSelected ? 2 : 1,
-          color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
-          fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.4 : 0.5),
-        };
+  // Aggregate stats based on activeKbliFilter
+  const processedData = (() => {
+    let list = allRawData;
+    if (activeKbliFilter) {
+      list = allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter);
+    }
+    const totalUmkm = list.reduce((sum, item) => sum + (item.jml_umkm || 0), 0);
+    
+    // Find dominant KBLI Category overall
+    const kbliTotals = { A: 0, C: 0, G: 0, I: 0, S: 0 };
+    list.forEach(item => {
+      kbliTotals.A += item.kbli_a || 0;
+      kbliTotals.C += item.kbli_c || 0;
+      kbliTotals.G += item.kbli_g || 0;
+      kbliTotals.I += item.kbli_i || 0;
+      kbliTotals.S += item.kbli_s || 0;
+    });
+    
+    let dominantKbli = "None";
+    let max = -1;
+    Object.entries(kbliTotals).forEach(([k, v]) => {
+      if (v > max) {
+        max = v;
+        dominantKbli = k;
       }
-      return {
-        fillColor: "#e5e7eb",
-        weight: isSelected ? 2 : 1,
-        color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
-        fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.3 : 0.4),
-      };
-    },
-    [kbliColors]
-  );
+    });
 
-  const getHoverStyle = useCallback(() => {
     return {
-      fillColor: "#facc15",
-      weight: 2,
-      color: "#0f172a",
-      fillOpacity: 0.7,
+      totalPenduduk: totalUmkm, // Used in CountUp
+      totalUmkm,
+      dominantKbli
     };
-  }, []);
+  })();
 
-  const onEachFeature = useCallback(
-    (feature, layer) => {
-      const props = feature.properties;
+  const getMapStyle = (properties) => {
+    const rt = properties.RT || properties.rt;
+    const rw = properties.RW || properties.rw;
+    const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
+    
+    if (!match || (match.jml_umkm || 0) === 0) {
+      return { fillColor: "#cbd5e1", fillOpacity: 0.2, color: "#94a3b8", weight: 1.5 };
+    }
+    const dom = getDominantKbli(match);
+    const color = kbliColors[dom.kbli] || "#94a3b8";
+    
+    const isSelected = selectedArea.rt === String(rt) && selectedArea.rw === String(rw);
+    return {
+      fillColor: color,
+      fillOpacity: isSelected ? 0.85 : 0.6,
+      color: isSelected ? "#ffffff" : color,
+      weight: isSelected ? 3 : 1.5,
+    };
+  };
 
-      let dominantText = "Tidak Ada Data";
-      if (props.totalUmkm > 0) {
-        dominantText = getKbliName(props.dominantKbli);
-      }
-
-      const tooltipContent = `
-        <div style="font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; min-width: 200px; max-width: 250px;">
-          <div style="font-weight: bold; color: #1f2937; margin-bottom: 6px; font-size: 13px;">${
-            props.nmdesa || "Tidak Diketahui"
-          }</div>
-          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 6px; font-size: 11px; color: #4b5563;">
-            <span>RT: ${props.rt || "-"}</span>
-            <span>RW: ${props.rw || "-"}</span>
-          </div>
-          <div style="color: #6b7280; font-size: 11px; margin-bottom: 2px;">Sektor Dominan:</div>
-          <div style="color: #dc2626; font-weight: bold; font-size: 12px; margin-bottom: 8px;">
-            ${dominantText}
-          </div>
-          <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 6px; text-align: center;">
-            <div style="color: #166534; font-weight: bold; font-size: 11px;">
-              Jumlah UMKM: ${props.totalUmkm || 0}
-            </div>
-            <div style="color: #15803d; font-size: 10px; margin-top: 2px;">
-               (${props.kbliCount || 0} di sektor dominan)
-            </div>
-          </div>
-        </div>
+  const onEachFeature = (feature, layer) => {
+    const props = feature.properties;
+    const rt = props.RT || props.rt;
+    const rw = props.RW || props.rw;
+    const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
+    
+    let popupContent = `<div style="font-family: 'Inter', sans-serif; padding: 4px;">
+      <h4 style="margin: 0 0 6px 0; font-weight: 700; color: #1e293b; border-bottom: 1px solid #e2e8f0; pb: 4px;">RT ${rt} / RW ${rw}</h4>`;
+    
+    if (match && match.jml_umkm > 0) {
+      const dom = getDominantKbli(match);
+      popupContent += `
+        <p style="margin: 0 0 4px 0; font-size: 11px; color: #475569;">Total UMKM: <strong style="color: #2563eb;">${match.jml_umkm}</strong></p>
+        <p style="margin: 0; font-size: 10px; color: #64748b;">Dominan KBLI: <strong>${dom.kbli} (${getKbliName(dom.kbli)})</strong></p>
       `;
+    } else {
+      popupContent += `<p style="margin: 0; font-size: 11px; color: #94a3b8; italic;">Tidak ada data UMKM</p>`;
+    }
+    popupContent += `</div>`;
 
-      const popupContent = `
-  <div style="font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; min-width: 220px; max-width: 260px;">
-    <div style="font-weight: bold; color: #1f2937; margin-bottom: 6px; font-size: 14px; border-bottom: 1px solid #e5e7eb; padding-bottom: 3px;">${
-      props.nmdesa || "Tidak Diketahui"
-    }</div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px;">
-      <div style="color: #374151; font-size: 11px;"><strong>RT:</strong> ${
-        props.rt || "?"
-      }</div>
-      <div style="color: #374151; font-size: 11px;"><strong>RW:</strong> ${
-        props.rw || "?"
-      }</div>
-    </div>
-    <div style="color: #374151; margin-bottom: 3px; font-size: 11px;"><strong>Dusun:</strong> ${
-      props.dusun || "Tidak Diketahui"
-    }</div>
-    <div style="color: #374151; margin-bottom: 6px; font-size: 11px;"><strong>Kecamatan:</strong> ${
-      props.kecamatan || "Tidak Diketahui"
-    }</div>
-    <div style="color: #dc2626; font-weight: 600; margin-bottom: 3px; font-size: 12px;">Sektor KBLI Dominan:</div>
-    <div style="color: #dc2626; font-weight: 500; margin-bottom: 6px; padding: 4px 6px; background-color: #fef2f2; border-radius: 3px; border-left: 2px solid #dc2626; font-size: 11px;">${dominantText}</div>
-    <div style="color: #059669; font-weight: 600; background-color: #f0fdf4; padding: 6px 8px; border-radius: 4px; text-align: center; border: 1px solid #bbf7d0; font-size: 11px;">
-      <strong>Jumlah UMKM:</strong> ${props.totalUmkm || 0}
-      <div style="font-size: 10px; color: #065f46; margin-top: 1px;">
-        (${props.kbliCount || 0} di sektor dominan)
-      </div>
-    </div>
-  </div>
-`;
+    layer.bindPopup(popupContent, { closeButton: false, offset: L.point(0, -10) });
 
-      layer.bindTooltip(tooltipContent, {
-        permanent: false,
-        direction: "top",
-        offset: [0, -10],
-        className: "custom-tooltip",
-        opacity: 0.95,
-      });
+    layer.on({
+      mouseover: (e) => {
+        const l = e.target;
+        l.setStyle({ weight: 3, color: "#ffffff", fillOpacity: 0.8 });
+        l.openPopup();
+      },
+      mouseout: (e) => {
+        const l = e.target;
+        if (geoJsonRef.current) {
+          geoJsonRef.current.resetStyle(l);
+        }
+        l.closePopup();
+      },
+      click: (e) => {
+        setSelectedArea({ rt: String(rt), rw: String(rw) });
+        setSelectedAreaTitle(`RT ${rt} / RW ${rw}`);
+        if (match) {
+          setAllRawData([match]);
+        } else {
+          setAllRawData([]);
+        }
+      }
+    });
+  };
 
-      layer.bindPopup(popupContent, {
-        className: "custom-popup-compact",
-        maxWidth: 280,
-        minWidth: 220,
-        closeButton: true,
-        autoClose: false,
-        closeOnClick: false,
-        autoPan: false,
-      });
-
-      const originalStyle = getMapStyle(props);
-      layer.setStyle(originalStyle);
-
-      layer.on({
-        mouseover: (e) => {
-          const hoveredLayer = e.target;
-          hoveredLayer.setStyle(getHoverStyle());
-          hoveredLayer.bringToFront();
-        },
-
-        mouseout: (e) => {
-          const layer = e.target;
-          layer.setStyle(originalStyle);
-        },
-
-        click: (e) => {
-          const clickedLayer = e.target;
-          const { RT, RW, nmdesa } = clickedLayer.feature.properties;
-
-          if (RT && RW) {
-            setSelectedAreaTitle(`${nmdesa || 'Desa'} - RT ${RT}/RW ${RW}`);
-            setSelectedArea({ rt: RT, rw: RW, nmdesa });
-            selectedAreaRef.current = { rt: RT, rw: RW, nmdesa }; // Update ref immediately
-          }
-
-          clickedLayer._map.eachLayer((layer) => {
-            if (layer.getPopup && layer.getPopup() && layer !== clickedLayer) {
-              layer.closePopup();
-            }
-            if (layer.feature && layer.feature.properties && layer.setStyle) {
-              layer.setStyle(getMapStyle(layer.feature.properties)); // Apply spotlight
-            }
-          });
-
-          // Zoom to the clicked polygon smoothly, offset for the left panel
-          if (clickedLayer.getBounds) {
-            clickedLayer._map.flyToBounds(clickedLayer.getBounds(), { 
-              paddingTopLeft: [380, 50], // Offset for the left panel
-              paddingBottomRight: [50, 50],
-              duration: 1.5,
-              easeLinearity: 0.25
-            });
-          }
-
-          clickedLayer.openPopup();
-        },
-      });
-    },
-    [getMapStyle, getHoverStyle]
-  );
-
-  const handleResetView = () => {
-    setSelectedArea({ rt: null, rw: null, nmdesa: null });
-    selectedAreaRef.current = { rt: null, rw: null, nmdesa: null };
-    setSelectedAreaTitle(`Desa ${desaName || "Sidoarjo"}`);
-
-
-    // Refresh layer styles manually
+  const handleReset = () => {
+    setSelectedArea({ rt: "", rw: "" });
+    setSelectedAreaTitle(`Desa ${desaName}`);
+    setAllRawData(allOriginalData);
     if (geoJsonRef.current) {
-      geoJsonRef.current.eachLayer((layer) => {
-        if (layer.feature && layer.feature.properties && layer.setStyle) {
-          layer.setStyle(getMapStyle(layer.feature.properties));
-        }
-        if (layer.getPopup && layer.getPopup()) {
-          layer.closePopup();
-        }
-      });
+      geoJsonRef.current.resetStyle();
     }
   };
 
-
+  const enrichedGeojsonData = (() => {
+    if (!geojsonData || !geojsonData.features) return null;
+    const features = geojsonData.features.map(f => {
+      const rt = f.properties.RT || f.properties.rt;
+      const rw = f.properties.RW || f.properties.rw;
+      const match = allOriginalData.find(item => item.rt === String(rt) && item.rw === String(rw));
+      const dom = match ? getDominantKbli(match) : { kbli: "None", count: 0 };
+      return {
+        ...f,
+        properties: {
+          ...f.properties,
+          totalUmkm: match ? match.jml_umkm : 0,
+          dominantKbli: dom.kbli
+        }
+      };
+    });
+    return { ...geojsonData, features };
+  })();
 
   return (
-    <div
-      className="relative h-full w-full overflow-hidden"
-      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-    >
+    <div className="flex-1 w-full bg-slate-50 flex flex-col font-inter overflow-hidden relative">
+      
+      {/* Dynamic Header Info */}
+      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none text-gray-800">
+          Peta UMKM Desa {desaName}
+        </h1>
+        <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-lg">
+          Jelajahi sebaran unit usaha mikro kecil dan menengah di tingkat Rukun Tetangga (RT)
+        </p>
+      </div>
+
       <style jsx global>{`
-        * {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-        *::-webkit-scrollbar {
-          display: none;
-        }
-        .leaflet-interactive {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-        .leaflet-interactive:hover {
-          filter: brightness(1.1);
-        }
-
-        .custom-tooltip {
-          background: rgba(255, 255, 255, 0.98) !important;
-          border: 1px solid #e5e7eb !important;
-          border-radius: 8px !important;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
-        }
-        .custom-tooltip .leaflet-tooltip-content {
-          margin: 0 !important;
-          padding: 8px 12px !important;
-        }
-        .custom-tooltip::before {
-          border-top-color: #e5e7eb !important;
-        }
-
-        .custom-popup .leaflet-popup-content-wrapper {
-          background: white !important;
-          border-radius: 12px !important;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-            0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-          padding: 1px !important;
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
-        }
-        .custom-popup .leaflet-popup-content {
-          margin: 0 !important;
-          padding: 16px 20px !important;
-        }
-        .custom-popup .leaflet-popup-close-button {
-          color: #6b7280 !important;
-          font-size: 18px !important;
-          font-weight: bold !important;
-          padding: 8px !important;
-        }
-        .custom-popup .leaflet-popup-close-button:hover {
-          color: #374151 !important;
-          background-color: #f3f4f6 !important;
-          border-radius: 4px !important;
-        }
-
-        .custom-popup-compact .leaflet-popup-content-wrapper {
-          background: white !important;
-          border-radius: 8px !important;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-            0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
-          padding: 1px !important;
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
-        }
-        .custom-popup-compact .leaflet-popup-content {
-          margin: 0 !important;
-          padding: 12px 14px !important;
-        }
-        .custom-popup-compact .leaflet-popup-close-button {
-          color: #9ca3af !important;
-          font-size: 16px !important;
-          font-weight: bold !important;
-          padding: 4px 3px !important;
-          right: 6px !important;
-          top: 6px !important;
-          width: 20px !important;
-          height: 20px !important;
-          line-height: 12px !important;
-          text-align: center !important;
-          border-radius: 50% !important;
-          background-color: #f9fafb !important;
-          border: 1px solid #e5e7eb !important;
-          transition: all 0.2s ease !important;
-        }
-        .custom-popup-compact .leaflet-popup-close-button:hover {
-          color: #374151 !important;
-          background-color: #f3f4f6 !important;
-          border-color: #d1d5db !important;
-          transform: scale(1.1) !important;
-        }
-        .custom-popup-compact .leaflet-popup-tip {
-          background: white !important;
-          border: 1px solid #e5e7eb !important;
-        }
-
-        .leaflet-popup {
-          animation: popupFadeIn 0.3s ease-out;
-        }
-        @keyframes popupFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
         .leaflet-interactive:focus,
         .leaflet-clickable,
         .leaflet-zoom-animated .leaflet-interactive {
@@ -636,205 +254,149 @@ const Dashboard = ({ initialDesaName }) => {
         }
       `}</style>
 
-      {/* Peta Fullscreen */}
-      <div className="absolute inset-0 z-0">
-        {geojsonData ? (
-          <MapContainer
-            center={[-7.379, 112.73]}
-            zoom={13}
-            style={{ height: "100%", width: "100%" }}
-            doubleClickZoom={true}
-            zoomControl={false}
-          >
-            <TileLayer
-              url={activeBasemap.url}
-              attribution={activeBasemap.attribution}
-              maxZoom={activeBasemap.maxZoom}
-            />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
-            <AutoZoom geojsonData={geojsonData} />
-            {enrichedGeojsonData && (
-              <GeoJSON
-                ref={geoJsonRef}
-                key={`geojson-${allOriginalData.length}`}
-                data={enrichedGeojsonData}
-                style={(feature) => getMapStyle(feature.properties)}
-                onEachFeature={onEachFeature}
-              />
-            )}
-          </MapContainer>
-        ) : (
-          <div className="flex items-center justify-center h-full bg-gray-100">
-            <BeatLoader color="#4A90E2" size={10} />
-          </div>
-        )}
-      </div>
-
-      {/* Legend */}
-      <div className="absolute bottom-6 left-4 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-gray-100 z-[1000] min-w-[200px] transition-all duration-300">
-            <h4 className="font-bold text-gray-800 mb-3 text-sm flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                Legend UMKM
-              </span>
-            </h4>
-            <div className="flex flex-col gap-2.5">
-              {Object.entries(kbliColors)
-                .filter(([kbli]) => {
-                  if (!enrichedGeojsonData || !enrichedGeojsonData.features) return true;
-                  return enrichedGeojsonData.features.some(f => f.properties.dominantKbli === kbli && f.properties.totalUmkm > 0);
-                })
-                .map(([kbli, color]) => (
-                <div key={kbli} className="flex items-center gap-3 group">
-                  <span
-                    className="w-4 h-4 rounded shadow-sm border border-black/10 transition-transform group-hover:scale-110"
-                    style={{ backgroundColor: color }}
-                  ></span>
-                  <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
-                    KBLI {kbli} - {getKbliName(kbli)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-      {/* Filter Panel */}
-      <div className="absolute top-48 right-4 z-[1000]">
-        {!isFilterOpen ? (
-          <button
-            onClick={() => setIsFilterOpen(true)}
-            className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 hover:shadow-xl transition-all duration-300 flex items-center space-x-2 group"
-          >
-            <svg
-              className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
-              />
-            </svg>
-            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
-              Filter Data
-            </span>
-            {activeKbliFilter && (
-              <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium ml-2">
-                1 Aktif
-              </div>
-            )}
-          </button>
-        ) : (
-          <div className="relative">
-            <button
-              onClick={() => setIsFilterOpen(false)}
-              className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1 rounded-full shadow-md transition-all duration-200"
-              style={{ width: "24px", height: "24px" }}
-            >
-              <svg
-                className="w-4 h-4 m-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <FilterPanelUmkm
-              onFilterChange={(filters) => setActiveKbliFilter(filters.kbliDominan)}
-              filteredCount={processedData.totalPenduduk || 0}
-              totalCount={allRawData.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)}
-              kbliColors={kbliColors}
-              getKbliName={getKbliName}
-            />
-          </div>
-        )}
-      </div>
-
-
-
-      {/*Panel Overlay*/}
-      <div
-        className={`absolute top-4 left-4 z-10 transition-all duration-300 ${
-          isPanelMinimized ? "w-16 h-12" : "w-80 max-h-[calc(100vh-130px)] flex flex-col"
-        }`}
+      {/* Map Container — same classes and responsive structure as LandingPage */}
+      <div 
+        className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6" 
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col flex-1 min-h-0">
-          <div
-            className="bg-blue-600 text-white p-3 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors duration-200"
-            onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-          >
-            <h2
-              className={`font-medium text-sm ${
-                isPanelMinimized ? "hidden" : "block"
-              }`}
+        {/* Outer frame of map */}
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+          {geojsonData ? (
+            <MapContainer
+              center={[-7.379, 112.73]}
+              zoom={13}
+              minZoom={12}
+              maxZoom={18}
+              zoomSnap={0.5}
+              zoomDelta={0.5}
+              maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+              maxBoundsViscosity={1.0}
+              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
+              doubleClickZoom={true}
+              zoomControl={false}
+              scrollWheelZoom={true}
             >
-              {selectedAreaTitle}
-            </h2>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsPanelMinimized(!isPanelMinimized);
-                }}
-                className="text-white hover:text-gray-200 p-1 rounded transition-colors duration-200"
-                title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
-              >
-                {isPanelMinimized ? (
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                ) : (
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                )}
-              </button>
-          </div>
-
-          {!isPanelMinimized && (
-            <div className="flex flex-col flex-1 min-h-0 overflow-y-auto custom-scrollbar p-1">
-              <h2 className="text-lg font-bold text-gray-800 text-center mb-2 mt-1 pb-1 border-b-2 border-blue-100">
-                Data UMKM
-              </h2>
-
-              <div className="bg-blue-50 rounded-lg p-2 mb-3 shadow-sm border border-blue-100 transform transition hover:scale-105">
-                <p className="text-xs text-gray-500 font-medium text-center">
-                  Total UMKM
-                </p>
-                <p className="text-3xl font-extrabold text-blue-600 text-center my-0">
-                  <CountUp end={processedData?.totalPenduduk || 0} duration={2} separator="." />
-                </p>
-                {selectedArea.rt && selectedArea.rw && (
-                  <p className="text-[10px] text-gray-400 text-center">
-                    di RT {selectedArea.rt} / RW {selectedArea.rw}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex-1 min-h-0 w-full px-1">
-                <UmkmCharts 
-                  data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} 
+              <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+              <AutoZoom geojsonData={geojsonData} />
+              {enrichedGeojsonData && (
+                <GeoJSON
+                  ref={geoJsonRef}
+                  key={`geojson-${allOriginalData.length}`}
+                  data={enrichedGeojsonData}
+                  style={(feature) => getMapStyle(feature.properties)}
+                  onEachFeature={onEachFeature}
                 />
-              </div>
-
+              )}
+            </MapContainer>
+          ) : (
+            <div className="flex items-center justify-center h-full bg-gray-100">
+              <BeatLoader color="#4A90E2" size={10} />
             </div>
           )}
+
+          {/* ── LEFT PANEL — inside map, top left, scrollable, made narrower (w-44) */}
+          <div
+            className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${
+              isPanelMinimized ? "w-10 h-10" : "w-44"
+            }`}
+            style={!isPanelMinimized ? { maxHeight: "calc(100% - 2rem)" } : {}}
+          >
+            <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
+              <div
+                className="bg-blue-600 text-white px-2 py-1.5 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
+                onClick={() => setIsPanelMinimized(!isPanelMinimized)}
+              >
+                <h2 className={`font-medium text-[11px] truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }}
+                  className="text-white hover:text-gray-200 shrink-0 ml-1"
+                  title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
+                >
+                  {isPanelMinimized ? (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  ) : (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                  )}
+                </button>
+              </div>
+              {!isPanelMinimized && (
+                <div className="overflow-y-auto p-1.5" style={{ maxHeight: "calc(100% - 32px)" }}>
+                  <div className="flex gap-1 mb-1.5">
+                    <button onClick={handleReset} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 rounded text-[10px] font-semibold transition-colors rounded-md shadow-sm">
+                      Reset
+                    </button>
+                  </div>
+                  <h2 className="text-[11px] font-bold text-gray-800 text-center mb-1.5 pb-0.5 border-b border-blue-100">Data UMKM</h2>
+                  <div className="bg-blue-50 rounded-lg p-1.5 mb-1.5 border border-blue-100">
+                    <p className="text-[9px] text-gray-500 font-medium text-center">Total UMKM</p>
+                    <p className="text-lg font-extrabold text-blue-600 text-center my-0">
+                      <CountUp end={processedData?.totalPenduduk || 0} duration={2} separator="." />
+                    </p>
+                    {selectedArea.rt && selectedArea.rw && (
+                      <p className="text-[8px] text-gray-400 text-center">RT {selectedArea.rt} / RW {selectedArea.rw}</p>
+                    )}
+                  </div>
+                  <div className="w-full">
+                    <UmkmCharts data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── LEGEND — inside map, bottom left, smaller max-w */}
+          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-100 z-[1000] max-w-[140px] pointer-events-auto">
+            <h4 className="font-bold text-gray-700 mb-1 text-[9px] uppercase tracking-wide flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>Legend UMKM
+            </h4>
+            <div className="flex flex-col gap-1 max-h-[100px] overflow-y-auto no-scrollbar">
+              {Object.entries(kbliColors)
+                .filter(([kbli]) => enrichedGeojsonData?.features?.some(f => f.properties.dominantKbli === kbli && f.properties.totalUmkm > 0) ?? true)
+                .map(([kbli, color]) => (
+                  <div key={kbli} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded shrink-0 border border-black/10" style={{ backgroundColor: color }}></span>
+                    <span className="text-[9px] text-gray-600 truncate">KBLI {kbli} – {getKbliName(kbli)}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
+          <div className="absolute top-[160px] right-4 z-[1000] pointer-events-auto flex flex-col items-end gap-2">
+            {!isFilterOpen ? (
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-100 w-10 h-10 hover:shadow-xl transition-all flex items-center justify-center group relative"
+                title="Filter Data"
+              >
+                <svg className="w-4 h-4 text-gray-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                </svg>
+                {activeKbliFilter && <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"></span>}
+              </button>
+            ) : (
+              <div className="relative">
+                <button onClick={() => setIsFilterOpen(false)} className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 p-1 rounded-full shadow-md" style={{ width: "22px", height: "22px" }}>
+                  <svg className="w-3.5 h-3.5 m-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <FilterPanelUmkm onFilterChange={(filters) => setActiveKbliFilter(filters.kbliDominan)} filteredCount={processedData.totalPenduduk || 0} totalCount={allRawData.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)} kbliColors={kbliColors} getKbliName={getKbliName} />
+              </div>
+            )}
+          </div>
+
+          {/* ── AI INSIGHT — inside map, bottom right */}
+          <AIInsightBox 
+            desaName={desaName} 
+            featureName={selectedAreaTitle} 
+            contextType="umkm" 
+            requireClick={true} 
+            customClass="bottom-4 right-4" 
+            data={{ totalUmkm: processedData.totalUmkm, dominanKbli: getKbliName(processedData.dominantKbli) }} 
+          />
+
         </div>
       </div>
-
-      {/* AI Insight Box at the bottom middle */}
-      <AIInsightBox 
-        featureName={selectedAreaTitle}
-        contextType="umkm"
-        data={{
-          totalUmkm: processedData.totalUmkm,
-          dominanKbli: getKbliName(processedData.dominantKbli)
-        }}
-      />
     </div>
   );
 };
