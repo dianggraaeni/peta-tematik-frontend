@@ -72,11 +72,15 @@ const UmkmCharts = ({ data }) => {
   const lokasiOptions = {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-    xAxis: { type: "value" },
+    xAxis: { 
+      type: "value",
+      axisLabel: { hideOverlap: true, fontSize: 10 },
+      splitNumber: 3
+    },
     yAxis: {
       type: "category",
       data: aggregated.lokasi.map((d) => d.name).reverse(),
-      axisLabel: { interval: 0, width: 80, overflow: 'truncate' }
+      axisLabel: { interval: 0, width: 85, overflow: 'break', fontSize: 10, lineHeight: 12 }
     },
     series: [
       {
@@ -109,7 +113,7 @@ const UmkmCharts = ({ data }) => {
         </h3>
         <ReactECharts
           option={lokasiOptions}
-          style={{ height: 160, width: "100%" }}
+          style={{ height: 210, width: "100%" }}
           opts={{ renderer: "svg" }}
         />
       </div>

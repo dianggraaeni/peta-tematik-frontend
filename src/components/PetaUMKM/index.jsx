@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import BeatLoader from "react-spinners/BeatLoader";
@@ -25,11 +26,11 @@ const getKbliName = (kbli) => {
 // Dominant KBLI extraction
 const getDominantKbli = (item) => {
   const counts = {
-    A: item.kbli_a || 0,
-    C: item.kbli_c || 0,
-    G: item.kbli_g || 0,
-    I: item.kbli_i || 0,
-    S: item.kbli_s || 0,
+    A: item.jml_umkm_kbli_a || 0,
+    C: item.jml_umkm_kbli_c || 0,
+    G: item.jml_umkm_kbli_g || 0,
+    I: item.jml_umkm_kbli_i || 0,
+    S: item.jml_umkm_kbli_s || 0,
   };
   let maxKbli = "Lainnya";
   let maxVal = 0;
@@ -90,10 +91,11 @@ const Dashboard = ({ initialDesaName }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const geoRes = await api6.get(`/api/geojson/umkm?desa=${desaName.toUpperCase()}`);
+        const formattedDesaName = desaName.charAt(0).toUpperCase() + desaName.slice(1).toLowerCase();
+        const geoRes = await api6.get(`/api/peta?nmdesa=${formattedDesaName}`);
         setGeojsonData(geoRes.data);
 
-        const dataRes = await api6.get(`/api/umkm/data?desa=${desaName.toUpperCase()}`);
+        const dataRes = await api6.get(`/api/umkm?nmdesa=${formattedDesaName}`);
         setAllRawData(dataRes.data);
         setAllOriginalData(dataRes.data);
       } catch (err) {
@@ -138,6 +140,7 @@ const Dashboard = ({ initialDesaName }) => {
   })();
 
   const getMapStyle = (properties) => {
+    if (properties.marker_type === "UMKM") return {};
     const rt = properties.RT || properties.rt;
     const rw = properties.RW || properties.rw;
     const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
@@ -159,6 +162,23 @@ const Dashboard = ({ initialDesaName }) => {
 
   const onEachFeature = (feature, layer) => {
     const props = feature.properties;
+    
+    if (props.marker_type === "UMKM") {
+      let kbliClean = props.kategori_kbli || "Lainnya";
+      if (kbliClean.includes('_')) kbliClean = kbliClean.split('_')[1].toUpperCase();
+      
+      const popupContent = `
+        <div style="font-family: 'Inter', sans-serif; padding: 4px;">
+          <h4 style="margin: 0 0 4px 0; font-weight: 700; color: #1e293b;">${props.nama_usaha || 'UMKM'}</h4>
+          <p style="margin: 0 0 2px 0; font-size: 11px; color: #475569;">${props.alamat || '-'}</p>
+          <p style="margin: 0 0 2px 0; font-size: 11px; color: #2563eb;">KBLI: <strong>${kbliClean} (${getKbliName(kbliClean)})</strong></p>
+          <p style="margin: 0; font-size: 11px; color: #64748b;">Kegiatan: ${props.kegiatan_utama_usaha || '-'}</p>
+        </div>
+      `;
+      layer.bindPopup(popupContent, { offset: L.point(0, -5) });
+      return;
+    }
+
     const rt = props.RT || props.rt;
     const rw = props.RW || props.rw;
     const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
@@ -233,15 +253,20 @@ const Dashboard = ({ initialDesaName }) => {
   })();
 
   return (
-    <div className="flex-1 w-full bg-slate-50 flex flex-col font-inter overflow-hidden relative">
+    <div className="min-h-screen w-full bg-slate-50 flex flex-col font-inter overflow-x-hidden relative">
       
       {/* Dynamic Header Info */}
       <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-2 tracking-tight leading-none text-gray-800">
+        <div className="animate-float">
+          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
+            Jelajahi
+          </p>
+        </div>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
           Peta UMKM Desa {desaName}
         </h1>
-        <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-lg">
-          Jelajahi sebaran unit usaha mikro kecil dan menengah di tingkat Rukun Tetangga (RT)
+        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
+          Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
 
@@ -280,13 +305,31 @@ const Dashboard = ({ initialDesaName }) => {
               <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
               <AutoZoom geojsonData={geojsonData} />
               {enrichedGeojsonData && (
-                <GeoJSON
-                  ref={geoJsonRef}
-                  key={`geojson-${allOriginalData.length}`}
-                  data={enrichedGeojsonData}
-                  style={(feature) => getMapStyle(feature.properties)}
-                  onEachFeature={onEachFeature}
-                />
+                <MarkerClusterGroup chunkedLoading>
+                  <GeoJSON
+                    ref={geoJsonRef}
+                    key={`geojson-${allOriginalData.length}`}
+                    data={enrichedGeojsonData}
+                    style={(feature) => getMapStyle(feature.properties)}
+                    onEachFeature={onEachFeature}
+                    pointToLayer={(feature, latlng) => {
+                      if (feature.properties.marker_type === "UMKM") {
+                        let kbli = feature.properties.kategori_kbli || "";
+                        if (kbli.includes('_')) kbli = kbli.split('_')[1].toUpperCase();
+                        const color = kbliColors[kbli] || "#3b82f6";
+                        
+                        const customIcon = L.divIcon({
+                          className: 'custom-umkm-marker',
+                          html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                          iconSize: [16, 16],
+                          iconAnchor: [8, 8]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                      }
+                      return L.marker(latlng);
+                    }}
+                  />
+                </MarkerClusterGroup>
               )}
             </MapContainer>
           ) : (

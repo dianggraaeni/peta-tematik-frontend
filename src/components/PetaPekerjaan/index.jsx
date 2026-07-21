@@ -396,16 +396,14 @@ const Dashboard = ({ desaName: propsDesaName }) => {
         const rt = feature.properties.RT || feature.properties.rt;
         const rw = feature.properties.RW || feature.properties.rw;
 
-        const rt_formatted = rt?.toString().padStart(3, "0");
-        const rw_formatted = rw?.toString().padStart(3, "0");
+        const rt_formatted = rt ? rt.toString().padStart(3, "0") : null;
+        const rw_formatted = rw ? rw.toString().padStart(3, "0") : null;
 
         const possibleKeys = [
           `${rt_formatted}-${rw_formatted}`,
           `${rt}-${rw}`,
-          `${rt?.toString()}-${rw?.toString()}`,
-          `${rt?.toString().padStart(2, "0")}-${rw
-            ?.toString()
-            .padStart(2, "0")}`,
+          `${rt ? rt.toString() : ''}-${rw ? rw.toString() : ''}`,
+          `${rt ? rt.toString().padStart(2, "0") : ''}-${rw ? rw.toString().padStart(2, "0") : ''}`,
         ];
 
         let areaInfo = null;

@@ -16,7 +16,7 @@ import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
-import api2 from "../../utils/api2.js";
+import api6 from "../../utils/api6.js";
 import { message } from "antd";
 import CountUp from "react-countup";
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -33,7 +33,7 @@ export default function MapSection() {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
-  const [dataAgregat, setDataAgregat] = useState([]);
+  const [dataAgregat, setDataAgregat] = useState({});
   const [dataRumahTangga, setDataRumahTangga] = useState([]);
   const [selectedRT, setSelectedRT] = useState("desa");
   const [loading, setLoading] = useState(false);
@@ -47,71 +47,91 @@ export default function MapSection() {
   const changeVisualization = (type) => setVisualization(type);
 
   const fetchData = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
-      const response = await api2.get("/api/sls/all/geojson");
-      setData(response.data.data); // Update state dengan data dari API
-      console.log("Data fetched:", response.data.data);
+      const response = await api6.get("/api/peta?nmdesa=SIMOKETAWANG");
+      const features = response.data.features || [];
+      const polygons = features.filter(f => f.geometry && f.geometry.type !== "Point");
+      
+      const formattedData = polygons.map(f => {
+        // Ensure rt and rw exist in lowercase for compatibility
+        if (f.properties.RT) f.properties.rt = f.properties.RT;
+        if (f.properties.RW) f.properties.rw = f.properties.RW;
+        
+        // Ensure kode exists
+        if (!f.properties.kode && f.properties.rt) {
+          f.properties.kode = f.properties.rt;
+        }
+
+        // Count businesses inside this polygon dynamically
+        const rt = f.properties.rt;
+        const rw = f.properties.rw;
+        let count = 0;
+        
+        // Find points that belong to this RT/RW
+        features.forEach(pt => {
+          if (pt.geometry && pt.geometry.type === "Point" && pt.properties.marker_type === "Kelengkeng") {
+            const ptRt = pt.properties.RT || pt.properties.rt || (pt.properties.rt_rw_dusun && pt.properties.rt_rw_dusun.match(/RT\s*(\d+)/)?.[1]);
+            if (ptRt && parseInt(ptRt) === parseInt(rt)) {
+              count++;
+            }
+          }
+        });
+        f.properties.jml_unit_usaha_klengkeng = count;
+
+        return {
+          type: "FeatureCollection",
+          features: [f]
+        };
+      });
+      
+      setData(formattedData);
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(`Terjadi kesalahan: ${error.message}`, 5);
-      }
+      message.error(`Terjadi kesalahan muat peta: ${error.message}`, 5);
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false);
     }
   };
 
   const fetchDataAgregat = async () => {
-    setLoading(true); // Mulai loading
-    try {
-      const response = await api2.get("/api/sls/all/aggregate");
-      setDataAgregat(response.data.data); // Update state dengan data dari API
-      console.log("Data fetched:", response.data.data);
-    } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(`Terjadi kesalahan: ${error.message}`, 5);
-      }
-    } finally {
-      setLoading(false); // Akhiri loading
-    }
+    // Will be calculated dynamically after RumahTangga is fetched
   };
 
   const fetchDataRumahTangga = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
-      const response = await api2.get("/api/usahaKlengkeng");
-      setDataRumahTangga(response.data.data); // Update state dengan data dari API
-      console.log("Data fetched:", response.data.data);
+      const response = await api6.get("/api/peta?nmdesa=SIMOKETAWANG");
+      const points = response.data.features
+        .filter(f => f.geometry.type === "Point" && f.properties.marker_type === "Kelengkeng")
+        .map(f => ({
+          ...f.properties,
+          latitude: f.geometry.coordinates[1],
+          longitude: f.geometry.coordinates[0],
+        }));
+      setDataRumahTangga(points);
+      
+      // Calculate Aggregates
+      let jmlPohon = 0;
+      let belum = 0;
+      let sudah = 0;
+      points.forEach(item => {
+        const pohon = Number.parseInt(item.jml_pohon) || 0;
+        const volume = Number.parseFloat(item.volume_produksi) || 0;
+        jmlPohon += pohon;
+        if (volume > 0) sudah += pohon;
+        else belum += pohon;
+      });
+      
+      setDataAgregat({
+        jml_pohon: jmlPohon,
+        jml_pohon_blm_berproduksi: belum,
+        jml_pohon_sdh_berproduksi: sudah
+      });
+
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(`Terjadi kesalahan: ${error.message}`, 5);
-      }
+      message.error(`Terjadi kesalahan muat kelengkeng: ${error.message}`, 5);
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false);
     }
   };
 
@@ -295,25 +315,29 @@ export default function MapSection() {
       .replace(/\s\/\s/, "/"); // Gabungkan kembali "/" tanpa spasi
   }
 
-  function calculateCentroid(multiPolygon) {
+  function calculateCentroid(geometry) {
     let totalX = 0,
       totalY = 0,
       totalPoints = 0;
 
-    multiPolygon.coordinates.forEach((polygon) => {
-      polygon.forEach((ring) => {
-        ring.forEach((coordinate) => {
-          totalX += coordinate[0];
-          totalY += coordinate[1];
-          totalPoints++;
-        });
+    const processRing = (ring) => {
+      ring.forEach((coordinate) => {
+        totalX += coordinate[0];
+        totalY += coordinate[1];
+        totalPoints++;
       });
-    });
+    };
 
-    const centroidX = totalX / totalPoints;
-    const centroidY = totalY / totalPoints;
+    if (geometry.type === "Polygon") {
+      geometry.coordinates.forEach(processRing);
+    } else if (geometry.type === "MultiPolygon") {
+      geometry.coordinates.forEach((polygon) => {
+        polygon.forEach(processRing);
+      });
+    }
 
-    return [centroidY, centroidX]; // Return as an array of floats
+    if (totalPoints === 0) return [0, 0];
+    return [totalY / totalPoints, totalX / totalPoints];
   }
 
   const tempatUsaha = {
@@ -346,11 +370,11 @@ export default function MapSection() {
   const dataJenis = [
     {
       name: "Belum",
-      value: dataAgregat.jml_pohon_blm_berproduksi,
+      value: dataAgregat.jml_pohon_blm_berproduksi || 0,
     },
     {
       name: "Sudah",
-      value: dataAgregat.jml_pohon_sdh_berproduksi,
+      value: dataAgregat.jml_pohon_sdh_berproduksi || 0,
     },
   ];
 
@@ -513,18 +537,57 @@ export default function MapSection() {
   };
 
   return (
-    <div className="relative w-full h-[89vh] font-sfProDisplay">
-      <div className="absolute top-0 left-0 z-0 w-full h-full">
-        <MapContainer
-          center={[-7.446033620089397, 112.60262064240202]} // lokasi desa simoanginangin
-          zoom={16}
-          scrollWheelZoom={true}
-          className="w-full h-full"
-          touchZoom={true}
-          whenCreated={setMapInstance}
-          zoomControl={false}
-          doubleClickZoom={true}
-        >
+    <div className="min-h-screen bg-slate-50 flex flex-col font-inter overflow-x-hidden">
+      {/* Header Info */}
+      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
+        <div className="animate-float">
+          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
+            Jelajahi
+          </p>
+        </div>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
+          Peta Potensi Kelengkeng Desa SIMOKETAWANG
+        </h1>
+        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
+          Arahkan kursor ke wilayah untuk melihat informasi singkat
+        </p>
+      </div>
+
+      <style jsx global>{`
+        * {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        *::-webkit-scrollbar {
+          display: none;
+        }
+        .leaflet-interactive {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .leaflet-interactive:focus,
+        .leaflet-clickable,
+        .leaflet-zoom-animated .leaflet-interactive {
+          outline: none !important;
+          border: none !important;
+        }
+      `}</style>
+
+      {/* Map Container */}
+      <div 
+        className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6" 
+      >
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+          <div className="absolute top-0 left-0 z-0 w-full h-full font-sfProDisplay">
+            <MapContainer
+              center={[-7.446033620089397, 112.60262064240202]}
+              zoom={16}
+              scrollWheelZoom={true}
+              className="w-full h-full"
+              touchZoom={true}
+              whenCreated={setMapInstance}
+              zoomControl={false}
+              doubleClickZoom={true}
+            >
           <TileLayer
             url={activeBasemap.url}
             attribution={activeBasemap.attribution}
@@ -534,7 +597,7 @@ export default function MapSection() {
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (
-              <>
+              <React.Fragment key={index}>
                 <MemoizedGeoJSON
                   key={index}
                   data={geoJsonData}
@@ -560,24 +623,22 @@ export default function MapSection() {
                     })}
                   />
                 )}
-              </>
+              </React.Fragment>
             ))
           ) : (
             <BeatLoader />
           )}
           {showIndividu &&
-            // <MarkerClusterGroup>
-            filtered.map((item) => (
-              <CustomMarker key={`marker-${item._id}`} item={item} />
+            filtered.map((item, idx) => (
+              <CustomMarker key={`marker-individu-${idx}`} item={item} />
             ))
-            // </MarkerClusterGroup>
           }
         </MapContainer>
       </div>
 
-      <div className="mx-[10%] font-sfProDisplay">
+      <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
         <button
-          className="absolute top-4 right-[10%] z-10 px-11 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center"
+          className="absolute top-4 right-[10%] z-10 px-11 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center pointer-events-auto"
           onClick={() => setIsFilterOpen(!isFilterOpen)}
         >
           <span className="mr-2 material-icons">filter_list</span>
@@ -585,7 +646,7 @@ export default function MapSection() {
         </button>
 
         <button
-          className="absolute top-4 left-[10%] z-10 px-12 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center"
+          className="absolute top-4 left-[10%] z-10 px-12 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center pointer-events-auto"
           onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
         >
           <span className="mr-2 material-icons">analytics</span>
@@ -600,7 +661,7 @@ export default function MapSection() {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 right-[10%] z-10 w-64 p-4 bg-[#101920] rounded-md shadow-md text-white"
+          className="absolute top-16 right-[10%] z-10 w-64 p-4 bg-[#101920] rounded-md shadow-md text-white pointer-events-auto"
         >
           <div>
             <div className="grid grid-cols-2 gap-4">
@@ -690,7 +751,7 @@ export default function MapSection() {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 left-[10%] z-10 w-64 max-h-[77vh] p-4 bg-[#1D262C] rounded-md shadow-md text-white overflow-y-auto"
+          className="absolute top-16 left-[10%] z-10 w-64 max-h-[77vh] p-4 bg-[#1D262C] rounded-md shadow-md text-white overflow-y-auto pointer-events-auto custom-scrollbar"
         >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
@@ -714,7 +775,7 @@ export default function MapSection() {
                           start={0}
                           end={
                             filteredData.features[0].properties
-                              .jml_unit_usaha_klengkeng
+                              .jml_unit_usaha_klengkeng || 0
                           }
                           duration={3}
                         />
@@ -731,13 +792,13 @@ export default function MapSection() {
                               name: "Belum",
                               value:
                                 filteredData.features[0].properties
-                                  .jml_pohon_blm_berproduksi,
+                                  .jml_pohon_blm_berproduksi || 0,
                             },
                             {
                               name: "Sudah",
                               value:
                                 filteredData.features[0].properties
-                                  .jml_pohon_sdh_berproduksi,
+                                  .jml_pohon_sdh_berproduksi || 0,
                             },
                           ]}
                           dataKey="value"
@@ -752,13 +813,13 @@ export default function MapSection() {
                               name: "Belum",
                               value:
                                 filteredData.features[0].properties
-                                  .jml_pohon_blm_berproduksi,
+                                  .jml_pohon_blm_berproduksi || 0,
                             },
                             {
                               name: "Sudah",
                               value:
                                 filteredData.features[0].properties
-                                  .jml_pohon_sdh_berproduksi,
+                                  .jml_pohon_sdh_berproduksi || 0,
                             },
                           ].map((entry, index) => (
                             <Cell
@@ -797,7 +858,7 @@ export default function MapSection() {
                       <div className="text-4xl font-bold">
                         <CountUp
                           start={0}
-                          end={dataAgregat.jml_pohon}
+                          end={dataAgregat.jml_pohon || 0}
                           duration={3}
                         />
                       </div>
@@ -844,9 +905,10 @@ export default function MapSection() {
           </div>
         </Transition>
         <div
-          className="absolute bottom-4 right-4 z-10 w-auto p-2 mr-[8%] bg-white rounded-md shadow-md text-gray-800"
+          className="absolute bottom-4 right-[10%] z-10 w-auto p-2 bg-white rounded-md shadow-md text-gray-800 pointer-events-auto"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.7)", // Semi-transparent background
+            backgroundColor: "rgba(255, 255, 255, 0.7)",
+
             backdropFilter: "blur(12px)", // Blur effect
           }}
         >
@@ -876,6 +938,8 @@ export default function MapSection() {
             <LegendMenu />
           </div>
         </div>
+      </div>
+      </div>
       </div>
     </div>
   );

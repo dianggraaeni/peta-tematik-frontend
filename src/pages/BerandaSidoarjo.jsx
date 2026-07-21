@@ -155,6 +155,8 @@ const BerandaSidoarjo = () => {
     const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
     if (normalizedName === "SIMOANGINANGIN") {
       navigate("/detail-simoanginangin");
+    } else if (normalizedName === "SIMOKETAWANG") {
+      navigate("/detail-simoketawang");
     } else {
       navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
     }
