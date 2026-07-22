@@ -13,6 +13,7 @@ import {
   useMap,
 } from "react-leaflet";
 import CustomMapControls, { useBasemap } from "../CustomMapControls";
+import AIInsightBox from "../AIInsightBox";
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
@@ -578,6 +579,9 @@ export default function MapSection() {
         <MapContainer
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
+          minZoom={12}
+          maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+          maxBoundsViscosity={1.0}
           scrollWheelZoom={true}
           className="w-full h-full"
           touchZoom={true}
@@ -958,6 +962,17 @@ export default function MapSection() {
             <LegendMenu />
           </div>
         </div>
+
+        {/* ── AI INSIGHT — inside map, bottom right */}
+        <AIInsightBox 
+          desaName="Simoanginangin"
+          featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
+          contextType="sayuran"
+          requireClick={true}
+          customClass="bottom-4 right-4"
+          data={dataAgregat}
+        />
+      </div>
       </div>
     </div>
   );

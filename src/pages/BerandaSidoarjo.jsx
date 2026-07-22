@@ -210,7 +210,7 @@ const BerandaSidoarjo = () => {
     return {
       fillColor,
       opacity: 1,
-      color: isSelected ? "#ffffff" : "#475569", // Slate dark grey
+      color: isSelected ? (mapMode === "tematik" ? "#FFD700" : "#ffffff") : "#475569", // Gold for tematik selected, else white
       weight: isSelected ? 3 : 2,
       dashArray: isSelected ? "" : "3",
       fillOpacity: (mapMode === "tematik" && activeThemes.length > 0 && !fillColor.includes("f59e0b")) ? 0.3 : (isSelected ? 0.7 : 0.5),
@@ -246,7 +246,7 @@ const BerandaSidoarjo = () => {
       ...getStyle(feature),
       fillColor: fillColor,
       weight: isSelected ? 3 : 2,
-      color: isSelected ? "#ffffff" : "#1e293b",
+      color: isSelected ? (mapMode === "tematik" ? "#FFD700" : "#ffffff") : "#1e293b",
       dashArray: "",
       fillOpacity: 0.8,
     };

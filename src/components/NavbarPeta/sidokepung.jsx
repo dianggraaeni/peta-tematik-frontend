@@ -10,7 +10,7 @@ export default function NavbarPetaKelengkeng({ desaName = "SIDOARJO" }) {
       {/* Left side: Logos and Title */}
       <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Coat_of_Arms_of_Sidoarjo_Regency.png/664px-Coat_of_Arms_of_Sidoarjo_Regency.png"
+          src="/pict/logo_sidoarjo.png"
           alt="Sidoarjo Coat of Arms"
           className="h-10 md:h-12 w-auto object-contain drop-shadow-sm"
         />
@@ -49,7 +49,7 @@ export default function NavbarPetaKelengkeng({ desaName = "SIDOARJO" }) {
         </button>
 
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/peta-tematik')}
           className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-2 shrink-0"
         >
           <span className="font-extrabold text-lg -mt-1">&laquo;</span> Peta Tematik

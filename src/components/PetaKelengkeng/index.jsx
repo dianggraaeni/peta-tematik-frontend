@@ -13,6 +13,7 @@ import {
   useMap,
 } from "react-leaflet";
 import CustomMapControls, { useBasemap } from "../CustomMapControls";
+import AIInsightBox from "../AIInsightBox";
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
@@ -103,6 +104,12 @@ export default function MapSection() {
       const response = await api6.get("/api/peta?nmdesa=SIMOKETAWANG");
       const points = response.data.features
         .filter(f => f.geometry.type === "Point" && f.properties.marker_type === "Kelengkeng")
+        .filter(f => {
+          const lng = f.geometry.coordinates[0];
+          const lat = f.geometry.coordinates[1];
+          // Simoketawang rough bounds
+          return lng >= 112.58 && lng <= 112.62 && lat >= -7.46 && lat <= -7.43;
+        })
         .map(f => ({
           ...f.properties,
           latitude: f.geometry.coordinates[1],
@@ -115,7 +122,7 @@ export default function MapSection() {
       let belum = 0;
       let sudah = 0;
       points.forEach(item => {
-        const pohon = Number.parseInt(item.jml_pohon) || 0;
+        const pohon = Number.parseInt(item.jumlah_pohon) || 0;
         const volume = Number.parseFloat(item.volume_produksi) || 0;
         jmlPohon += pohon;
         if (volume > 0) sudah += pohon;
@@ -162,39 +169,30 @@ export default function MapSection() {
 
   const getColor = (density) => {
     return density > 32
-      ? "#7E370C"
+      ? "#064e3b"
       : density > 16
-      ? "#B05E27"
+      ? "#065f46"
       : density > 8
-      ? "#D4AC2B"
+      ? "#047857"
       : density > 4
-      ? "#FFCE45"
+      ? "#059669"
       : density > 2
-      ? "#FEB24C"
+      ? "#10b981"
       : density > 1
-      ? "#FED976"
-      : "#000000";
+      ? "#34d399"
+      : "rgba(16, 185, 129, 0.2)"; // transparent green instead of slate
   };
 
   const markerIcon = divIcon({
-    className: "custom-label",
+    className: "custom-marker-icon",
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -18],
     html: `
-    <span
-      class="material-symbols-outlined"
-      style="
-        color: #BD7A33;
-        font-size: 1.5rem;
-        font-variation-settings:
-          'FILL' 1,
-          'wght' 400,
-          'GRAD' 0,
-          'opsz' 24;
-        -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.8); /* Menambahkan stroke putih */
-      "
-    >
-      nutrition
-    </span>
-  `,
+      <div style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background-color: #10b981; border-radius: 9999px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 2px solid white;">
+        <span class="material-icons" style="color: white; font-size: 18px;">park</span>
+      </div>
+    `,
   });
 
   let selectedLayer = null; // Track the currently selected layer
@@ -395,12 +393,12 @@ export default function MapSection() {
   const filtered = useMemo(() => {
     return dataRumahTangga.filter(
       (item) =>
-        (selectedRT === "desa" || item.kodeSls === selectedRT) &&
+        (selectedRT === "desa" || (item.rt_rw_dusun && item.rt_rw_dusun.includes(selectedRT))) &&
         (selectedClassification === "all" ||
           (selectedClassification in variables &&
             item[variables[selectedClassification]] !== 0)) &&
         (selectedtUsaha === "all" ||
-          (Array.isArray(item.pemanfaatan_produk) &&
+          (item.pemanfaatan_produk &&
             item.pemanfaatan_produk.includes(selectedtUsaha)))
     );
   }, [dataRumahTangga, selectedRT, selectedClassification, selectedtUsaha]);
@@ -412,67 +410,13 @@ export default function MapSection() {
         icon={markerIcon}
       >
         <Popup>
-          <div className="z-100">
-            <strong>Informasi Usaha:</strong>
-            {console.log("Check items ", item)}
-            <img
-              src={item.url_img}
-              alt="Kelengkeng Image"
-              className="object-cover w-full h-40 mb-3 rounded-lg"
-              loading="lazy"
-            />
-            <b>{item.nama_kepala_keluarga}</b>
-            <br />
-            {item.rt_rw_dusun}
-            <br />
-            <b>Jumlah Pohon: </b>
-            <br />
-            {item.jml_pohon}
-            <br />
-            <b>Jenis Kelengkeng:</b>
-            <br />
-            {item.jml_pohon_new_crystal > 0 && (
-              <>
-                New Crystal: {item.jml_pohon_new_crystal} Pohon
-                <br />
-              </>
-            )}
-            {item.jml_pohon_pingpong > 0 && (
-              <>
-                Pingpong: {item.jml_pohon_pingpong} Pohon
-                <br />
-              </>
-            )}
-            {item.jml_pohon_metalada > 0 && (
-              <>
-                Metalada: {item.jml_pohon_metalada} Pohon
-                <br />
-              </>
-            )}
-            {item.jml_pohon_diamond_river > 0 && (
-              <>
-                Diamond River: {item.jml_pohon_diamond_river} Pohon
-                <br />
-              </>
-            )}
-            {item.jml_pohon_merah > 0 && (
-              <>
-                Merah: {item.jml_pohon_merah} Pohon
-                <br />
-              </>
-            )}
-            <b>Volume Produksi: </b>
-            <br />
-            {item.volume_produksi} kg
-            <br />
-            <b>Jenis Pupuk: </b>
-            <br />
-            {capitalizeWords(item.jenis_pupuk)}
-            <br />
-            <b>Pemanfaatan Produk: </b>
-            <br />
-            {capitalizeWords(item.pemanfaatan_produk)}
-            <br />
+          <div className="z-100 min-w-[200px] p-1">
+            <strong className="block text-emerald-700 text-base mb-2 border-b pb-1">Informasi Usaha</strong>
+            <div className="text-sm space-y-1 text-gray-700">
+              <p><b>Jumlah Pohon:</b> {item.jumlah_pohon}</p>
+              <p><b>Volume Produksi:</b> {item.volume_produksi} kg</p>
+              <p><b>Pemanfaatan Produk:</b><br/>{capitalizeWords(item.pemanfaatan_produk)}</p>
+            </div>
           </div>
         </Popup>
       </Marker>
@@ -482,7 +426,7 @@ export default function MapSection() {
 
   CustomMarker.displayName = "CustomMarker";
 
-  const Colors = ["#FED976", "#d4ac2b"]; // Two colors: base color and a lighter tint
+  const Colors = ["#a7f3d0", "#10b981"]; // Two emerald colors for charts
   const LegendMenu = () => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -495,8 +439,8 @@ export default function MapSection() {
         {/* Tombol Simbol Legenda */}
         <button
           onClick={toggleExpand2}
-          className={`py-1 px-2 rounded-md focus:outline-none ${
-            isExpanded ? "bg-[#D4AC2B] text-white" : "bg-gray-200 text-gray-800"
+          className={`w-full py-1.5 px-3 rounded-lg flex items-center justify-center focus:outline-none transition-colors shadow-sm border ${
+            isExpanded ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-700 hover:bg-gray-100 border-gray-200"
           }`}
           aria-label="Toggle Legend"
         >
@@ -507,7 +451,7 @@ export default function MapSection() {
         {/* Menu yang akan diperluas ketika tombol diklik */}
         {isExpanded && (
           <div
-            className="absolute right-0 bottom-full mb-3 p-4 w-[20vh] bg-white rounded-md shadow-md text-gray-800"
+            className="absolute left-full -bottom-2 ml-3 p-4 w-[20vh] bg-white rounded-md shadow-md text-gray-800"
             style={{
               backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent background
               backdropFilter: "blur(12px)", // Blur effect
@@ -521,7 +465,7 @@ export default function MapSection() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to right, #FFCE45,#D4AC2B, #B05E27, #7E370C)",
+                    "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
                   borderRadius: "99px",
                 }}
               ></div>
@@ -581,6 +525,9 @@ export default function MapSection() {
             <MapContainer
               center={[-7.446033620089397, 112.60262064240202]}
               zoom={16}
+              minZoom={12}
+              maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+              maxBoundsViscosity={1.0}
               scrollWheelZoom={true}
               className="w-full h-full"
               touchZoom={true}
@@ -593,7 +540,106 @@ export default function MapSection() {
             attribution={activeBasemap.attribution}
             maxZoom={activeBasemap.maxZoom}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap}>
+            <div className="relative pointer-events-auto">
+              <button
+                className="w-10 h-10 bg-white/90 backdrop-blur-md hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-100 flex items-center justify-center transition-all hover:shadow-xl hover:text-emerald-600 active:scale-95"
+                onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); }}
+                title="Filter"
+              >
+                <span className="material-icons">filter_list</span>
+              </button>
+              <Transition
+                show={isFilterOpen}
+                className="absolute top-0 right-full mr-3 z-10 w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800"
+                enter="transition ease-out duration-300"
+                enterFrom="opacity-0 transform translate-x-4"
+                enterTo="opacity-100 transform translate-x-0"
+                leave="transition ease-in duration-200"
+                leaveFrom="opacity-100 transform translate-x-0"
+                leaveTo="opacity-0 transform translate-x-4"
+              >
+                <div onClick={(e) => e.stopPropagation()}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                        Tahun
+                      </label>
+                      <select
+                        id="tahun"
+                        name="tahun"
+                        className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                      >
+                        <option value="2024">2024</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                        RT
+                      </label>
+                      <select
+                        id="rt"
+                        name="rt"
+                        className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                        value={selectedRT}
+                        onChange={(e) => setSelectedRT(e.target.value)}
+                      >
+                        <option value="desa">Semua RT</option>
+                        {data && data.length > 0 ? (
+                          data.map((item) => {
+                            const { rt, kode } = item.features[0].properties;
+                            return (
+                              <option key={rt} value={kode}>
+                                {rt}
+                              </option>
+                            );
+                          })
+                        ) : (
+                          <option value="" disabled>
+                            No RT
+                          </option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+
+                  <label className="block mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                    Jenis Kelengkeng
+                  </label>
+                  <select
+                    id="jenis"
+                    name="jenis"
+                    className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                    onChange={handleClassificationChange}
+                    value={selectedClassification}
+                  >
+                    {Object.entries(classifications).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+
+                  <label className="block mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                    Pemanfaatan Produk
+                  </label>
+                  <select
+                    id="tUsaha"
+                    name="tUsaha"
+                    className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                    onChange={handletUsahaChange}
+                    value={selectedtUsaha}
+                  >
+                    {Object.entries(tempatUsaha).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </Transition>
+            </div>
+          </CustomMapControls>
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (
@@ -628,120 +674,24 @@ export default function MapSection() {
           ) : (
             <BeatLoader />
           )}
-          {showIndividu &&
-            filtered.map((item, idx) => (
-              <CustomMarker key={`marker-individu-${idx}`} item={item} />
-            ))
-          }
+          {showIndividu && (
+            <MarkerClusterGroup chunkedLoading maxClusterRadius={40}>
+              {filtered.map((item, idx) => (
+                <CustomMarker key={`marker-individu-${idx}`} item={item} />
+              ))}
+            </MarkerClusterGroup>
+          )}
         </MapContainer>
       </div>
 
       <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
         <button
-          className="absolute top-4 right-[10%] z-10 px-11 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center pointer-events-auto"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
-        >
-          <span className="mr-2 material-icons">filter_list</span>
-          Filter
-        </button>
-
-        <button
-          className="absolute top-4 left-[10%] z-10 px-12 py-2 bg-[#D4AC2B] text-white rounded-xl shadow-md flex items-center pointer-events-auto"
+          className="absolute top-4 left-4 z-10 px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-emerald-600 rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
           onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
         >
-          <span className="mr-2 material-icons">analytics</span>
+          <span className="mr-2 material-icons text-emerald-500">analytics</span>
           Statistik
         </button>
-
-        <Transition
-          show={isFilterOpen}
-          enter="transition ease-out duration-300"
-          enterFrom="opacity-0 transform scale-95"
-          enterTo="opacity-100 transform scale-100"
-          leave="transition ease-in duration-200"
-          leaveFrom="opacity-100 transform scale-100"
-          leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 right-[10%] z-10 w-64 p-4 bg-[#101920] rounded-md shadow-md text-white pointer-events-auto"
-        >
-          <div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-white">
-                  Tahun
-                </label>
-                <select
-                  id="tahun"
-                  name="tahun"
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-600 bg-[#2E2E2E] text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                >
-                  <option value="2024">2024</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white">
-                  RT
-                </label>
-                <select
-                  id="rt"
-                  name="rt"
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-600 bg-[#2E2E2E] text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                  value={selectedRT}
-                  onChange={(e) => setSelectedRT(e.target.value)}
-                >
-                  <option value="desa">Semua RT</option>
-                  {data && data.length > 0 ? (
-                    data.map((item) => {
-                      const { rt, kode } = item.features[0].properties; // Destrukturisasi untuk bersih
-                      return (
-                        <option key={rt} value={kode}>
-                          {rt}
-                        </option>
-                      );
-                    })
-                  ) : (
-                    <option value="" disabled>
-                      No RT available
-                    </option>
-                  )}
-                </select>
-              </div>
-            </div>
-
-            <label className="block mt-4 text-sm font-medium text-white">
-              Jenis Kelengkeng
-            </label>
-            <select
-              id="jenis"
-              name="jenis"
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-600 bg-[#2E2E2E] text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-              onChange={handleClassificationChange}
-              value={selectedClassification}
-            >
-              {Object.entries(classifications).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-
-            <label className="block mt-4 text-sm font-medium text-white">
-              Pemanfaatan Produk
-            </label>
-            <select
-              id="tUsaha"
-              name="tUsaha"
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-600 bg-[#2E2E2E] text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-              onChange={handletUsahaChange}
-              value={selectedtUsaha}
-            >
-              {Object.entries(tempatUsaha).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
-        </Transition>
 
         <Transition
           show={isVisualizationOpen}
@@ -751,7 +701,7 @@ export default function MapSection() {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 left-[10%] z-10 w-64 max-h-[77vh] p-4 bg-[#1D262C] rounded-md shadow-md text-white overflow-y-auto pointer-events-auto custom-scrollbar"
+          className="absolute top-16 left-4 z-10 w-64 max-h-[77vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 overflow-y-auto pointer-events-auto custom-scrollbar"
         >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
@@ -759,8 +709,8 @@ export default function MapSection() {
                 {selectedRT !== "desa" ? (
                   <>
                     <div className="mb-4">
-                      <p className="bg-[#2E2E2E] rounded-full p-1 text-sm text-white font-medium">
-                        <span className="mr-1 text-sm text-white material-icons">
+                      <p className="bg-gray-100 border border-gray-200 rounded-full p-1.5 text-xs text-gray-700 font-semibold flex items-center">
+                        <span className="mr-1 text-emerald-500 material-icons text-sm">
                           location_on
                         </span>
                         RT {filteredData.features[0].properties.rt} RW{" "}
@@ -769,8 +719,8 @@ export default function MapSection() {
                       </p>
                     </div>
 
-                    <div className="bg-[#101920] p-4 rounded-md mb-4 text-left">
-                      <div className="text-4xl font-bold">
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-emerald-600">
                         <CountUp
                           start={0}
                           end={
@@ -783,8 +733,8 @@ export default function MapSection() {
                       <p className="text-xm">Pohon Kelengkeng</p>
                     </div>
 
-                    <div className="bg-[#101920] p-4 rounded-md mb-4 text-left">
-                      <p className="mb-1 text-xm">Produksi</p>
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <p className="mb-2 text-sm font-bold text-gray-500 uppercase tracking-wider">Produksi</p>
                       <PieChart width={175} height={175}>
                         <Pie
                           data={[
@@ -846,27 +796,27 @@ export default function MapSection() {
                 ) : (
                   <>
                     <div className="mb-4">
-                      <p className="bg-[#2E2E2E] rounded-full text-white p-1 text-sm font-medium">
-                        <span className="mr-1 text-sm material-icons">
+                      <p className="bg-gray-100 border border-gray-200 rounded-full p-1.5 text-xs text-gray-700 font-semibold flex items-center">
+                        <span className="mr-1 text-emerald-500 material-icons text-sm">
                           location_on
                         </span>
                         Desa Simoketawang
                       </p>
                     </div>
 
-                    <div className="bg-[#101920] p-4 rounded-md mb-4 text-left">
-                      <div className="text-4xl font-bold">
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-emerald-600">
                         <CountUp
                           start={0}
                           end={dataAgregat.jml_pohon || 0}
                           duration={3}
                         />
                       </div>
-                      <p className="text-xm">Pohon Kelengkeng</p>
+                      <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Pohon Kelengkeng</p>
                     </div>
 
-                    <div className="bg-[#101920] p-4 rounded-md mb-4 text-left">
-                      <p className="mb-1 text-xm">Produksi</p>
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <p className="mb-2 text-sm font-bold text-gray-500 uppercase tracking-wider">Status Produksi</p>
                       <PieChart width={175} height={175}>
                         <Pie
                           data={dataJenis}
@@ -905,17 +855,16 @@ export default function MapSection() {
           </div>
         </Transition>
         <div
-          className="absolute bottom-4 right-[10%] z-10 w-auto p-2 bg-white rounded-md shadow-md text-gray-800 pointer-events-auto"
+          className="absolute bottom-4 left-4 z-10 w-auto p-2 bg-white rounded-md shadow-md text-gray-800 pointer-events-auto"
           style={{
             backgroundColor: "rgba(255, 255, 255, 0.7)",
-
             backdropFilter: "blur(12px)", // Blur effect
           }}
         >
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col gap-2">
             <button
-              className={`py-1 px-2 rounded-md justify-center items-center text-center text-sm mr-4 ${
-                showRT ? "bg-[#7E370C] text-white" : "bg-gray-200 text-gray-800"
+              className={`py-1.5 px-3 rounded-lg flex items-center gap-1 font-semibold transition-colors shadow-sm border ${
+                showRT ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
               }`}
               onClick={toggleRT}
             >
@@ -938,6 +887,16 @@ export default function MapSection() {
             <LegendMenu />
           </div>
         </div>
+
+        {/* ── AI INSIGHT — inside map, bottom right */}
+        <AIInsightBox 
+          desaName="Simoketawang"
+          featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
+          contextType="kelengkeng"
+          requireClick={true}
+          customClass="bottom-4 right-4"
+          data={dataAgregat}
+        />
       </div>
       </div>
       </div>
