@@ -291,7 +291,7 @@ const Dashboard = ({ initialDesaName }) => {
               center={[-7.379, 112.73]}
               zoom={13}
               minZoom={12}
-              maxZoom={18}
+              maxZoom={24}
               zoomSnap={0.5}
               zoomDelta={0.5}
               maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
@@ -301,11 +301,11 @@ const Dashboard = ({ initialDesaName }) => {
               zoomControl={false}
               scrollWheelZoom={true}
             >
-              <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
+              <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxNativeZoom={activeBasemap.maxZoom || 19} maxZoom={24} />
               <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
               <AutoZoom geojsonData={geojsonData} />
               {enrichedGeojsonData && (
-                <MarkerClusterGroup chunkedLoading>
+                <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={21} maxClusterRadius={40}>
                   <GeoJSON
                     ref={geoJsonRef}
                     key={`geojson-${allOriginalData.length}`}

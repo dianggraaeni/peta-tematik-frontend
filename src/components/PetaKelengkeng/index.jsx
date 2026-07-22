@@ -575,6 +575,7 @@ export default function MapSection() {
               center={[-7.446033620089397, 112.60262064240202]}
               zoom={16}
               minZoom={12}
+              maxZoom={24}
               maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
               maxBoundsViscosity={1.0}
               scrollWheelZoom={true}
@@ -587,7 +588,8 @@ export default function MapSection() {
           <TileLayer
             url={activeBasemap.url}
             attribution={activeBasemap.attribution}
-            maxZoom={activeBasemap.maxZoom}
+            maxNativeZoom={activeBasemap.maxZoom || 19}
+            maxZoom={24}
           />
           <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap}>
             <div className="relative pointer-events-auto">
