@@ -53,9 +53,11 @@ export default function MapSection() {
     try {
       const response = await api6.get("/api/peta?nmdesa=SIMOKETAWANG");
       const features = response.data.features || [];
-      const polygons = features.filter(f => f.geometry && f.geometry.type !== "Point");
+      const rawPolygons = features.filter(f => f.geometry && f.geometry.type !== "Point");
       
-      const formattedData = polygons.map(f => {
+      const seenRt = new Set();
+      const polygons = [];
+      rawPolygons.forEach(f => {
         // Ensure rt and rw exist in lowercase for compatibility
         if (f.properties.RT) f.properties.rt = f.properties.RT;
         if (f.properties.RW) f.properties.rw = f.properties.RW;
@@ -64,6 +66,15 @@ export default function MapSection() {
         if (!f.properties.kode && f.properties.rt) {
           f.properties.kode = f.properties.rt;
         }
+
+        const rtKey = f.properties.rt || "unknown_rt";
+        if (!seenRt.has(rtKey)) {
+          seenRt.add(rtKey);
+          polygons.push(f);
+        }
+      });
+
+      const formattedData = polygons.map(f => {
 
         // Count businesses inside this polygon dynamically
         const rt = f.properties.rt;
@@ -179,24 +190,22 @@ export default function MapSection() {
       opacity: 1,
       color: "#1e293b",
       dashArray: "",
-      fillOpacity: 0.5,
+      fillOpacity: density > 0 ? 0.7 : 0.2,
     };
   };
 
   const getColor = (density) => {
-    return density > 32
-      ? "#064e3b"
-      : density > 16
-      ? "#065f46"
-      : density > 8
-      ? "#047857"
-      : density > 4
-      ? "#059669"
-      : density > 2
-      ? "#10b981"
-      : density > 1
-      ? "#34d399"
-      : "rgba(16, 185, 129, 0.2)"; // transparent green instead of slate
+    return density >= 15
+      ? "#022c22" // emerald 950
+      : density >= 10
+      ? "#047857" // emerald 700
+      : density >= 6
+      ? "#10b981" // emerald 500
+      : density >= 3
+      ? "#34d399" // emerald 400
+      : density >= 1
+      ? "#6ee7b7" // emerald 300
+      : "rgba(16, 185, 129, 0.1)"; // transparent
   };
 
   const markerIcon = divIcon({
