@@ -453,27 +453,50 @@ export default function MapSection() {
   }, [dataRumahTangga, selectedRT, selectedClassification, selectedtUsaha]);
 
   const CustomMarker = memo(
-    ({ item }) => (
-      <Marker
-        position={[parseFloat(item.latitude), parseFloat(item.longitude)]}
-        icon={markerIcon}
-      >
-        <Popup>
-          <div className="z-100 min-w-[200px] p-1">
-            <strong className="block text-emerald-700 text-base mb-2 border-b pb-1">Informasi Usaha</strong>
-            <div className="text-sm space-y-1 text-gray-700">
-              <p><b>Jumlah Pohon:</b> {item.jumlah_pohon}</p>
-              <p><b>Volume Produksi:</b> {item.volume_produksi} kg</p>
-              <p><b>Pemanfaatan Produk:</b><br/>{capitalizeWords(item.pemanfaatan_produk)}</p>
+    ({ item }) => {
+      const markerRef = useRef(null);
+      useEffect(() => {
+        if (markerRef.current) {
+          markerRef.current.options.jumlah_pohon = parseInt(item.jumlah_pohon) || 0;
+        }
+      }, [item]);
+
+      return (
+        <Marker
+          ref={markerRef}
+          position={[parseFloat(item.latitude), parseFloat(item.longitude)]}
+          icon={markerIcon}
+        >
+          <Popup>
+            <div className="z-100 min-w-[200px] p-1">
+              <strong className="block text-emerald-700 text-base mb-2 border-b pb-1">Informasi Usaha</strong>
+              <div className="text-sm space-y-1 text-gray-700">
+                <p><b>Jumlah Pohon:</b> {item.jumlah_pohon}</p>
+                <p><b>Volume Produksi:</b> {item.volume_produksi} kg</p>
+                <p><b>Pemanfaatan Produk:</b><br/>{capitalizeWords(item.pemanfaatan_produk)}</p>
+              </div>
             </div>
-          </div>
-        </Popup>
-      </Marker>
-    ),
+          </Popup>
+        </Marker>
+      );
+    },
     []
   );
 
   CustomMarker.displayName = "CustomMarker";
+
+  const createClusterCustomIcon = function (cluster) {
+    let totalTrees = 0;
+    cluster.getAllChildMarkers().forEach((marker) => {
+      totalTrees += marker.options.jumlah_pohon || 1;
+    });
+
+    return L.divIcon({
+      html: `<div style="background-color: rgba(16, 185, 129, 0.8); color: white; font-weight: bold; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(4, 120, 87, 0.9); box-shadow: 0 0 10px rgba(0,0,0,0.2); font-family: 'SF Pro Display', sans-serif;"><span style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${totalTrees}</span></div>`,
+      className: 'custom-tree-cluster-icon',
+      iconSize: L.point(40, 40)
+    });
+  };
 
   const Colors = ["#a7f3d0", "#10b981"]; // Two emerald colors for charts
   const LegendMenu = () => {
@@ -726,7 +749,12 @@ export default function MapSection() {
             <BeatLoader />
           )}
           {showIndividu && (
-            <MarkerClusterGroup chunkedLoading maxClusterRadius={40}>
+            <MarkerClusterGroup 
+              chunkedLoading 
+              maxClusterRadius={40} 
+              disableClusteringAtZoom={21}
+              iconCreateFunction={createClusterCustomIcon}
+            >
               {filtered.map((item, idx) => (
                 <CustomMarker key={`marker-individu-${idx}`} item={item} />
               ))}
