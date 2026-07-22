@@ -85,7 +85,9 @@ export default function MapSection() {
         features.forEach(pt => {
           if (pt.geometry && pt.geometry.type === "Point" && pt.properties.marker_type === "Kelengkeng") {
             try {
-              if (turf.booleanPointInPolygon(pt, f)) {
+              const ptRt = pt.properties.rt;
+              const polyRt = f.properties.rt; // extracted in the map above
+              if (ptRt && polyRt && parseInt(ptRt) === parseInt(polyRt)) {
                 const pohon = Number.parseInt(pt.properties.jumlah_pohon) || 0;
                 count += pohon > 0 ? pohon : 1; // if jumlah_pohon is 0 or missing, at least count it as 1 to avoid 0 if it exists
               }
