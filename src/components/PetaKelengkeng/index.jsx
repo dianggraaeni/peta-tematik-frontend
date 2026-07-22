@@ -99,6 +99,13 @@ export default function MapSection() {
         };
       });
       
+      // Sort by RT ascending
+      formattedData.sort((a, b) => {
+        const rtA = parseInt(a.features[0].properties.rt) || 0;
+        const rtB = parseInt(b.features[0].properties.rt) || 0;
+        return rtA - rtB;
+      });
+      
       setData(formattedData);
     } catch (error) {
       message.error(`Terjadi kesalahan muat peta: ${error.message}`, 5);
