@@ -86,7 +86,8 @@ export default function MapSection() {
           if (pt.geometry && pt.geometry.type === "Point" && pt.properties.marker_type === "Kelengkeng") {
             try {
               if (turf.booleanPointInPolygon(pt, f)) {
-                count++;
+                const pohon = Number.parseInt(pt.properties.jumlah_pohon) || 0;
+                count += pohon > 0 ? pohon : 1; // if jumlah_pohon is 0 or missing, at least count it as 1 to avoid 0 if it exists
               }
             } catch (e) {}
           }
@@ -202,13 +203,13 @@ export default function MapSection() {
   };
 
   const getColor = (density) => {
-    return density >= 15
+    return density >= 50
       ? "#022c22" // emerald 950
-      : density >= 10
+      : density >= 35
       ? "#047857" // emerald 700
-      : density >= 6
+      : density >= 20
       ? "#10b981" // emerald 500
-      : density >= 3
+      : density >= 10
       ? "#34d399" // emerald 400
       : density >= 1
       ? "#6ee7b7" // emerald 300
