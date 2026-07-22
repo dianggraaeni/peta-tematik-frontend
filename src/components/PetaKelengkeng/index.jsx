@@ -392,14 +392,28 @@ export default function MapSection() {
 
   const filtered = useMemo(() => {
     return dataRumahTangga.filter(
-      (item) =>
-        (selectedRT === "desa" || (item.rt_rw_dusun && item.rt_rw_dusun.includes(selectedRT))) &&
-        (selectedClassification === "all" ||
-          (selectedClassification in variables &&
-            item[variables[selectedClassification]] !== 0)) &&
-        (selectedtUsaha === "all" ||
-          (item.pemanfaatan_produk &&
-            item.pemanfaatan_produk.includes(selectedtUsaha)))
+      (item) => {
+        // Safe RT check: check rt_rw_dusun, rt, RT, or fallback to true if we don't have that data so markers don't vanish unconditionally
+        const rtMatch = selectedRT === "desa" || 
+                        (item.rt_rw_dusun && item.rt_rw_dusun.includes(selectedRT)) ||
+                        (item.rt && String(item.rt) === selectedRT) ||
+                        (item.RT && String(item.RT) === selectedRT) ||
+                        (!item.rt_rw_dusun && !item.rt && !item.RT); // If no RT data exists on the point, show it anyway
+
+        // Safe Classification check
+        const classMatch = selectedClassification === "all" ||
+                           (selectedClassification in variables &&
+                            item[variables[selectedClassification]] !== undefined &&
+                            item[variables[selectedClassification]] !== 0 &&
+                            item[variables[selectedClassification]] !== "0");
+
+        // Safe Pemanfaatan check
+        const normalizedItemUsaha = item.pemanfaatan_produk ? item.pemanfaatan_produk.toLowerCase().replace(/\s+/g, '_') : "";
+        const normalizedSelectedUsaha = selectedtUsaha.toLowerCase();
+        const usahaMatch = selectedtUsaha === "all" || normalizedItemUsaha.includes(normalizedSelectedUsaha);
+
+        return rtMatch && classMatch && usahaMatch;
+      }
     );
   }, [dataRumahTangga, selectedRT, selectedClassification, selectedtUsaha]);
 
