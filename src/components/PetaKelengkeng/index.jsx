@@ -23,6 +23,7 @@ import CountUp from "react-countup";
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { BeatLoader } from "react-spinners";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import * as turf from "@turf/turf";
 
 export default function MapSection() {
   const [selectedClassification, setSelectedClassification] = useState("all");
@@ -69,13 +70,14 @@ export default function MapSection() {
         const rw = f.properties.rw;
         let count = 0;
         
-        // Find points that belong to this RT/RW
+        // Find points that belong to this RT/RW using spatial join
         features.forEach(pt => {
           if (pt.geometry && pt.geometry.type === "Point" && pt.properties.marker_type === "Kelengkeng") {
-            const ptRt = pt.properties.RT || pt.properties.rt || (pt.properties.rt_rw_dusun && pt.properties.rt_rw_dusun.match(/RT\s*(\d+)/)?.[1]);
-            if (ptRt && parseInt(ptRt) === parseInt(rt)) {
-              count++;
-            }
+            try {
+              if (turf.booleanPointInPolygon(pt, f)) {
+                count++;
+              }
+            } catch (e) {}
           }
         });
         f.properties.jml_unit_usaha_klengkeng = count;
@@ -102,19 +104,33 @@ export default function MapSection() {
     setLoading(true);
     try {
       const response = await api6.get("/api/peta?nmdesa=SIMOKETAWANG");
-      const points = response.data.features
-        .filter(f => f.geometry.type === "Point" && f.properties.marker_type === "Kelengkeng")
+      const features = response.data.features || [];
+      const polygons = features.filter(f => f.geometry && f.geometry.type !== "Point");
+
+      const points = features
+        .filter(f => f.geometry && f.geometry.type === "Point" && f.properties.marker_type === "Kelengkeng")
         .filter(f => {
           const lng = f.geometry.coordinates[0];
           const lat = f.geometry.coordinates[1];
           // Simoketawang rough bounds
           return lng >= 112.58 && lng <= 112.62 && lat >= -7.46 && lat <= -7.43;
         })
-        .map(f => ({
-          ...f.properties,
-          latitude: f.geometry.coordinates[1],
-          longitude: f.geometry.coordinates[0],
-        }));
+        .map(f => {
+          let assignedRt = null;
+          try {
+            const matchingPoly = polygons.find(poly => turf.booleanPointInPolygon(f, poly));
+            if (matchingPoly) {
+              assignedRt = matchingPoly.properties.RT || matchingPoly.properties.rt;
+            }
+          } catch(e) {}
+
+          return {
+            ...f.properties,
+            rt: assignedRt,
+            latitude: f.geometry.coordinates[1],
+            longitude: f.geometry.coordinates[0],
+          };
+        });
       setDataRumahTangga(points);
       
       // Calculate Aggregates
