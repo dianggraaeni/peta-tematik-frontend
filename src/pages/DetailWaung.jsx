@@ -301,10 +301,10 @@ export default function DetailWaung() {
           {/* RIGHT FLOATING PANEL (Filter) */}
           <div className="absolute top-[160px] right-4 z-[1000] w-64 md:w-72">
             <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-              <div className="bg-gray-800 text-white p-3 rounded-t-2xl flex justify-between items-center">
+              <div className="bg-blue-600 text-white p-3 rounded-t-2xl flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                  <h2 className="font-bold text-sm">Filter Tampilan Peta</h2>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  <span className="font-bold text-sm">Filter Tampilan Peta</span>
                 </div>
               </div>
               <div className="p-4 flex flex-col gap-4">

@@ -454,9 +454,9 @@ const LandingPage = () => {
 
         {/* Center Logos */}
         <div className="w-full flex justify-center items-center gap-3 sm:gap-6 order-1 sm:order-2 shrink-0">
-          <img src="/pict/logo_sidoarjo.png" alt="Sidoarjo" className="h-10 md:h-12 object-contain" />
-          <img src="/pict/logo_bps.png" alt="BPS" className="h-10 md:h-12 object-contain" />
-          <img src="/pict/logo_dc.png" alt="Desa Cantik" className="h-10 md:h-12 object-contain" />
+          <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-10 md:h-12 object-contain" />
+          
+          <img src="/pict/des-can.png" alt="Desa Cantik" className="h-10 md:h-12 object-contain" />
         </div>
 
         {/* Action Buttons */}

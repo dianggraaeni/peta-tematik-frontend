@@ -92,9 +92,9 @@ const HelpDesk = () => {
 
         {/* Logos (Right) */}
         <div className="flex-1 flex justify-center sm:justify-end items-center gap-3 md:gap-5">
-          <img src="/pict/logo_sidoarjo.png" alt="Logo Sidoarjo" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
-          <img src="/pict/logo_bps.png" alt="Logo BPS Sidoarjo" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
-          <img src="/pict/logo_dc.png" alt="Logo Desa Cantik" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
+          <img src="/pict/petis-darjo.png" alt="Logo Sidoarjo" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
+          
+          <img src="/pict/des-can.png" alt="Logo Desa Cantik" className="h-8 md:h-11 w-auto object-contain hover:scale-105 transition-transform drop-shadow-md" />
         </div>
       </div>
 

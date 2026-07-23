@@ -111,7 +111,7 @@ const Login = () => {
       <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-sm p-8 m-5 bg-white shadow-md rounded-xl md:max-w-md">
         <div className="flex flex-col items-center mb-8">
           <img
-            src="/pict/logo_dc.png"
+            src="/pict/des-can.png"
             alt="Logo"
             className="w-20 h-20 mb-3 md:w-30 md:h-30"
           />

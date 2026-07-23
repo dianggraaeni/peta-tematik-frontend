@@ -10,12 +10,12 @@ export default function NavbarPeta() {
       {/* Left side: Logos and Title */}
       <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
         <img
-          src="/pict/logo_sidoarjo.png"
+          src="/pict/petis-darjo.png"
           alt="Sidoarjo Coat of Arms"
           className="h-10 md:h-12 w-auto object-contain drop-shadow-sm"
         />
         <img
-          src="/pict/logo_dc.png"
+          src="/pict/des-can.png"
           alt="Desa Cantik Logo"
           className="h-10 md:h-12 w-auto object-contain drop-shadow-sm ml-1 md:ml-2"
         />

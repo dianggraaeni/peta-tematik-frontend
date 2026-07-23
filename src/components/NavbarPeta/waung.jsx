@@ -7,8 +7,8 @@ export default function NavbarPetaWaung() {
   return (
     <div className="w-full bg-[#bae6fd] px-4 py-2 sm:px-6 md:px-12 md:py-4 flex flex-col sm:flex-row justify-between items-center z-50 border-b-2 border-white/50 shadow-sm gap-3 sm:gap-0 sticky top-0">
       <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
-        <img src="/pict/logo_sidoarjo.png" alt="Sidoarjo Coat of Arms" className="h-10 md:h-12 w-auto object-contain drop-shadow-sm" />
-        <img src="/pict/logo_dc.png" alt="Desa Cantik Logo" className="h-10 md:h-12 w-auto object-contain drop-shadow-sm ml-1 md:ml-2" />
+        <img src="/pict/petis-darjo.png" alt="Sidoarjo Coat of Arms" className="h-10 md:h-12 w-auto object-contain drop-shadow-sm" />
+        <img src="/pict/des-can.png" alt="Desa Cantik Logo" className="h-10 md:h-12 w-auto object-contain drop-shadow-sm ml-1 md:ml-2" />
         <div className="ml-2 md:ml-3 flex flex-col justify-center">
           <p className="font-semibold text-blue-900 leading-tight text-xs md:text-sm tracking-wide">PETA TEMATIK</p>
           <p className="text-base md:text-lg font-extrabold text-blue-900 leading-tight uppercase">DESA WAUNG</p>

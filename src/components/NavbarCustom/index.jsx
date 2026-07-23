@@ -78,7 +78,7 @@ export default function NavbarCustom() {
             />
           </a>
           <img
-            src="/pict/logo_dc.png"
+            src="/pict/des-can.png"
             alt="Desa Cantik Logo"
             width={48}
             height={48}
