@@ -58,7 +58,8 @@ const desaTematikInfo = {
   "GROGOL": ["Pertanian Pertambangan"],
   "SIMO ANGIN ANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
   "SIMOANGINANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
-  "SIDOKEPUNG": ["Sosial Kependudukan"]
+  "SIDOKEPUNG": ["Sosial Kependudukan"],
+  "WAUNG": ["Sosial Kependudukan"]
 };
 
 const filterThemes = ["Sosial Kependudukan", "Ekonomi Perdagangan", "Pertanian Pertambangan"];
@@ -157,6 +158,8 @@ const BerandaSidoarjo = () => {
       navigate("/detail-simoanginangin");
     } else if (normalizedName === "SIMOKETAWANG") {
       navigate("/detail-simoketawang");
+    } else if (normalizedName === "WAUNG") {
+      navigate("/detail-waung");
     } else {
       navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
     }

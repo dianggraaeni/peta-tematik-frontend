@@ -1,0 +1,128 @@
+[
+  {
+    "kelompok": "0-4",
+    "luar_waung_L": 39,
+    "luar_waung_P": 49,
+    "luar_waung_total": 88,
+    "domisili_waung_L": 38,
+    "domisili_waung_P": 48,
+    "domisili_waung_total": 86
+  },
+  {
+    "kelompok": "5-9",
+    "luar_waung_L": 64,
+    "luar_waung_P": 63,
+    "luar_waung_total": 127,
+    "domisili_waung_L": 63,
+    "domisili_waung_P": 62,
+    "domisili_waung_total": 125
+  },
+  {
+    "kelompok": "10-14",
+    "luar_waung_L": 79,
+    "luar_waung_P": 63,
+    "luar_waung_total": 142,
+    "domisili_waung_L": 79,
+    "domisili_waung_P": 63,
+    "domisili_waung_total": 142
+  },
+  {
+    "kelompok": "15-19",
+    "luar_waung_L": 82,
+    "luar_waung_P": 68,
+    "luar_waung_total": 150,
+    "domisili_waung_L": 80,
+    "domisili_waung_P": 66,
+    "domisili_waung_total": 146
+  },
+  {
+    "kelompok": "20-24",
+    "luar_waung_L": 63,
+    "luar_waung_P": 58,
+    "luar_waung_total": 121,
+    "domisili_waung_L": 61,
+    "domisili_waung_P": 56,
+    "domisili_waung_total": 117
+  },
+  {
+    "kelompok": "25-29",
+    "luar_waung_L": 75,
+    "luar_waung_P": 75,
+    "luar_waung_total": 150,
+    "domisili_waung_L": 70,
+    "domisili_waung_P": 72,
+    "domisili_waung_total": 142
+  },
+  {
+    "kelompok": "30-34",
+    "luar_waung_L": 50,
+    "luar_waung_P": 66,
+    "luar_waung_total": 116,
+    "domisili_waung_L": 45,
+    "domisili_waung_P": 65,
+    "domisili_waung_total": 110
+  },
+  {
+    "kelompok": "35-39",
+    "luar_waung_L": 58,
+    "luar_waung_P": 63,
+    "luar_waung_total": 121,
+    "domisili_waung_L": 58,
+    "domisili_waung_P": 62,
+    "domisili_waung_total": 120
+  },
+  {
+    "kelompok": "40-44",
+    "luar_waung_L": 75,
+    "luar_waung_P": 72,
+    "luar_waung_total": 147,
+    "domisili_waung_L": 71,
+    "domisili_waung_P": 72,
+    "domisili_waung_total": 143
+  },
+  {
+    "kelompok": "45-49",
+    "luar_waung_L": 81,
+    "luar_waung_P": 70,
+    "luar_waung_total": 151,
+    "domisili_waung_L": 79,
+    "domisili_waung_P": 70,
+    "domisili_waung_total": 149
+  },
+  {
+    "kelompok": "50-54",
+    "luar_waung_L": 77,
+    "luar_waung_P": 69,
+    "luar_waung_total": 146,
+    "domisili_waung_L": 74,
+    "domisili_waung_P": 69,
+    "domisili_waung_total": 143
+  },
+  {
+    "kelompok": "55-59",
+    "luar_waung_L": 57,
+    "luar_waung_P": 75,
+    "luar_waung_total": 132,
+    "domisili_waung_L": 55,
+    "domisili_waung_P": 75,
+    "domisili_waung_total": 130
+  },
+  {
+    "kelompok": "60-64",
+    "luar_waung_L": 51,
+    "luar_waung_P": 45,
+    "luar_waung_total": 96,
+    "domisili_waung_L": 51,
+    "domisili_waung_P": 45,
+    "domisili_waung_total": 96
+  },
+  {
+    "kelompok": "65+",
+    "luar_waung_L": 69,
+    "luar_waung_P": 82,
+    "luar_waung_total": 151,
+    "domisili_waung_L": 67,
+    "domisili_waung_P": 82,
+    "domisili_waung_total": 149
+  }
+]

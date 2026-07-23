@@ -1,0 +1,112 @@
+[
+  {
+    "rt": "RT 001 RW 001",
+    "jumlah_keluarga": 67,
+    "rata_anggota": 3.074626865671642,
+    "milik_sendiri": 33,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 34,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 212.55223880597015
+  },
+  {
+    "rt": "RT 002 RW 001",
+    "jumlah_keluarga": 56,
+    "rata_anggota": 2.6964285714285716,
+    "milik_sendiri": 42,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 14,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 89.21428571428571
+  },
+  {
+    "rt": "RT 003 RW 002",
+    "jumlah_keluarga": 55,
+    "rata_anggota": 2.9454545454545453,
+    "milik_sendiri": 39,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 16,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 85.50909090909092
+  },
+  {
+    "rt": "RT 004 RW 002",
+    "jumlah_keluarga": 52,
+    "rata_anggota": 2.8461538461538463,
+    "milik_sendiri": 43,
+    "kontrak_sewa": 1,
+    "bebas_sewa": 8,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 96.90384615384616
+  },
+  {
+    "rt": "RT 005 RW 003",
+    "jumlah_keluarga": 59,
+    "rata_anggota": 2.864406779661017,
+    "milik_sendiri": 46,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 13,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 80.33898305084746
+  },
+  {
+    "rt": "RT 006 RW 003",
+    "jumlah_keluarga": 70,
+    "rata_anggota": 2.7142857142857144,
+    "milik_sendiri": 51,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 19,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 54.92857142857143
+  },
+  {
+    "rt": "RT 007 RW 004",
+    "jumlah_keluarga": 57,
+    "rata_anggota": 2.807017543859649,
+    "milik_sendiri": 43,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 14,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 80.6842105263158
+  },
+  {
+    "rt": "RT 008 RW 004",
+    "jumlah_keluarga": 68,
+    "rata_anggota": 3.176470588235294,
+    "milik_sendiri": 58,
+    "kontrak_sewa": 1,
+    "bebas_sewa": 9,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 88.98529411764706
+  },
+  {
+    "rt": "RT 009 RW 005",
+    "jumlah_keluarga": 60,
+    "rata_anggota": 2.933333333333333,
+    "milik_sendiri": 44,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 16,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 88.48333333333333
+  },
+  {
+    "rt": "RT 010 RW 005",
+    "jumlah_keluarga": 92,
+    "rata_anggota": 2.9347826086956523,
+    "milik_sendiri": 65,
+    "kontrak_sewa": 0,
+    "bebas_sewa": 27,
+    "dinas": 0,
+    "lainnya": 0,
+    "rata_luas_lantai": 78.59782608695652
+  }
+]

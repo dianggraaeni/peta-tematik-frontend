@@ -1,0 +1,332 @@
+[
+  {
+    "rt": "RT 001 RW 001",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 62,
+      "parket": 0,
+      "ubin": 4,
+      "kayu": 0,
+      "semen": 1,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 67,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 0,
+      "genteng": 64,
+      "seng": 0,
+      "asbes": 3,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 002 RW 001",
+    "lantai": {
+      "marmer": 3,
+      "keramik": 48,
+      "parket": 1,
+      "ubin": 4,
+      "kayu": 0,
+      "semen": 0,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 56,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 1,
+      "genteng": 51,
+      "seng": 0,
+      "asbes": 4,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 003 RW 002",
+    "lantai": {
+      "marmer": 4,
+      "keramik": 51,
+      "parket": 0,
+      "ubin": 0,
+      "kayu": 0,
+      "semen": 0,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 55,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 1,
+      "genteng": 52,
+      "seng": 1,
+      "asbes": 1,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 004 RW 002",
+    "lantai": {
+      "marmer": 2,
+      "keramik": 46,
+      "parket": 0,
+      "ubin": 0,
+      "kayu": 0,
+      "semen": 4,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 51,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 1,
+      "genteng": 47,
+      "seng": 1,
+      "asbes": 3,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 005 RW 003",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 55,
+      "parket": 0,
+      "ubin": 4,
+      "kayu": 0,
+      "semen": 0,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 59,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 0,
+      "genteng": 49,
+      "seng": 0,
+      "asbes": 10,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 006 RW 003",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 67,
+      "parket": 0,
+      "ubin": 1,
+      "kayu": 0,
+      "semen": 2,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 70,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 0,
+      "genteng": 66,
+      "seng": 1,
+      "asbes": 3,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 007 RW 004",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 51,
+      "parket": 0,
+      "ubin": 6,
+      "kayu": 0,
+      "semen": 0,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 56,
+      "kawat": 0,
+      "kayu": 1,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 0,
+      "genteng": 48,
+      "seng": 0,
+      "asbes": 9,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 008 RW 004",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 65,
+      "parket": 0,
+      "ubin": 3,
+      "kayu": 0,
+      "semen": 0,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 68,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 0,
+      "genteng": 66,
+      "seng": 1,
+      "asbes": 1,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 009 RW 005",
+    "lantai": {
+      "marmer": 0,
+      "keramik": 55,
+      "parket": 0,
+      "ubin": 1,
+      "kayu": 0,
+      "semen": 4,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 60,
+      "kawat": 0,
+      "kayu": 0,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 1,
+      "genteng": 58,
+      "seng": 0,
+      "asbes": 1,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  },
+  {
+    "rt": "RT 010 RW 005",
+    "lantai": {
+      "marmer": 3,
+      "keramik": 83,
+      "parket": 0,
+      "ubin": 0,
+      "kayu": 0,
+      "semen": 6,
+      "bambu": 0,
+      "tanah": 0,
+      "lainnya": 0
+    },
+    "dinding": {
+      "tembok": 91,
+      "kawat": 0,
+      "kayu": 1,
+      "anyaman_bambu": 0,
+      "batang_kayu": 0,
+      "bambu": 0,
+      "lainnya": 0
+    },
+    "atap": {
+      "beton": 1,
+      "genteng": 77,
+      "seng": 4,
+      "asbes": 10,
+      "bambu": 0,
+      "kayu": 0,
+      "jerami": 0,
+      "lainnya": 0
+    }
+  }
+]
