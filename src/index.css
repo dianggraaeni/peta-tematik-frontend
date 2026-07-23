@@ -13,3 +13,8 @@
   border-radius: 20px;
 }
 
+
+/* Fix Leaflet path focus outline (black box on click) */
+.leaflet-interactive:focus {
+    outline: none !important;
+}
