@@ -54,10 +54,9 @@ const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
 };
 
 const desaTematikInfo = {
-  "SIMOKETAWANG": ["Pertanian Pertambangan", "Ekonomi Perdagangan"],
-  "GROGOL": ["Pertanian Pertambangan"],
-  "SIMO ANGIN ANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
-  "SIMOANGINANGIN": ["Ekonomi Perdagangan", "Sosial Kependudukan"],
+  "SIMOKETAWANG": ["Ekonomi Perdagangan"],
+  "SIMO ANGIN ANGIN": ["Ekonomi Perdagangan"],
+  "SIMOANGINANGIN": ["Ekonomi Perdagangan"],
   "SIDOKEPUNG": ["Sosial Kependudukan"],
   "WAUNG": ["Sosial Kependudukan"]
 };
@@ -74,6 +73,7 @@ const BerandaSidoarjo = () => {
   const [selectedDesa, setSelectedDesa] = useState(null);
   const [selectedDesaId, setSelectedDesaId] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
