@@ -166,7 +166,7 @@ export default function DetailWaung() {
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none text-gray-900">
           Peta Tematik Desa WAUNG
         </h1>
-        <p className="italic text-sm sm:text-base md:text-lg font-medium text-black m-0">
+        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
           Arahkan kursor ke wilayah untuk melihat informasi singkat
         </p>
       </div>
@@ -185,7 +185,13 @@ export default function DetailWaung() {
             <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
-              <GeoJSON data={geojsonData} onEachFeature={onEachFeature} ref={geoJsonRef} style={getStyle} />
+              <GeoJSON
+                key={`geojson-${geojsonData.features.length}-${tabulasi1.length}-${colorMode}`}
+                data={geojsonData}
+                onEachFeature={onEachFeature}
+                ref={geoJsonRef}
+                style={getStyle}
+              />
             )}
           </MapContainer>
 
@@ -292,7 +298,7 @@ export default function DetailWaung() {
           </div>
 
           {/* RIGHT FLOATING PANEL (Filter) */}
-          <div className="absolute top-[200px] right-4 z-[1000] w-64 md:w-72">
+          <div className="absolute top-[160px] right-4 z-[1000] w-64 md:w-72">
             <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
               <div className="bg-gray-800 text-white p-3 rounded-t-2xl flex justify-between items-center">
                 <div className="flex items-center gap-2">
