@@ -149,11 +149,13 @@ export default function DetailWaung() {
 
   let lantaiData = [];
   let atapData = [];
+
   if (selT2) {
     lantaiData = Object.entries(selT2.lantai).filter(([k, v]) => v > 0).map(([name, value]) => ({ name: name.toUpperCase(), value }));
     atapData = Object.entries(selT2.atap).filter(([k, v]) => v > 0).map(([name, value]) => ({ name: name.toUpperCase(), value }));
   }
-  const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+
+  const PIE_COLORS = ['#3b82f6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#8b5cf6'];
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 overflow-x-hidden font-sans">
@@ -177,12 +179,16 @@ export default function DetailWaung() {
         <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
           
           <MapContainer 
-            center={[-7.5, 112.7]} 
+            center={[-7.498, 112.636]} 
             zoom={15} 
+            minZoom={14}
+            maxZoom={22}
+            maxBounds={[[-7.54, 112.63], [-7.48, 112.69]]}
+            maxBoundsViscosity={1.0}
             zoomControl={false} 
             style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
           >
-            <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
+            <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
             <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
@@ -199,14 +205,14 @@ export default function DetailWaung() {
           {/* LEFT FLOATING PANEL (Charts) */}
           <div className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? 'w-10 h-10' : 'w-80 md:w-96'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 flex flex-col max-h-[85%] overflow-hidden`}>
             <div 
-              className="bg-blue-600 text-white px-3 py-3 rounded-t-2xl flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0 h-12"
+              className={`bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition-colors shrink-0 flex items-center ${isPanelMinimized ? 'w-10 h-10 justify-center p-0 rounded-2xl' : 'px-3 h-12 justify-between rounded-t-2xl'}`}
               onClick={() => setIsPanelMinimized(!isPanelMinimized)}
             >
               <div className={`${isPanelMinimized ? 'hidden' : 'block'}`}>
                 <h2 className="font-bold text-sm md:text-base leading-tight">{selectedRT ? `Statistik ${selectedRT}` : "Desa Waung"}</h2>
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-2 ${isPanelMinimized ? 'm-0 p-0' : ''}`}>
                 {selectedRT && !isPanelMinimized && (
                   <button onClick={(e) => { e.stopPropagation(); setSelectedRT(null); }} className="bg-white/20 hover:bg-white/30 p-1 rounded-lg transition-colors" title="Tutup Detail">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -214,7 +220,7 @@ export default function DetailWaung() {
                 )}
                 <button 
                   onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} 
-                  className={`text-white hover:text-gray-200 shrink-0 ${isPanelMinimized ? '-ml-0.5 mt-[-2px]' : ''}`}
+                  className="text-white hover:text-gray-200 shrink-0 flex items-center justify-center w-6 h-6 transition-all"
                   title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
                 >
                   {isPanelMinimized ? (
@@ -275,12 +281,12 @@ export default function DetailWaung() {
                 <div className="space-y-4">
                   <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
                     <p className="text-center font-bold text-gray-700 text-sm mb-4">Distribusi Kelompok Umur</p>
-                    <div className="h-[220px]">
+                    <div className="h-[180px]">
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={kelompokUmur} margin={{ top: 0, right: 0, left: -25, bottom: 0 }} layout="vertical">
+                        <BarChart data={kelompokUmur} margin={{ top: 0, right: 10, left: -5, bottom: 0 }} layout="vertical">
                           <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
                           <XAxis type="number" tick={{fontSize: 10}} />
-                          <YAxis dataKey="kelompok" type="category" tick={{fontSize: 10}} width={40} />
+                          <YAxis dataKey="kelompok" type="category" tick={{fontSize: 10}} width={40} interval={0} />
                           <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                           <Legend verticalAlign="top" height={20} iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
                           <Bar dataKey="domisili_waung_L" name="Laki-Laki" stackId="a" fill="#3b82f6" />
