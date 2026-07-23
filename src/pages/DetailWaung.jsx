@@ -28,6 +28,7 @@ export default function DetailWaung() {
   const [colorMode, setColorMode] = useState('keluarga'); // 'keluarga' or 'luas_lantai'
   const [selectedRT, setSelectedRT] = useState(null);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
+  const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const geoJsonRef = useRef(null);
 
   useEffect(() => {
@@ -242,14 +243,14 @@ export default function DetailWaung() {
 
                   <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
                     <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Lantai Dominan</p>
-                    <div className="h-[160px]">
+                    <div className="h-[140px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={lantaiData} innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" label={false}>
+                          <Pie data={lantaiData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
                             {lantaiData.map((e, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                           </Pie>
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                          <Legend verticalAlign="bottom" height={20} iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
+                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
+                          <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -257,14 +258,14 @@ export default function DetailWaung() {
 
                   <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
                     <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Atap Dominan</p>
-                    <div className="h-[160px]">
+                    <div className="h-[140px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={atapData} innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" label={false}>
+                          <Pie data={atapData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
                             {atapData.map((e, i) => <Cell key={i} fill={PIE_COLORS[(i+2) % PIE_COLORS.length]} />)}
                           </Pie>
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                          <Legend verticalAlign="bottom" height={20} iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
+                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
+                          <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -332,26 +333,40 @@ export default function DetailWaung() {
           </div>
 
           {/* BOTTOM LEFT FLOATING PANEL (Legend) */}
-          <div className="absolute bottom-6 left-4 z-[1000]">
-            <div className="bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-4 border border-gray-100 text-xs w-64">
-              {colorMode === 'keluarga' ? (
-                <>
-                  <div className="font-bold text-gray-800 mb-2 pb-2 border-b border-gray-100 text-sm">Kepadatan Keluarga</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
-                  <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
-                </>
-              ) : (
-                <>
-                  <div className="font-bold text-gray-800 mb-2 pb-2 border-b border-gray-100 text-sm">Rata-rata Luas Lantai</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#166534] shadow-sm"></span> &gt; 150 m²</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#15803d] shadow-sm"></span> 90 - 150 m²</div>
-                  <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#22c55e] shadow-sm"></span> 75 - 90 m²</div>
-                  <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#86efac] shadow-sm"></span> &lt; 75 m²</div>
-                </>
-              )}
+          <div className={`absolute bottom-6 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-64'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden`}>
+            <div 
+              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-4 pb-2 border-b border-gray-100 text-sm flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+            >
+              {!isLegendMinimized && <span>{colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}</span>}
+              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
+                {isLegendMinimized ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
+              </button>
             </div>
+            
+            {!isLegendMinimized && (
+              <div className="p-4 pt-3 text-xs">
+                {colorMode === 'keluarga' ? (
+                  <>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
+                    <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#166534] shadow-sm"></span> &gt; 150 m²</div>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#15803d] shadow-sm"></span> 90 - 150 m²</div>
+                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#22c55e] shadow-sm"></span> 75 - 90 m²</div>
+                    <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#86efac] shadow-sm"></span> &lt; 75 m²</div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
         </div>
