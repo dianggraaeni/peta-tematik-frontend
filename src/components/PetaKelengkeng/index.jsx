@@ -31,6 +31,7 @@ export default function MapSection() {
   const [mapInstance, setMapInstance] = useState(null);
   const [isDataOpen, setIsDataOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
@@ -508,25 +509,21 @@ export default function MapSection() {
 
     return (
       <div className="relative">
-        {/* Tombol Simbol Legenda */}
         <button
           onClick={toggleExpand2}
-          className={`w-full py-1.5 px-3 rounded-lg flex items-center justify-center focus:outline-none transition-colors shadow-sm border ${
+          className={`w-10 h-10 rounded-lg flex items-center justify-center focus:outline-none transition-colors shadow-sm border ${
             isExpanded ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-700 hover:bg-gray-100 border-gray-200"
           }`}
           aria-label="Toggle Legend"
         >
-          {/* Ikon untuk tombol */}
-          <span className="material-icons">legend_toggle</span>
+          <span className="material-icons text-xl">legend_toggle</span>
         </button>
-
-        {/* Menu yang akan diperluas ketika tombol diklik */}
+  
         {isExpanded && (
           <div
-            className="absolute left-full -bottom-2 ml-3 p-4 w-[20vh] bg-white rounded-md shadow-md text-gray-800"
+            className="absolute right-full top-0 mr-3 p-3 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 text-gray-800"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.8)", // Semi-transparent background
-              backdropFilter: "blur(12px)", // Blur effect
+              zIndex: 1000,
             }}
           >
             <div className="mb-1 text-sm font-semibold text-right">
@@ -614,7 +611,7 @@ export default function MapSection() {
             maxNativeZoom={activeBasemap.maxZoom || 19}
             maxZoom={24}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap}>
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen}>
             <div className="relative pointer-events-auto">
               <button
                 className="w-10 h-10 bg-white/90 backdrop-blur-md hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-100 flex items-center justify-center transition-all hover:shadow-xl hover:text-emerald-600 active:scale-95"
@@ -933,36 +930,31 @@ export default function MapSection() {
             ) : null}
           </div>
         </Transition>
+
         <div
-          className="absolute bottom-4 left-4 z-10 w-auto p-2 bg-white rounded-md shadow-md text-gray-800 pointer-events-auto"
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.7)",
-            backdropFilter: "blur(12px)", // Blur effect
-          }}
+          className={`absolute top-4 right-16 z-[1000] flex gap-2 pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
         >
-          <div className="flex flex-col gap-2">
+          <div className="flex bg-white/95 backdrop-blur-xl p-1 rounded-xl shadow-2xl border border-gray-100 h-10">
             <button
-              className={`py-1.5 px-3 rounded-lg flex items-center gap-1 font-semibold transition-colors shadow-sm border ${
-                showRT ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+              className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
+                showRT ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
               }`}
               onClick={toggleRT}
+              title="Toggle RT"
             >
-              {showRT ? (
-                <div className="flex items-center">
-                  <span className="mr-2 text-xl material-icons">
-                    visibility
-                  </span>{" "}
-                  RT
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <span className="mr-2 text-xl material-icons">
-                    visibility_off
-                  </span>{" "}
-                  RT
-                </div>
-              )}
+              <span className="text-[10px]">RT</span>
             </button>
+            <button
+              className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
+                showIndividu ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+              }`}
+              onClick={() => setIndividu(!showIndividu)}
+              title="Toggle Individu"
+            >
+              <span className="text-[10px]">IND</span>
+            </button>
+          </div>
+          <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100">
             <LegendMenu />
           </div>
         </div>

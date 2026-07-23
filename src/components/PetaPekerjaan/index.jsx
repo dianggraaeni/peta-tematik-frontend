@@ -50,6 +50,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
   const [loading, setLoading] = useState(true);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [chartType, setChartType] = useState("doughnut");
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
@@ -627,18 +628,26 @@ const Dashboard = ({ desaName: propsDesaName }) => {
       });
 
       const originalStyle = getMapStyle(props);
-      layer.setStyle(originalStyle);
+      if (typeof layer.setStyle === 'function') {
+        layer.setStyle(originalStyle);
+      }
 
       layer.on({
         mouseover: (e) => {
           const hoveredLayer = e.target;
-          hoveredLayer.setStyle(getHoverStyle());
-          hoveredLayer.bringToFront();
+          if (typeof hoveredLayer.setStyle === 'function') {
+            hoveredLayer.setStyle(getHoverStyle());
+          }
+          if (typeof hoveredLayer.bringToFront === 'function') {
+            hoveredLayer.bringToFront();
+          }
         },
 
         mouseout: (e) => {
-          const layer = e.target;
-          layer.setStyle(originalStyle);
+          const layerTarget = e.target;
+          if (typeof layerTarget.setStyle === 'function') {
+            layerTarget.setStyle(originalStyle);
+          }
         },
 
         click: (e) => {
@@ -843,7 +852,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Outer frame of map */}
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm min-h-[600px]">
           {geojsonData ? (
             <MapContainer
               center={[-7.379, 112.73]}
@@ -860,7 +869,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
               scrollWheelZoom={true}
             >
               <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
               <AutoZoom geojsonData={geojsonData} />
               {enrichedGeojsonData && (
                 <GeoJSON
@@ -946,25 +955,32 @@ const Dashboard = ({ desaName: propsDesaName }) => {
             </div>
           </div>
 
-          {/* ── LEGEND — inside map, bottom left, smaller max-w */}
-          <div className="absolute bottom-4 left-4 z-[1000] bg-white rounded-lg shadow-lg border border-gray-200 p-2 max-w-[140px] pointer-events-auto">
-            <div className="flex justify-between items-center mb-1 cursor-pointer" onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
-              <h4 className="text-[9px] font-semibold text-gray-800 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Legend
-              </h4>
-              <button onClick={(e) => { e.stopPropagation(); setIsLegendMinimized(!isLegendMinimized); }} className="text-gray-500 text-xs ml-2">{isLegendMinimized ? "▲" : "▼"}</button>
+          {/* 📍 LEGEND - inside map, top right, smaller max-w */}
+          <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
+            <div 
+              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+            >
+              {!isLegendMinimized && <span>Legenda Pekerjaan</span>}
+              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
+                {isLegendMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
+              </button>
             </div>
             {!isLegendMinimized && (
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded border border-gray-300 shrink-0" style={{ backgroundColor: employmentColors["tidak bekerja"] }}></div>
-                  <span className="text-[9px] text-gray-700">Tidak Bekerja</span>
+              <div className="p-3 pt-2 text-[10px] space-y-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors["tidak bekerja"] }}></div>
+                  <span className="text-gray-700">Tidak Bekerja</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded border border-gray-300 shrink-0" style={{ backgroundColor: employmentColors["bekerja"] }}></div>
-                  <span className="text-[9px] text-gray-700">Bekerja</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors["bekerja"] }}></div>
+                  <span className="text-gray-700">Bekerja</span>
                 </div>
-                <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-1 text-[9px]">
+                <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-2">
                   <div className="flex justify-between"><span className="text-gray-600">Area:</span><span className="font-medium text-blue-700 truncate ml-1 max-w-[60px]">{selectedAreaTitle}</span></div>
                   <div className="flex justify-between"><span className="text-gray-600">Data:</span><span className="font-medium text-blue-700">{processedData.totalPenduduk || 0}</span></div>
                 </div>

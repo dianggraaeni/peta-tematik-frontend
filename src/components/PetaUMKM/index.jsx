@@ -86,6 +86,7 @@ const Dashboard = ({ initialDesaName }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
 
   useEffect(() => {
@@ -285,7 +286,7 @@ const Dashboard = ({ initialDesaName }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Outer frame of map */}
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
+        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm min-h-[600px]">
           {geojsonData ? (
             <MapContainer
               center={[-7.379, 112.73]}
@@ -302,7 +303,7 @@ const Dashboard = ({ initialDesaName }) => {
               scrollWheelZoom={true}
             >
               <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxNativeZoom={activeBasemap.maxZoom || 19} maxZoom={24} />
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
               <AutoZoom geojsonData={geojsonData} />
               {enrichedGeojsonData && (
                 <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={21} maxClusterRadius={40}>
@@ -388,21 +389,33 @@ const Dashboard = ({ initialDesaName }) => {
             </div>
           </div>
 
-          {/* ── LEGEND — inside map, bottom left, smaller max-w */}
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-100 z-[1000] max-w-[140px] pointer-events-auto">
-            <h4 className="font-bold text-gray-700 mb-1 text-[9px] uppercase tracking-wide flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>Legend UMKM
-            </h4>
-            <div className="flex flex-col gap-1 max-h-[100px] overflow-y-auto no-scrollbar">
-              {Object.entries(kbliColors)
-                .filter(([kbli]) => enrichedGeojsonData?.features?.some(f => f.properties.dominantKbli === kbli && f.properties.totalUmkm > 0) ?? true)
-                .map(([kbli, color]) => (
-                  <div key={kbli} className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded shrink-0 border border-black/10" style={{ backgroundColor: color }}></span>
-                    <span className="text-[9px] text-gray-600 truncate">KBLI {kbli} – {getKbliName(kbli)}</span>
-                  </div>
-                ))}
+          {/* 📍 LEGEND - inside map, top right */}
+          <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
+            <div 
+              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+            >
+              {!isLegendMinimized && <span>Legenda UMKM</span>}
+              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
+                {isLegendMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
+              </button>
             </div>
+            {!isLegendMinimized && (
+              <div className="p-3 pt-2 text-[10px] flex flex-col gap-1 max-h-[150px] overflow-y-auto custom-scrollbar">
+                {Object.entries(kbliColors)
+                  .filter(([kbli]) => enrichedGeojsonData?.features?.some(f => f.properties.dominantKbli === kbli && f.properties.totalUmkm > 0) ?? true)
+                  .map(([kbli, color]) => (
+                    <div key={kbli} className="flex items-center gap-2 mb-1">
+                      <span className="w-4 h-4 rounded-sm border border-black/10 shadow-sm shrink-0" style={{ backgroundColor: color }}></span>
+                      <span className="text-gray-700 truncate">KBLI {kbli} - {getKbliName(kbli)}</span>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
 
           {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}

@@ -29,6 +29,7 @@ export default function DetailWaung() {
   const [selectedRT, setSelectedRT] = useState(null);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
 
   useEffect(() => {
@@ -189,7 +190,7 @@ export default function DetailWaung() {
             style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
           >
             <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
               <GeoJSON
@@ -281,18 +282,38 @@ export default function DetailWaung() {
                 <div className="space-y-4">
                   <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
                     <p className="text-center font-bold text-gray-700 text-sm mb-4">Distribusi Kelompok Umur</p>
-                    <div className="h-[180px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={kelompokUmur} margin={{ top: 0, right: 10, left: -5, bottom: 0 }} layout="vertical">
-                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
-                          <XAxis type="number" tick={{fontSize: 10}} />
-                          <YAxis dataKey="kelompok" type="category" tick={{fontSize: 10}} width={40} interval={0} />
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                          <Legend verticalAlign="top" height={20} iconSize={8} wrapperStyle={{ fontSize: '10px' }} />
-                          <Bar dataKey="domisili_waung_L" name="Laki-Laki" stackId="a" fill="#3b82f6" />
-                          <Bar dataKey="domisili_waung_P" name="Perempuan" stackId="a" fill="#ec4899" radius={[0, 4, 4, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                    <div className="h-[220px] flex w-full">
+                      {/* Laki-Laki */}
+                      <div className="flex-none flex flex-col" style={{ width: 'calc(50% + 22.5px)' }}>
+                        <p className="text-center font-bold text-gray-600 text-[10px] mb-1 pr-[45px]">Laki-laki</p>
+                        <div className="flex-1 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={kelompokUmur} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 20 }}>
+                              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                              <XAxis type="number" reversed domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
+                              <YAxis type="category" dataKey="kelompok" orientation="right" tick={{fontSize: 9, fill: '#374151', fontWeight: 600, textAnchor: 'middle'}} tickMargin={22.5} width={45} interval={0} axisLine={false} tickLine={false} />
+                              <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                              <Bar dataKey="domisili_waung_L" name="Laki-Laki" fill="#3b82f6" radius={[4, 0, 0, 4]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      {/* Perempuan */}
+                      <div className="flex-none flex flex-col" style={{ width: 'calc(50% - 22.5px)' }}>
+                        <p className="text-center font-bold text-gray-600 text-[10px] mb-1">Perempuan</p>
+                        <div className="flex-1 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={kelompokUmur} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 20 }}>
+                              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                              <XAxis type="number" domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
+                              <YAxis type="category" dataKey="kelompok" hide />
+                              <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                              <Bar dataKey="domisili_waung_P" name="Perempuan" fill="#ec4899" radius={[0, 4, 4, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
@@ -338,37 +359,37 @@ export default function DetailWaung() {
             </div>
           </div>
 
-          {/* BOTTOM LEFT FLOATING PANEL (Legend) */}
-          <div className={`absolute bottom-6 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-64'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden`}>
+          {/* TOP RIGHT FLOATING PANEL (Legend) */}
+          <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
             <div 
-              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-4 pb-2 border-b border-gray-100 text-sm flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
               onClick={() => setIsLegendMinimized(!isLegendMinimized)}
             >
               {!isLegendMinimized && <span>{colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}</span>}
               <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
                 {isLegendMinimized ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 )}
               </button>
             </div>
             
             {!isLegendMinimized && (
-              <div className="p-4 pt-3 text-xs">
+              <div className="p-3 pt-2 text-[10px]">
                 {colorMode === 'keluarga' ? (
                   <>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
-                    <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
+                    <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
                   </>
                 ) : (
                   <>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#166534] shadow-sm"></span> &gt; 150 m²</div>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#15803d] shadow-sm"></span> 90 - 150 m²</div>
-                    <div className="flex items-center gap-3 mb-1.5"><span className="w-5 h-5 rounded-md bg-[#22c55e] shadow-sm"></span> 75 - 90 m²</div>
-                    <div className="flex items-center gap-3"><span className="w-5 h-5 rounded-md bg-[#86efac] shadow-sm"></span> &lt; 75 m²</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#064e3b] shadow-sm"></span> &gt; 70 m&sup2;</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#059669] shadow-sm"></span> 50 - 70 m&sup2;</div>
+                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#34d399] shadow-sm"></span> 30 - 50 m&sup2;</div>
+                    <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#a7f3d0] shadow-sm"></span> &lt; 30 m&sup2;</div>
                   </>
                 )}
               </div>
