@@ -6,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import NavbarPetaWaung from '../components/NavbarPeta/waung';
 import CustomMapControls, { useBasemap } from '../components/CustomMapControls';
 import { Select, SelectItem } from '@nextui-org/react';
+import AIInsightBox from '../components/AIInsightBox';
 
 const AutoZoom = ({ geojsonData, selectedRT }) => {
   const map = useMap();
@@ -422,6 +423,16 @@ export default function DetailWaung() {
               </div>
             )}
           </div>
+
+          {/* AI INSIGHT - inside map, bottom right */}
+          <AIInsightBox 
+            desaName="Waung" 
+            featureName={selectedRT} 
+            contextType="waung" 
+            requireClick={true} 
+            customClass="bottom-4 right-4" 
+            data={{ rukunTetangga: selectedRT, detail: selectedRT ? processedWaungData.find(d => d.rt === selectedRT) : null }} 
+          />
 
         </div>
       </div>

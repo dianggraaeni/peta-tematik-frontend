@@ -549,7 +549,6 @@ const LandingPage = () => {
               dragging={true}
               scrollWheelZoom={true}
             >
-              <ZoomControl position="bottomright" />
               <TileLayer
                 url={activeBasemap.url}
                 attribution={activeBasemap.attribution}
