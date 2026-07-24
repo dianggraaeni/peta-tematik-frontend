@@ -14,15 +14,22 @@ export default function NavbarPetaWaung() {
           <p className="text-base md:text-lg font-extrabold text-blue-900 leading-tight uppercase">DESA WAUNG</p>
         </div>
       </div>
+
       <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 w-full sm:w-auto justify-end">
         <button onClick={() => navigate("/bantuan")} className="bg-white hover:bg-gray-100 text-blue-600 rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-300">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </button>
-        <Link to="/peta-tematik" className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-2 rounded-full font-bold shadow-md shadow-blue-500/30 transition-all flex items-center gap-2 text-sm md:text-base group whitespace-nowrap">
-          <span className="group-hover:-translate-x-1 transition-transform">&laquo;</span> Peta Tematik
-        </Link>
+          <Link to="/peta-tematik" className="bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-4 md:pr-5 py-1.5 md:py-2 rounded-full font-bold shadow-md shadow-blue-500/30 transition-all flex items-center gap-2 text-sm md:text-base group whitespace-nowrap">
+            <div className="w-6 h-6 md:w-7 md:h-7 bg-white text-blue-600 rounded-full flex items-center justify-center shadow-sm">
+              <svg className="group-hover:-translate-x-0.5 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="11 17 6 12 11 7"></polyline>
+                <polyline points="18 17 13 12 18 7"></polyline>
+              </svg>
+            </div>
+            <span>Peta Tematik</span>
+          </Link>
         <button onClick={() => navigate("/login")} className="bg-white hover:bg-gray-50 font-bold py-2 px-4 md:px-6 rounded-full shadow-md transition-all text-sm md:text-base border border-gray-200 whitespace-nowrap" style={{ color: "black", opacity: 1 }}>Masuk Admin</button>
       </div>
     </div>

@@ -76,6 +76,7 @@ const BerandaSidoarjo = () => {
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
   const [showInfoPanel, setShowInfoPanel] = useState(false);
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   
   const searchRef = useRef(null);
@@ -696,7 +697,7 @@ const BerandaSidoarjo = () => {
               attribution={activeBasemap.attribution}
               maxZoom={activeBasemap.maxZoom}
             />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
             <MapController 
               geojsonData={geojsonData} 
               selectedDesa={selectedDesa} 
@@ -710,6 +711,31 @@ const BerandaSidoarjo = () => {
               onEachFeature={onEachFeature}
             />
             <MapClickHandler />
+
+            {/* Map Legends */}
+            {mapMode === "kepadatan" && showInfoPanel && (
+              <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/90 backdrop-blur-md shadow-2xl rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar`}>
+                <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#2563eb]"></span> 3.500 - 5.000</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 2.500 - 3.500</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 1.500 - 2.500</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> 1.000 - 1.500</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#bfdbfe]"></span> 500 - 1.000</div>
+                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
+              </div>
+            )}
+            {mapMode === "rasio" && showInfoPanel && (
+              <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/90 backdrop-blur-md shadow-2xl rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar`}>
+                <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
+                <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
+                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
+              </div>
+            )} 
           </MapContainer>
         ) : (
           <div className="flex h-full items-center justify-center">
@@ -752,31 +778,6 @@ const BerandaSidoarjo = () => {
                   <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Map Legends */}
-          {mapMode === "kepadatan" && showInfoPanel && (
-            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
-              <div className="font-bold text-gray-700 mb-2">Kepadatan Penduduk (Jiwa/km²)</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 7.000</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1d4ed8]"></span> 5.000 - 7.000</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#2563eb]"></span> 3.500 - 5.000</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 2.500 - 3.500</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#60a5fa]"></span> 1.500 - 2.500</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#93c5fd]"></span> 1.000 - 1.500</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#bfdbfe]"></span> 500 - 1.000</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#dbeafe]"></span> &lt; 500</div>
-            </div>
-          )}
-          {mapMode === "rasio" && showInfoPanel && (
-            <div className="absolute bottom-6 left-4 z-[1000] bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-3 border border-gray-100/50 text-xs max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
-              <div className="font-bold text-gray-700 mb-2">Rasio L/P (Sex Ratio)</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#1e3a8a]"></span> &gt; 105 (Dominan Laki-laki)</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#3b82f6]"></span> 102 - 105 (Lebih banyak Laki-laki)</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#9ca3af]"></span> 98 - 102 (Seimbang)</div>
-              <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded bg-[#ec4899]"></span> 95 - 98 (Lebih banyak Perempuan)</div>
-              <div className="flex items-center gap-2"><span className="w-4 h-4 rounded bg-[#be185d]"></span> &lt; 95 (Dominan Perempuan)</div>
             </div>
           )}
         

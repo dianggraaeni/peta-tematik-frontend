@@ -32,7 +32,8 @@ export default function MapSection() {
   const [isDataOpen, setIsDataOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [isLayerOpen, setIsLayerOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isFilterMinimized, setIsFilterMinimized] = useState(true);
+  const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
@@ -500,54 +501,7 @@ export default function MapSection() {
   };
 
   const Colors = ["#a7f3d0", "#10b981"]; // Two emerald colors for charts
-  const LegendMenu = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
 
-    const toggleExpand2 = () => {
-      setIsExpanded(!isExpanded);
-    };
-
-    return (
-      <div className="relative">
-        <button
-          onClick={toggleExpand2}
-          className={`w-10 h-10 rounded-lg flex items-center justify-center focus:outline-none transition-colors shadow-sm border ${
-            isExpanded ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-700 hover:bg-gray-100 border-gray-200"
-          }`}
-          aria-label="Toggle Legend"
-        >
-          <span className="material-icons text-xl">legend_toggle</span>
-        </button>
-  
-        {isExpanded && (
-          <div
-            className="absolute right-full top-0 mr-3 p-3 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 text-gray-800"
-            style={{
-              zIndex: 1000,
-            }}
-          >
-            <div className="mb-1 text-sm font-semibold text-right">
-              Jumlah Usaha
-            </div>
-            <div className="relative h-6 mb-2 rounded-full">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
-                  borderRadius: "99px",
-                }}
-              ></div>
-            </div>
-            <div className="flex justify-between px-2 mt-1">
-              <span className="text-xs">0</span>
-              <span className="text-xs">50+</span>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-inter overflow-x-hidden">
@@ -611,70 +565,79 @@ export default function MapSection() {
             maxNativeZoom={activeBasemap.maxZoom || 19}
             maxZoom={24}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen}>
-            <div className="relative pointer-events-auto">
-              <button
-                className="w-10 h-10 bg-white/90 backdrop-blur-md hover:bg-white text-gray-700 rounded-xl shadow-lg border border-gray-100 flex items-center justify-center transition-all hover:shadow-xl hover:text-emerald-600 active:scale-95"
-                onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); }}
-                title="Filter"
-              >
-                <span className="material-icons">filter_list</span>
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
+          
+          {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
+          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden flex flex-col`}>
+            <div 
+              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+            >
+              {!isFilterMinimized && (
+                <div className="flex items-center gap-2 text-emerald-600">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  <span>Filter Data</span>
+                </div>
+              )}
+              {isFilterMinimized && (selectedClassification !== "all" || selectedtUsaha !== "all" || selectedRT !== "desa") && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full"></span>
+              )}
+              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
+                {isFilterMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
               </button>
-              <Transition
-                show={isFilterOpen}
-                className="absolute top-0 right-full mr-3 z-10 w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800"
-                enter="transition ease-out duration-300"
-                enterFrom="opacity-0 transform translate-x-4"
-                enterTo="opacity-100 transform translate-x-0"
-                leave="transition ease-in duration-200"
-                leaveFrom="opacity-100 transform translate-x-0"
-                leaveTo="opacity-0 transform translate-x-4"
-              >
-                <div onClick={(e) => e.stopPropagation()}>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                        Tahun
-                      </label>
-                      <select
-                        id="tahun"
-                        name="tahun"
-                        className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
-                      >
-                        <option value="2024">2024</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                        RT
-                      </label>
-                      <select
-                        id="rt"
-                        name="rt"
-                        className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
-                        value={selectedRT}
-                        onChange={(e) => setSelectedRT(e.target.value)}
-                      >
-                        <option value="desa">Semua RT</option>
-                        {data && data.length > 0 ? (
-                          data.map((item) => {
-                            const { rt, kode } = item.features[0].properties;
-                            return (
-                              <option key={rt} value={kode}>
-                                {rt}
-                              </option>
-                            );
-                          })
-                        ) : (
-                          <option value="" disabled>
-                            No RT
-                          </option>
-                        )}
-                      </select>
-                    </div>
+            </div>
+            
+            {!isFilterMinimized && (
+              <div className="p-4 flex flex-col gap-4 text-left">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                      Tahun
+                    </label>
+                    <select
+                      id="tahun"
+                      name="tahun"
+                      className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                    >
+                      <option value="2024">2024</option>
+                    </select>
                   </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                      RT
+                    </label>
+                    <select
+                      id="rt"
+                      name="rt"
+                      className="block w-full py-2 px-3 text-sm border-gray-200 bg-gray-50 text-gray-800 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 rounded-lg transition-colors"
+                      value={selectedRT}
+                      onChange={(e) => setSelectedRT(e.target.value)}
+                    >
+                      <option value="desa">Semua RT</option>
+                      {data && data.length > 0 ? (
+                        data.map((item) => {
+                          const { rt, kode } = item.features[0].properties;
+                          return (
+                            <option key={rt} value={kode}>
+                              {rt}
+                            </option>
+                          );
+                        })
+                      ) : (
+                        <option value="" disabled>
+                          No RT
+                        </option>
+                      )}
+                    </select>
+                  </div>
+                </div>
 
-                  <label className="block mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
                     Jenis Kelengkeng
                   </label>
                   <select
@@ -690,8 +653,10 @@ export default function MapSection() {
                       </option>
                     ))}
                   </select>
+                </div>
 
-                  <label className="block mt-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
                     Pemanfaatan Produk
                   </label>
                   <select
@@ -708,9 +673,9 @@ export default function MapSection() {
                     ))}
                   </select>
                 </div>
-              </Transition>
-            </div>
-          </CustomMapControls>
+              </div>
+            )}
+          </div>
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (
@@ -954,8 +919,41 @@ export default function MapSection() {
               <span className="text-[10px]">IND</span>
             </button>
           </div>
-          <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100">
-            <LegendMenu />
+          
+          <div className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-48'} flex flex-col`}>
+            <div 
+              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+            >
+              {!isLegendMinimized && <span>Legenda Potensi</span>}
+              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
+                {isLegendMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
+              </button>
+            </div>
+            {!isLegendMinimized && (
+              <div className="p-3 pt-2 text-left">
+                <div className="mb-1 text-xs font-semibold text-right">
+                  Jumlah Usaha
+                </div>
+                <div className="relative h-6 mb-1 rounded-full">
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
+                      borderRadius: "99px",
+                    }}
+                  ></div>
+                </div>
+                <div className="flex justify-between px-1">
+                  <span className="text-[10px] font-bold text-gray-500">0</span>
+                  <span className="text-[10px] font-bold text-gray-500">50+</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

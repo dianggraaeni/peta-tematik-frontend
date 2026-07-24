@@ -47,9 +47,15 @@ export default function NavbarPetaGrogol({ desaName = "GROGOL" }) {
 
         <button 
           onClick={() => navigate('/peta-tematik')}
-          className="w-full sm:w-auto px-6 py-2 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-2 shrink-0"
+          className="bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-4 md:pr-5 py-1.5 md:py-2 rounded-full font-bold shadow-md shadow-blue-500/30 transition-all flex items-center gap-2 text-sm md:text-base group whitespace-nowrap shrink-0"
         >
-          <span className="font-extrabold text-lg -mt-1">&laquo;</span> Peta Tematik
+          <div className="w-6 h-6 md:w-7 md:h-7 bg-white text-blue-600 rounded-full flex items-center justify-center shadow-sm">
+            <svg className="group-hover:-translate-x-0.5 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="11 17 6 12 11 7"></polyline>
+              <polyline points="18 17 13 12 18 7"></polyline>
+            </svg>
+          </div>
+          <span>Peta Tematik</span>
         </button>
 
         <button 

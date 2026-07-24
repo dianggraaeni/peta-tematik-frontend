@@ -53,7 +53,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [chartType, setChartType] = useState("doughnut");
 
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [isFilterMinimized, setIsFilterMinimized] = useState(true);
 
   const [activeFilters, setActiveFilters] = useState({
     gender: "",
@@ -869,7 +869,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
               scrollWheelZoom={true}
             >
               <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
+              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
               <AutoZoom geojsonData={geojsonData} />
               {enrichedGeojsonData && (
                 <GeoJSON
@@ -989,20 +989,31 @@ const Dashboard = ({ desaName: propsDesaName }) => {
           </div>
 
           {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
-          <div className="absolute top-[160px] right-4 z-[1000] pointer-events-auto flex flex-col items-end gap-2">
-            {!isFilterPanelOpen ? (
-              <button onClick={() => setIsFilterPanelOpen(true)} className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg border border-gray-100 w-10 h-10 hover:shadow-xl transition-all flex items-center justify-center group" title="Filter Data">
-                <svg className="w-4 h-4 text-gray-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
-                </svg>
+          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden flex flex-col`}>
+            <div 
+              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+            >
+              {!isFilterMinimized && (
+                <div className="flex items-center gap-2 text-blue-600">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  <span>Filter Data</span>
+                </div>
+              )}
+              {isFilterMinimized && (activeFilters.gender || activeFilters.ageGroup || activeFilters.employment || activeFilters.workField) && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+              )}
+              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
+                {isFilterMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
               </button>
-            ) : (
-              <div className="relative">
-                <button onClick={() => setIsFilterPanelOpen(false)} className="absolute top-2 right-2 z-50 bg-white text-gray-500 hover:text-gray-700 p-1 rounded-full shadow-md" style={{ width: "22px", height: "22px" }}>
-                  <svg className="w-3.5 h-3.5 m-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-                <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
-              </div>
+            </div>
+            
+            {!isFilterMinimized && (
+              <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
             )}
           </div>
 

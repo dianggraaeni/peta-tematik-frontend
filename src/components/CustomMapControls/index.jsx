@@ -43,25 +43,52 @@ export const useBasemap = () => {
   return [activeBasemap, setActiveBasemap];
 };
 
-const CustomMapControls = ({ activeBasemap, setActiveBasemap, children, onLayerOpenChange }) => {
+const CustomMapControls = ({ activeBasemap, setActiveBasemap, children, onLayerOpenChange, isDetail }) => {
   const map = useMap();
   const [isOpen, setIsOpen] = useState(false);
   const controlRef = useRef(null);
+  const zoomRef = useRef(null);
 
   useEffect(() => {
-    if (controlRef.current) {
-      const el = controlRef.current;
-      L.DomEvent.disableScrollPropagation(el);
-      const stop = (e) => L.DomEvent.stopPropagation(e);
-      L.DomEvent.on(el, 'mousedown touchstart dblclick', stop);
-      return () => {
-        L.DomEvent.off(el, 'mousedown touchstart dblclick', stop);
-      };
-    }
+    const disableEvents = (el) => {
+      if (el) {
+        L.DomEvent.disableScrollPropagation(el);
+        const stop = (e) => L.DomEvent.stopPropagation(e);
+        L.DomEvent.on(el, 'mousedown touchstart dblclick', stop);
+        return () => L.DomEvent.off(el, 'mousedown touchstart dblclick', stop);
+      }
+    };
+    const cleanupControl = disableEvents(controlRef.current);
+    const cleanupZoom = disableEvents(zoomRef.current);
+    
+    return () => {
+      if (cleanupControl) cleanupControl();
+      if (cleanupZoom) cleanupZoom();
+    };
   }, []);
 
+  const ZoomControls = () => (
+    <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-lg shadow-lg overflow-hidden border border-gray-100 pointer-events-auto">
+      <button 
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); map.zoomIn(); }} 
+        className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors border-b border-gray-200 font-bold text-lg leading-none active:bg-gray-200"
+        title="Zoom In"
+      >
+        +
+      </button>
+      <button 
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); map.zoomOut(); }} 
+        className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors font-bold text-xl leading-none active:bg-gray-200"
+        title="Zoom Out"
+      >
+        -
+      </button>
+    </div>
+  );
+
   return (
-    <div ref={controlRef} className="absolute top-4 right-4 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
+    <div className="custom-controls-wrapper">
+      <div ref={controlRef} className="absolute top-4 right-4 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
       
       {/* Basemap Dropdown */}
       <div className="relative pointer-events-auto">
@@ -126,27 +153,20 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap, children, onLayerO
         </button>
       </div>
 
-      {/* Zoom Controls */}
-      <div className="flex flex-col bg-white/90 backdrop-blur-md rounded-lg shadow-lg overflow-hidden border border-gray-100 pointer-events-auto">
-        <button 
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); map.zoomIn(); }} 
-          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors border-b border-gray-200 font-bold text-lg leading-none active:bg-gray-200"
-          title="Zoom In"
-        >
-          +
-        </button>
-        <button 
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); map.zoomOut(); }} 
-          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 text-gray-700 hover:text-blue-600 transition-colors font-bold text-xl leading-none active:bg-gray-200"
-          title="Zoom Out"
-        >
-          -
-        </button>
-      </div>
+      {/* Zoom Controls (non-detail) */}
+      {!isDetail && ZoomControls()}
 
       {/* Children elements (e.g. Filter button) stacked here */}
       {children}
     </div>
+    
+    {/* Zoom Controls (detail) */}
+    {isDetail && (
+      <div ref={zoomRef} className="absolute top-[72px] right-4 z-[1000] flex flex-col items-end pointer-events-none">
+        {ZoomControls()}
+      </div>
+    )}
+  </div>
   );
 };
 

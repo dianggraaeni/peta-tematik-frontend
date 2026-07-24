@@ -29,6 +29,7 @@ export default function DetailWaung() {
   const [selectedRT, setSelectedRT] = useState(null);
   const [isPanelMinimized, setIsPanelMinimized] = useState(false);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
+  const [isFilterMinimized, setIsFilterMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
 
@@ -190,7 +191,7 @@ export default function DetailWaung() {
             style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
           >
             <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true} onLayerOpenChange={setIsLayerOpen} />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
               <GeoJSON
@@ -288,10 +289,25 @@ export default function DetailWaung() {
                         <p className="text-center font-bold text-gray-600 text-[10px] mb-1 pr-[45px]">Laki-laki</p>
                         <div className="flex-1 w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={kelompokUmur} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 20 }}>
+                            <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 20 }}>
                               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
                               <XAxis type="number" reversed domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
-                              <YAxis type="category" dataKey="kelompok" orientation="right" tick={{fontSize: 9, fill: '#374151', fontWeight: 600, textAnchor: 'middle'}} tickMargin={22.5} width={45} interval={0} axisLine={false} tickLine={false} />
+                              <YAxis 
+                                type="category" 
+                                dataKey="kelompok" 
+                                orientation="right" 
+                                tick={({x, y, payload}) => (
+                                  <text x={x} y={y} dy={3} textAnchor="middle" fill="#374151" fontSize={9} fontWeight={600}>
+                                    {payload.value}
+                                  </text>
+                                )} 
+                                tickMargin={22.5}
+                                tickSize={0}
+                                width={45} 
+                                interval={0} 
+                                axisLine={false} 
+                                tickLine={false} 
+                              />
                               <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                               <Bar dataKey="domisili_waung_L" name="Laki-Laki" fill="#3b82f6" radius={[4, 0, 0, 4]} />
                             </BarChart>
@@ -304,7 +320,7 @@ export default function DetailWaung() {
                         <p className="text-center font-bold text-gray-600 text-[10px] mb-1">Perempuan</p>
                         <div className="flex-1 w-full">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={kelompokUmur} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 20 }}>
+                            <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 20 }}>
                               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
                               <XAxis type="number" domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
                               <YAxis type="category" dataKey="kelompok" hide />
@@ -326,27 +342,38 @@ export default function DetailWaung() {
           </div>
 
           {/* RIGHT FLOATING PANEL (Filter) */}
-          <div className="absolute top-[160px] right-4 z-[1000] w-64 md:w-72">
-            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-              <div className="bg-blue-600 text-white p-3 rounded-t-2xl flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                  <span className="font-bold text-sm">Filter Tampilan Peta</span>
+          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-64 md:w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
+            <div 
+              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+            >
+              {!isFilterMinimized && (
+                <div className="flex items-center gap-2 text-blue-600">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  <span>Filter Data</span>
                 </div>
-              </div>
+              )}
+              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
+                {isFilterMinimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                )}
+              </button>
+            </div>
+            
+            {!isFilterMinimized && (
               <div className="p-4 flex flex-col gap-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Tema Warna (Choropleth)</label>
-                  <Select 
-                    selectedKeys={[colorMode]}
-                    onChange={(e) => setColorMode(e.target.value)}
-                    size="sm"
-                    className="w-full"
-                  >
-                    <SelectItem key="keluarga" value="keluarga" className="text-sm">Jumlah Keluarga</SelectItem>
-                    <SelectItem key="luas_lantai" value="luas_lantai" className="text-sm">Rata-rata Luas Lantai</SelectItem>
-                  </Select>
-                </div>
+                <Select 
+                  selectedKeys={[colorMode]}
+                  onChange={(e) => setColorMode(e.target.value)}
+                  size="sm"
+                  className="w-full"
+                  aria-label="Pilih Data"
+                >
+                  <SelectItem key="keluarga" value="keluarga" className="text-sm">Jumlah Keluarga</SelectItem>
+                  <SelectItem key="luas_lantai" value="luas_lantai" className="text-sm">Rata-rata Luas Lantai</SelectItem>
+                </Select>
                 {selectedRT && (
                   <button 
                     onClick={() => { setSelectedRT(null); }}
@@ -356,7 +383,7 @@ export default function DetailWaung() {
                   </button>
                 )}
               </div>
-            </div>
+            )}
           </div>
 
           {/* TOP RIGHT FLOATING PANEL (Legend) */}
