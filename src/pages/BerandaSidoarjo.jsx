@@ -316,7 +316,11 @@ const BerandaSidoarjo = () => {
     const props = feature.properties;
     const rawName = props.DESA || props.nmdesa || props.KECAMATAN || "";
     const desaName = rawName.toUpperCase();
-    const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+    let displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+    
+    if (displayName && !displayName.toLowerCase().startsWith("desa ") && !displayName.toLowerCase().startsWith("kelurahan ")) {
+      displayName = "Desa " + displayName;
+    }
     
     const iddesa = props.iddesa;
     const villageThemes = desaTematikInfo[desaName] || [];
@@ -508,16 +512,22 @@ const BerandaSidoarjo = () => {
           {isSearchFocused && searchTerm.trim() !== "" && (
             <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden flex flex-col border border-gray-100">
               {searchResults.length > 0 ? (
-                searchResults.map((result, idx) => (
+                searchResults.map((result, idx) => {
+                  let desaName = result.DESA || result.nmdesa;
+                  if (desaName && !desaName.toLowerCase().startsWith("desa ") && !desaName.toLowerCase().startsWith("kelurahan ")) {
+                    desaName = "Desa " + desaName;
+                  }
+                  return (
                   <button
                     key={idx}
                     onClick={() => handleSelectSearch(result.DESA || result.nmdesa)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
                   >
-                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{result.DESA || result.nmdesa}</div>
+                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>{desaName}</div>
                     <div className="text-xs" style={{ color: "#6b7280" }}>Kecamatan {result.KECAMATAN || result.nmkec}</div>
                   </button>
-                ))
+                  );
+                })
               ) : (
                 <div className="px-4 py-3 text-sm text-gray-500 text-center italic">
                   Desa tidak ditemukan
@@ -589,26 +599,27 @@ const BerandaSidoarjo = () => {
       {/* Theme Filter Area */}
       <div className="w-full px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mb-4 relative z-[2000] gap-3">
         
-        {/* Map Mode Buttons */}
-        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200">
-          <button 
-            onClick={(e) => { e.stopPropagation(); setMapMode("tematik"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "tematik" ? "bg-[#eab308] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
+        {/* Map Mode Dropdown */}
+        <div className={`relative flex-shrink-0 rounded-lg shadow-sm border ${
+          mapMode === 'tematik' ? 'bg-[#eab308] border-[#eab308]' : 
+          mapMode === 'kepadatan' ? 'bg-[#1d4ed8] border-[#1d4ed8]' : 
+          'bg-[#8b5cf6] border-[#8b5cf6]'
+        } transition-colors`}>
+          <select
+            value={mapMode}
+            onChange={(e) => { e.stopPropagation(); setMapMode(e.target.value); }}
+            className="w-full pl-4 pr-10 py-2 text-xs md:text-sm font-bold text-white bg-transparent outline-none appearance-none cursor-pointer focus:ring-0"
+            style={{ minWidth: '180px' }}
           >
-            Tematik
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
-          >
-            Kepadatan
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setMapMode("rasio"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
-          >
-            Rasio L/P
-          </button>
+            <option value="tematik" className="text-gray-800 bg-white">Peta Tematik</option>
+            <option value="kepadatan" className="text-gray-800 bg-white">Kepadatan Penduduk</option>
+            <option value="rasio" className="text-gray-800 bg-white">Rasio L/P</option>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
         </div>
 
         <div className="flex flex-grow justify-end items-center gap-3">

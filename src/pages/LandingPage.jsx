@@ -279,9 +279,8 @@ const LandingPage = () => {
     if (stats) {
       let tooltipContent = `
         <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
-          <div style="font-weight: bold; font-size: 14px;">${props.KECAMATAN}</div>
-          <div style="font-size: 11px; color: #666; margin-bottom: 6px;">Kecamatan</div>
-          <div style="font-size: 11px; text-align: left;">
+          <div style="font-weight: bold; font-size: 14px;">Kecamatan ${props.KECAMATAN}</div>
+          <div style="font-size: 11px; text-align: left; margin-top: 6px;">
             <p style="margin: 2px 0;"><strong>Total Penduduk:</strong> ${stats.jumlah_penduduk.toLocaleString('id-ID')} jiwa</p>
             <p style="margin: 2px 0;"><strong>Kepadatan:</strong> ${Math.round(stats.kepadatan_penduduk).toLocaleString('id-ID')} jiwa/km²</p>
       `;
@@ -539,26 +538,32 @@ const LandingPage = () => {
           {mapMode === "kepadatan" ? "Kepadatan Penduduk Sidoarjo (jiwa/km²)" : "Rasio Jenis Kelamin (Sex Ratio) Kecamatan"}
         </p>
 
-        {/* Map Mode Buttons */}
-        <div className="flex bg-white rounded-lg shadow-sm p-1 border border-gray-200 w-fit mx-auto relative z-[2000] mb-4 md:mb-6">
-          <button 
-            onClick={(e) => { navigate('/peta-tematik') }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all text-gray-500 hover:bg-amber-100 hover:text-amber-700`}
+        {/* Map Mode Dropdown */}
+        <div className={`relative flex-shrink-0 rounded-lg shadow-sm border mx-auto w-fit z-[2000] mb-4 md:mb-6 ${
+          mapMode === 'kepadatan' ? 'bg-[#1d4ed8] border-[#1d4ed8]' : 
+          'bg-[#8b5cf6] border-[#8b5cf6]'
+        } transition-colors`}>
+          <select
+            value={mapMode}
+            onChange={(e) => { 
+              if (e.target.value === "tematik") {
+                navigate('/peta-tematik');
+              } else {
+                setMapMode(e.target.value);
+              }
+            }}
+            className="w-full pl-4 pr-10 py-2 text-xs md:text-sm font-bold text-white bg-transparent outline-none appearance-none cursor-pointer focus:ring-0"
+            style={{ minWidth: '180px' }}
           >
-            Tematik
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setMapMode("kepadatan"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "kepadatan" ? "bg-[#1d4ed8] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
-          >
-            Kepadatan
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setMapMode("rasio"); }}
-            className={`px-3 py-1.5 text-xs md:text-sm font-bold rounded-md transition-all ${mapMode === "rasio" ? "bg-[#8b5cf6] text-white shadow-sm" : "text-gray-500 hover:bg-gray-100"}`}
-          >
-            Rasio L/P
-          </button>
+            <option value="kepadatan" className="text-gray-800 bg-white">Kepadatan Penduduk</option>
+            <option value="rasio" className="text-gray-800 bg-white">Rasio L/P</option>
+            <option value="tematik" className="text-gray-800 bg-white">Peta Tematik</option>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
         </div>
       </div>
 
