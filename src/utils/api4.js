@@ -7,7 +7,7 @@ const api4 = axios.create({
 // Add a request interceptor
 api4.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-grogol");
+    const token = localStorage.getItem("token-grogol") || localStorage.getItem("token-pusat") || localStorage.getItem("token-desa-cantik");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,3 +19,4 @@ api4.interceptors.request.use(
 );
 
 export default api4;
+

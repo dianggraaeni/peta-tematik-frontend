@@ -7,7 +7,7 @@ const api5 = axios.create({
 // Add a request interceptor
 api5.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-desa-cantik");
+    const token = localStorage.getItem("token-desa-cantik") || localStorage.getItem("token-pusat") || localStorage.getItem("token-desa-cantik");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,3 +19,4 @@ api5.interceptors.request.use(
 );
 
 export default api5;
+

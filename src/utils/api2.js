@@ -7,7 +7,7 @@ const api2 = axios.create({
 // Add a request interceptor
 api2.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token-simoketawang");
+    const token = localStorage.getItem("token-simoketawang") || localStorage.getItem("token-pusat") || localStorage.getItem("token-desa-cantik");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,3 +19,4 @@ api2.interceptors.request.use(
 );
 
 export default api2;
+

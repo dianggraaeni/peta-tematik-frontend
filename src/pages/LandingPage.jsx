@@ -50,8 +50,22 @@ const LandingPage = () => {
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
+  const selectedKecamatanRef = useRef(null);
   const isFeatureClicked = useRef(false);
   const navigate = useNavigate();
+
+  // Kecamatan yang sudah punya data detail per desa
+  const kecamatanWithDetail = {
+    "BALONGBENDO": "balongbendo",
+    "BUDURAN": "buduran",
+  };
+
+  const handleNavigateKecamatan = (kecName) => {
+    const slug = kecamatanWithDetail[kecName?.toUpperCase()];
+    if (slug) {
+      navigate(`/detail-kecamatan/${slug}`);
+    }
+  };
 
   useEffect(() => {
     // Fetch the boundaries GeoJSON from public folder
@@ -116,6 +130,7 @@ const LandingPage = () => {
 
   const handleSelectSearch = (kecamatanName) => {
     setSelectedKecamatan(kecamatanName);
+    selectedKecamatanRef.current = kecamatanName;
     setSearchTerm(kecamatanName);
     setIsSearchFocused(false);
   };
@@ -299,7 +314,13 @@ const LandingPage = () => {
         },
         click: (e) => {
           isFeatureClicked.current = true;
-          setSelectedKecamatan(props.KECAMATAN);
+          if (selectedKecamatanRef.current === props.KECAMATAN && kecamatanWithDetail[props.KECAMATAN?.toUpperCase()]) {
+            // Double click on kecamatan with data -> navigate
+            handleNavigateKecamatan(props.KECAMATAN);
+          } else {
+            setSelectedKecamatan(props.KECAMATAN);
+            selectedKecamatanRef.current = props.KECAMATAN;
+          }
           setTimeout(() => { isFeatureClicked.current = false; }, 50);
         }
       });
@@ -644,6 +665,32 @@ const LandingPage = () => {
             requireClick={true}
             customClass="bottom-4 right-4" 
           />
+          {/* Selected Kecamatan Action Card */}
+          <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${selectedKecamatan ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+            <div className="bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-4 md:p-5 flex flex-col items-center gap-3 border border-gray-100/50 max-w-sm w-[90vw]">
+              <div className="text-center">
+                <h3 className="font-extrabold text-lg md:text-xl text-gray-800">{selectedKecamatan}</h3>
+                <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
+                  {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()]
+                    ? 'Data detail per desa tersedia — klik untuk menjelajah'
+                    : 'Kecamatan di Kabupaten Sidoarjo'}
+                </p>
+              </div>
+              {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()] ? (
+                <button
+                  onClick={() => handleNavigateKecamatan(selectedKecamatan)}
+                  className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center"
+                >
+                  <span>Lihat Detail Kecamatan</span>
+                </button>
+              ) : (
+                <div className="w-full py-2 px-4 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium">
+                  Data detail belum tersedia
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

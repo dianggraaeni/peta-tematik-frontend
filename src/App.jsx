@@ -11,6 +11,7 @@ import PetaTematik from "./pages/PetaPekerjaanSidokepung";
 import PetaUmkmSimoanginangin from "./pages/PetaUmkmSimoanginangin";
 import PetaKelengkengSimoketawang from "./pages/petaKelengkengSimoketawang";
 import DetailWaung from "./pages/DetailWaung";
+import DetailKecamatan from "./pages/DetailKecamatan";
 import BerandaSidoarjo from "./pages/BerandaSidoarjo";
 import LandingPage from "./pages/LandingPage";
 import StatAdmin from "./pages/statAdmin";
@@ -36,6 +37,7 @@ function App() {
         <Route path="/detail-simoanginangin" element={<PetaUmkmSimoanginangin />} />
         <Route path="/detail-simoketawang" element={<PetaKelengkengSimoketawang />} />
         <Route path="/detail-waung" element={<DetailWaung />} />
+        <Route path="/detail-kecamatan/:slug" element={<DetailKecamatan />} />
         
         {/* Login Routes */}
         <Route path="/login" element={<LoginGeneral />} /> {/* Default unified login */}

@@ -19,3 +19,4 @@ api6.interceptors.request.use(
 );
 
 export default api6;
+

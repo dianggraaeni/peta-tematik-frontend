@@ -72,6 +72,7 @@ const LoginGeneral = () => {
         let destination = "/";
         if (returnedUser === "admin_pusat") {
           localStorage.setItem("token-pusat", returnedToken);
+          localStorage.setItem("token-desa-cantik", returnedToken); // Added so generic checks pass
           destination = "/admin/pusat";
         } else if (returnedUser.startsWith("admin_")) {
           const desaName = returnedUser.replace("admin_", "");

@@ -72,6 +72,7 @@ const BerandaSidoarjo = () => {
   const [activeThemes, setActiveThemes] = useState([]);
   const [selectedDesa, setSelectedDesa] = useState(null);
   const [selectedDesaId, setSelectedDesaId] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
@@ -153,8 +154,22 @@ const BerandaSidoarjo = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
-  const handleNavigateDetail = (desaName) => {
+  // Kecamatan yang sudah punya data detail level desa
+  const kecamatanWithDetail = {
+    "BALONGBENDO": "balongbendo",
+    "BUDURAN": "buduran",
+  };
+
+  const handleNavigateDetail = (desaName, kecamatanName) => {
     const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
+    const normalizedKec = (kecamatanName || '').toUpperCase();
+    
+    // Cek apakah kecamatan punya data detail desa
+    if (kecamatanWithDetail[normalizedKec]) {
+      navigate(`/detail-kecamatan/${kecamatanWithDetail[normalizedKec]}`);
+      return;
+    }
+    
     if (normalizedName === "SIMOANGINANGIN") {
       navigate("/detail-simoanginangin");
     } else if (normalizedName === "SIMOKETAWANG") {
@@ -339,11 +354,13 @@ const BerandaSidoarjo = () => {
       },
       click: (e) => {
         isFeatureClicked.current = true;
+        const nmkec = props.KECAMATAN || props.nmkec || "";
         if (selectedDesaRef.current === desaName) {
-          handleNavigateDetail(desaName);
+          handleNavigateDetail(desaName, nmkec);
         } else {
           setSelectedDesa(desaName);
           setSelectedDesaId(iddesa);
+          setSelectedKecamatan(nmkec);
         }
         setTimeout(() => { isFeatureClicked.current = false; }, 50);
       },
@@ -793,12 +810,16 @@ const BerandaSidoarjo = () => {
               <button 
                 onClick={() => {
                   if (selectedDesa) {
-                    handleNavigateDetail(selectedDesa);
+                    handleNavigateDetail(selectedDesa, selectedKecamatan);
                   }
                 }}
                 className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
               >
-                <span>Lihat Detail Desa</span>
+                <span>
+                  {kecamatanWithDetail[(selectedKecamatan || '').toUpperCase()]
+                    ? `Lihat Detail Kecamatan ${selectedKecamatan}`
+                    : 'Lihat Detail Desa'}
+                </span>
               </button>
             </div>
           </div>
