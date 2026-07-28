@@ -685,7 +685,7 @@ const LandingPage = () => {
                 <h3 className="font-extrabold text-lg md:text-xl text-gray-800">{selectedKecamatan}</h3>
                 <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
                   {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()]
-                    ? 'Data detail per desa tersedia — klik untuk menjelajah'
+                    ? `Kumpulan desa di Kecamatan ${selectedKecamatan.charAt(0).toUpperCase() + selectedKecamatan.slice(1).toLowerCase()}`
                     : 'Kecamatan di Kabupaten Sidoarjo'}
                 </p>
               </div>
