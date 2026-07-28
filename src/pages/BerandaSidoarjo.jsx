@@ -154,10 +154,18 @@ const BerandaSidoarjo = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
-  // Kecamatan yang sudah punya data detail level desa
+  // Kecamatan yang bisa diklik untuk melihat batas desanya
   const kecamatanWithDetail = {
     "BALONGBENDO": "balongbendo",
     "BUDURAN": "buduran",
+    "GEDANGAN": "gedangan",
+    "KREMBUNG": "krembung",
+    "PORONG": "porong",
+    "PRAMBON": "prambon",
+    "SIDOARJO": "sidoarjo",
+    "TAMAN": "taman",
+    "TANGGULANGIN": "tanggulangin",
+    "WARU": "waru"
   };
 
   const handleNavigateDetail = (desaName, kecamatanName) => {

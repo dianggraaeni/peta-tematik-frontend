@@ -9,7 +9,7 @@ import L from "leaflet";
 // ===========================================
 // AUTO ZOOM
 // ===========================================
-const AutoZoom = ({ geojsonData }) => {
+const AutoZoom = ({ geojsonData, isDummyData }) => {
   const map = useMap();
   useEffect(() => {
     if (geojsonData && map) {
@@ -18,13 +18,13 @@ const AutoZoom = ({ geojsonData }) => {
       if (bounds.isValid()) {
         const isMobile = window.innerWidth < 768;
         map.fitBounds(bounds, {
-          paddingTopLeft: isMobile ? [20, 20] : [340, 50], // Account for the 320px left panel on desktop
+          paddingTopLeft: isMobile || !isDummyData ? [20, 20] : [340, 50], // Account for the 320px left panel on desktop if dummy data exists
           paddingBottomRight: [50, 50],
           maxZoom: 14,
         });
       }
     }
-  }, [geojsonData, map]);
+  }, [geojsonData, map, isDummyData]);
   return null;
 };
 
@@ -44,6 +44,14 @@ const getKepadatanColor = (jumlah, max) => {
 // ===========================================
 // MAIN COMPONENT
 // ===========================================
+const getDesaName = (props) => {
+  let name = props.nama_desa || props.NAMOBJ || props.WADMKD || props.DESA || props.KELURAHAN || props.Desa || "Tanpa Nama";
+  if (!name.toLowerCase().startsWith("desa ") && !name.toLowerCase().startsWith("kelurahan ")) {
+    name = "Desa " + name;
+  }
+  return name;
+};
+
 const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [selectedDesa, setSelectedDesa] = useState(null);
@@ -55,27 +63,43 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
 
-  // Dummy population data per desa (since no API - illustrative)
+  const isDummyData = kecamatanSlug === 'balongbendo' || kecamatanSlug === 'buduran';
+
+  // Population data per desa (Dummy for balongbendo/buduran, 0 for others)
   const desaStats = useMemo(() => {
     if (!geojsonData) return {};
     const stats = {};
+    
     geojsonData.features.forEach((f, i) => {
-      const name = f.properties.nama_desa;
-      // Simulate realistic population data
-      const base = 1500 + (i * 317 + 421) % 3500;
-      const laki = Math.round(base * (0.48 + Math.random() * 0.04));
-      const perempuan = base - laki;
-      stats[name] = {
-        total: base,
-        laki,
-        perempuan,
-        kk: Math.round(base / 3.8),
-        rjk: Math.round((laki / perempuan) * 100),
-        luas: (f.properties.luas * 111 * 111).toFixed(2), // rough km²
-      };
+      const name = getDesaName(f.properties);
+      
+      if (isDummyData) {
+        // Simulate realistic population data
+        const base = 1500 + (i * 317 + 421) % 3500;
+        const laki = Math.round(base * (0.48 + Math.random() * 0.04));
+        const perempuan = base - laki;
+        stats[name] = {
+          total: base,
+          laki,
+          perempuan,
+          kk: Math.round(base / 3.8),
+          rjk: Math.round((laki / perempuan) * 100),
+          luas: f.properties.luas ? (f.properties.luas * 111 * 111).toFixed(2) : 0,
+        };
+      } else {
+        // No data available
+        stats[name] = {
+          total: 0,
+          laki: 0,
+          perempuan: 0,
+          kk: 0,
+          rjk: 0,
+          luas: 0,
+        };
+      }
     });
     return stats;
-  }, [geojsonData]);
+  }, [geojsonData, kecamatanSlug]);
 
   const maxPenduduk = useMemo(() => {
     return Math.max(...Object.values(desaStats).map((d) => d.total), 1);
@@ -108,14 +132,14 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
 
   const getStyle = useCallback(
     (feature) => {
-      const name = feature.properties.nama_desa;
+      const name = getDesaName(feature.properties);
       const stat = desaStats[name];
       const isSelected = selectedDesa === name;
       const isHovered = hoveredDesa === name;
       return {
-        fillColor: getKepadatanColor(stat?.total || 0, maxPenduduk),
+        fillColor: isDummyData ? getKepadatanColor(stat?.total || 0, maxPenduduk) : "#3b82f6",
         fillOpacity: isSelected ? 0.95 : isHovered ? 0.85 : 0.7,
-        color: isSelected ? "#1e3a8a" : isHovered ? "#3b82f6" : "#ffffff",
+        color: isSelected ? "#1e3a8a" : isHovered ? (isDummyData ? "#3b82f6" : "#60a5fa") : "#ffffff",
         weight: isSelected ? 3 : isHovered ? 2.5 : 1.5,
       };
     },
@@ -124,23 +148,26 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
 
   const onEachFeature = useCallback(
     (feature, layer) => {
-      const name = feature.properties.nama_desa;
+      const name = getDesaName(feature.properties);
       const stat = desaStats[name];
 
-      layer.bindTooltip(
-        `<div style="font-family:sans-serif;padding:6px 10px;border-radius:8px;font-size:13px;">
+      const tooltipContent = isDummyData
+        ? `<div style="font-family:sans-serif;padding:6px 10px;border-radius:8px;font-size:13px;">
           <b style="color:#1e3a8a">${name}</b><br/>
           Penduduk: <b>${stat ? stat.total.toLocaleString("id-ID") : "-"} jiwa</b>
-        </div>`,
-        { sticky: true, className: "custom-tooltip" }
-      );
+        </div>`
+        : `<div style="font-family:sans-serif;padding:6px 10px;border-radius:8px;font-size:13px;">
+          <b style="color:#1e3a8a">${name}</b>
+        </div>`;
+
+      layer.bindTooltip(tooltipContent, { sticky: true, className: "custom-tooltip" });
 
       layer.on({
         mouseover: (e) => {
           setHoveredDesa(name);
           e.target.setStyle({
             fillOpacity: 0.85,
-            color: "#3b82f6",
+            color: isDummyData ? "#3b82f6" : "#60a5fa",
             weight: 2.5,
           });
         },
@@ -148,8 +175,21 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           setHoveredDesa(null);
           if (geoJsonRef.current) geoJsonRef.current.resetStyle(e.target);
         },
-        click: () => {
-          setSelectedDesa((prev) => (prev === name ? null : name));
+        click: (e) => {
+          if (isDummyData) {
+            setSelectedDesa((prev) => (prev === name ? null : name));
+          }
+          // Efek zoom saat desa diklik
+          const layer = e.target;
+          if (layer && layer._map) {
+            const isMobile = window.innerWidth < 768;
+            layer._map.flyToBounds(layer.getBounds(), {
+              paddingTopLeft: isMobile || !isDummyData ? [20, 20] : [340, 50],
+              paddingBottomRight: [50, 50],
+              maxZoom: 15,
+              duration: 1.0 // animasi
+            });
+          }
         },
       });
     },
@@ -200,7 +240,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
 
         {geojsonData && (
           <>
-            <AutoZoom geojsonData={geojsonData} />
+            <AutoZoom geojsonData={geojsonData} isDummyData={isDummyData} />
             <GeoJSON
               key={`${kecamatanSlug}-${JSON.stringify(selectedDesa)}-${JSON.stringify(hoveredDesa)}`}
               ref={geoJsonRef}
@@ -219,7 +259,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
         />
         
         {/* Hint */}
-        {!selectedDesa && (
+        {isDummyData && !selectedDesa && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none">
             <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs text-gray-600 border border-gray-200">
               Klik desa untuk melihat detail statistik
@@ -231,9 +271,10 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       {/* =========================================
           LEFT PANEL: Stats + Selected Desa Info (Floating)
       ========================================= */}
-      <div 
-        className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? "w-10 h-10" : "w-[90vw] md:w-80 max-h-[calc(100vh-100px)]"}`}
-      >
+      {isDummyData && (
+        <div 
+          className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? "w-10 h-10" : "w-[90vw] md:w-80 max-h-[calc(100vh-100px)]"}`}
+        >
         <div className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col h-full">
           <div 
             className="bg-blue-600 text-white px-3 py-2.5 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
@@ -283,7 +324,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           <div className="p-5 flex-1">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-blue-900 text-sm">
-                Desa {selectedDesa}
+                {selectedDesa}
               </h3>
               <button
                 onClick={() => setSelectedDesa(null)}
@@ -320,7 +361,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
               <div className="flex h-5 rounded-full overflow-hidden">
                 <div
                   className="bg-indigo-500 transition-all duration-700"
-                  style={{ width: `${(selectedStat.laki / selectedStat.total) * 100}%` }}
+                  style={{ width: `${selectedStat.total ? (selectedStat.laki / selectedStat.total) * 100 : 0}%` }}
                 />
                 <div
                   className="bg-pink-400 flex-1"
@@ -328,10 +369,10 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
               </div>
               <div className="flex justify-between text-xs mt-1">
                 <span className="text-indigo-600">
-                  ♂ {((selectedStat.laki / selectedStat.total) * 100).toFixed(1)}%
+                  ♂ {selectedStat.total ? ((selectedStat.laki / selectedStat.total) * 100).toFixed(1) : "0.0"}%
                 </span>
                 <span className="text-pink-500">
-                  ♀ {((selectedStat.perempuan / selectedStat.total) * 100).toFixed(1)}%
+                  ♀ {selectedStat.total ? ((selectedStat.perempuan / selectedStat.total) * 100).toFixed(1) : "0.0"}%
                 </span>
               </div>
             </div>
@@ -344,12 +385,12 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
             </p>
             <div className="space-y-1">
               {geojsonData &&
-                geojsonData.features.map((f) => {
-                  const name = f.properties.nama_desa;
+                geojsonData.features.map((f, i) => {
+                  const name = getDesaName(f.properties);
                   const stat = desaStats[name];
                   return (
                     <button
-                      key={name}
+                      key={`${name}-${i}`}
                       onClick={() => setSelectedDesa(name)}
                       className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors text-left group"
                     >
@@ -369,11 +410,13 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       )}
       </div>
     </div>
+    )}
 
       {/* =========================================
           LEGEND (Floating Right)
       ========================================= */}
-      <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-52'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-xl rounded-xl border border-gray-200 overflow-hidden`}>
+      {isDummyData && (
+        <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-52'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-xl rounded-xl border border-gray-200 overflow-hidden`}>
         <div 
           className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
           onClick={() => setIsLegendMinimized(!isLegendMinimized)}
@@ -410,6 +453,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           </div>
         )}
       </div>
+      )}
 
     </div>
   );
