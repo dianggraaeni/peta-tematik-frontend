@@ -16,7 +16,12 @@ const AutoZoom = ({ geojsonData }) => {
       const tempLayer = L.geoJSON(geojsonData);
       const bounds = tempLayer.getBounds();
       if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+        const isMobile = window.innerWidth < 768;
+        map.fitBounds(bounds, {
+          paddingTopLeft: isMobile ? [20, 20] : [340, 50], // Account for the 320px left panel on desktop
+          paddingBottomRight: [50, 50],
+          maxZoom: 14,
+        });
       }
     }
   }, [geojsonData, map]);
@@ -182,8 +187,8 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       <MapContainer
         center={[-7.4, 112.6]}
         zoom={12}
-        minZoom={12}
-        maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+        minZoom={11}
+        maxBounds={[[-7.8, 112.4], [-7.2, 112.9]]}
         maxBoundsViscosity={1.0}
         className="w-full h-full absolute inset-0 z-0"
         zoomControl={false}
