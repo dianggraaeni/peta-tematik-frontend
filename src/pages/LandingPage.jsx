@@ -5,6 +5,7 @@ import L from "leaflet";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
+import { fetchKabupatenData } from "../utils/openDataApi";
 
 // Auto Zoom to fit Sidoarjo or selected Kecamatan
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
@@ -37,7 +38,8 @@ const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
 const LandingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [statsData, setStatsData] = useState([]);
-  const [pendudukData, setPendudukData] = useState(null);
+  const [pendudukData, setPendudukData] = useState(null); // Kept for legacy/fallback
+  const [apiKabupatenData, setApiKabupatenData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -56,16 +58,24 @@ const LandingPage = () => {
 
   // Kecamatan yang bisa diklik untuk melihat batas desanya
   const kecamatanWithDetail = {
-    "BALONGBENDO": "balongbendo",
-    "BUDURAN": "buduran",
-    "GEDANGAN": "gedangan",
+    "TARIK": "tarik",
+    "PRAMBON": "prambon",
     "KREMBUNG": "krembung",
     "PORONG": "porong",
-    "PRAMBON": "prambon",
-    "SIDOARJO": "sidoarjo",
-    "TAMAN": "taman",
+    "JABON": "jabon",
     "TANGGULANGIN": "tanggulangin",
-    "WARU": "waru"
+    "CANDI": "candi",
+    "TULANGAN": "tulangan",
+    "WONOAYU": "wonoayu",
+    "SUKODONO": "sukodono",
+    "SIDOARJO": "sidoarjo",
+    "BUDURAN": "buduran",
+    "SEDATI": "sedati",
+    "WARU": "waru",
+    "GEDANGAN": "gedangan",
+    "TAMAN": "taman",
+    "KRIAN": "krian",
+    "BALONGBENDO": "balongbendo"
   };
 
   const handleNavigateKecamatan = (kecName) => {
@@ -82,17 +92,24 @@ const LandingPage = () => {
       .then((data) => setGeojsonData(data))
       .catch((err) => console.error("Error loading boundaries:", err));
 
-    // Fetch statistical data
+    // Fetch statistical data (provides Luas Wilayah)
     fetch("/data/statistikSidoarjo.json")
       .then((res) => res.json())
       .then((data) => setStatsData(data))
       .catch((err) => console.error("Error loading stats:", err));
 
-    // Fetch demographic data for aggregation
+    // Fetch demographic data for aggregation (fallback)
     fetch("/data/penduduk.json")
       .then((res) => res.json())
       .then((data) => setPendudukData(data))
       .catch((err) => console.error("Error loading penduduk:", err));
+      
+    // Fetch live API data for Kecamatan aggregate
+    fetchKabupatenData().then(data => {
+      if (data && data.length > 0) {
+        setApiKabupatenData(data);
+      }
+    });
   }, []);
 
   // Handle clicking outside the search box to close dropdown
@@ -143,30 +160,56 @@ const LandingPage = () => {
     setIsSearchFocused(false);
   };
 
-  // Helper function to get stats for a district
+  // Helper function to get stats for a district, merged with live API data if available
   const getDistrictStats = (kecamatanName) => {
     if (!kecamatanName || !statsData.length) return null;
-    return statsData.find(
+    const baseStat = statsData.find(
       (stat) => stat.kecamatan.toUpperCase() === kecamatanName.toUpperCase()
     );
+    if (!baseStat) return null;
+
+    // Merge with API data
+    if (apiKabupatenData) {
+      const liveData = apiKabupatenData.find(d => d.kecamatan === baseStat.kecamatan.toUpperCase());
+      if (liveData) {
+        const liveJumlah = liveData.total;
+        const kepadatan = baseStat.luas_wilayah > 0 ? liveJumlah / baseStat.luas_wilayah : 0;
+        return {
+          ...baseStat,
+          jumlah_penduduk: liveJumlah,
+          kepadatan_penduduk: kepadatan
+        };
+      }
+    }
+    return baseStat;
   };
 
   // Aggregate stats
-  const totalPenduduk = statsData.reduce((sum, stat) => sum + stat.jumlah_penduduk, 0);
   const totalLuas = statsData.reduce((sum, stat) => sum + stat.luas_wilayah, 0);
+  const totalPenduduk = apiKabupatenData 
+    ? apiKabupatenData.reduce((sum, d) => sum + d.total, 0)
+    : statsData.reduce((sum, stat) => sum + stat.jumlah_penduduk, 0);
   const avgKepadatan = totalLuas > 0 ? (totalPenduduk / totalLuas) : 0;
   
   const sidoarjoAgregat = React.useMemo(() => {
-    if (!pendudukData) return null;
     let L = 0, P = 0, total = 0, kk = 0;
-    Object.values(pendudukData).forEach((desa) => {
-      L += desa.L;
-      P += desa.P;
-      total += desa.total_penduduk;
-      kk += desa.total_kk || 0;
-    });
+    if (apiKabupatenData) {
+      apiKabupatenData.forEach(d => {
+        L += d.L;
+        P += d.P;
+        total += d.total;
+        kk += Math.round(d.total / 3.8); // Estimate KK
+      });
+    } else if (pendudukData) {
+      Object.values(pendudukData).forEach((desa) => {
+        L += desa.L;
+        P += desa.P;
+        total += desa.total_penduduk;
+        kk += desa.total_kk || 0;
+      });
+    }
     return { L, P, total, kk };
-  }, [pendudukData]);
+  }, [apiKabupatenData, pendudukData]);
 
   // Choropleth color scale based on map mode
   const getKepadatanColor = (density) => {
@@ -181,7 +224,7 @@ const LandingPage = () => {
   };
 
   const getRasioColor = (l, p) => {
-    if (!p) return "#e5e7eb";
+    if (!p) return "#bfdbfe";
     const rjk = (l / p) * 100;
     if (rjk > 105) return "#1e3a8a"; 
     if (rjk > 102) return "#3b82f6";
@@ -191,19 +234,26 @@ const LandingPage = () => {
   };
 
   const kecamatanDemografi = React.useMemo(() => {
-    if (!pendudukData) return {};
     const agg = {};
-    Object.values(pendudukData).forEach((desa) => {
-      const kec = (desa.Kecamatan || "").toUpperCase();
-      if (!agg[kec]) {
-        agg[kec] = { L: 0, P: 0, total: 0 };
-      }
-      agg[kec].L += desa.L;
-      agg[kec].P += desa.P;
-      agg[kec].total += desa.total_penduduk;
-    });
+    if (apiKabupatenData) {
+      // Use Live API Data
+      apiKabupatenData.forEach(d => {
+        agg[d.kecamatan] = { L: d.L, P: d.P, total: d.total };
+      });
+    } else if (pendudukData) {
+      // Fallback to local dummy data
+      Object.values(pendudukData).forEach((desa) => {
+        const kec = (desa.Kecamatan || "").toUpperCase();
+        if (!agg[kec]) {
+          agg[kec] = { L: 0, P: 0, total: 0 };
+        }
+        agg[kec].L += desa.L;
+        agg[kec].P += desa.P;
+        agg[kec].total += desa.total_penduduk;
+      });
+    }
     return agg;
-  }, [pendudukData]);
+  }, [apiKabupatenData, pendudukData]);
 
   const getStyle = (feature) => {
     const kecName = feature.properties.KECAMATAN.toUpperCase();
@@ -211,7 +261,7 @@ const LandingPage = () => {
     const density = stats ? stats.kepadatan_penduduk : 0;
     const isSelected = selectedKecamatan === feature.properties.KECAMATAN;
     
-    let fillColor = "#e5e7eb";
+    let fillColor = "#bfdbfe";
     if (mapMode === "kepadatan") {
       fillColor = getKepadatanColor(density);
     } else if (mapMode === "rasio") {
@@ -223,9 +273,9 @@ const LandingPage = () => {
       fillColor: fillColor,
       weight: isSelected ? 3 : 2,
       opacity: 1,
-      color: isSelected ? "#ffffff" : "#475569", // Thinner and slightly lighter dark border
+      color: isSelected ? "#ffffff" : "#475569", 
       dashArray: isSelected ? "" : "3",
-      fillOpacity: isSelected ? 0.7 : 0.5, // Higher opacity for visibility
+      fillOpacity: isSelected ? 0.7 : 0.5, 
     };
   };
 
