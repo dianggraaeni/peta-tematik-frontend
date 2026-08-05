@@ -264,7 +264,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
         center={[-7.4, 112.6]}
         zoom={12}
         minZoom={11}
-        maxBounds={[[-7.8, 112.4], [-7.2, 112.9]]}
+        maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
         maxBoundsViscosity={1.0}
         className="w-full h-full absolute inset-0 z-0"
         zoomControl={false}

@@ -580,7 +580,7 @@ export default function MapSection() {
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
           minZoom={12}
-          maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+          maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
           maxBoundsViscosity={1.0}
           scrollWheelZoom={true}
           className="w-full h-full"

@@ -295,7 +295,7 @@ const Dashboard = ({ initialDesaName }) => {
               maxZoom={24}
               zoomSnap={0.5}
               zoomDelta={0.5}
-              maxBounds={[[-7.65, 112.5], [-7.3, 112.85]]}
+              maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
               maxBoundsViscosity={1.0}
               style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
               doubleClickZoom={true}
