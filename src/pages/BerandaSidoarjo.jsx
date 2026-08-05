@@ -154,39 +154,31 @@ const BerandaSidoarjo = () => {
     setSearchResults(uniqueResults);
   }, [searchTerm, geojsonData]);
 
-  // Kecamatan yang bisa diklik untuk melihat batas desanya
-  const kecamatanWithDetail = {
-    "BALONGBENDO": "balongbendo",
-    "BUDURAN": "buduran",
-    "GEDANGAN": "gedangan",
-    "KREMBUNG": "krembung",
-    "PORONG": "porong",
-    "PRAMBON": "prambon",
-    "SIDOARJO": "sidoarjo",
-    "TAMAN": "taman",
-    "TANGGULANGIN": "tanggulangin",
-    "WARU": "waru"
-  };
 
-  const handleNavigateDetail = (desaName, kecamatanName) => {
+
+  const handleNavigateDetail = (desaName) => {
     const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
-    const normalizedKec = (kecamatanName || '').toUpperCase();
+
     
-    // Cek apakah kecamatan punya data detail desa
-    if (kecamatanWithDetail[normalizedKec]) {
-      navigate(`/detail-kecamatan/${kecamatanWithDetail[normalizedKec]}`);
+    // Prioritaskan Detail Desa jika desa ini adalah Desa Tematik
+    const isTematik = desaTematikInfo[desaName.toUpperCase()] || desaTematikInfo[normalizedName];
+    
+    if (isTematik) {
+      if (normalizedName === "SIMOANGINANGIN") {
+        navigate("/detail-simoanginangin");
+      } else if (normalizedName === "SIMOKETAWANG") {
+        navigate("/detail-simoketawang");
+      } else if (normalizedName === "WAUNG") {
+        navigate("/detail-waung");
+      } else {
+        // Fallback untuk desa tematik lain (misal Sidokepung, Grogol)
+        navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+      }
       return;
     }
-    
-    if (normalizedName === "SIMOANGINANGIN") {
-      navigate("/detail-simoanginangin");
-    } else if (normalizedName === "SIMOKETAWANG") {
-      navigate("/detail-simoketawang");
-    } else if (normalizedName === "WAUNG") {
-      navigate("/detail-waung");
-    } else {
-      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
-    }
+
+    // Jika tidak ada di keduanya
+    navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
   };
 
   const handleSelectSearch = (desaName) => {
@@ -834,11 +826,7 @@ const BerandaSidoarjo = () => {
                 }}
                 className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
               >
-                <span>
-                  {kecamatanWithDetail[(selectedKecamatan || '').toUpperCase()]
-                    ? `Lihat Detail Kecamatan ${selectedKecamatan}`
-                    : 'Lihat Detail Desa'}
-                </span>
+                <span>Lihat Detail Desa</span>
               </button>
             </div>
           </div>
