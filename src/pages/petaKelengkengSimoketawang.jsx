@@ -5,10 +5,8 @@ import MapSection from "../components/PetaKelengkeng";
 const PetaKelengkengSimoketawang = () => {
   return (
   
-      <div className="w-full h-full relative">
-      <NavbarPetaKelengkeng />
-      <MapSection />
-      {/* <Footer /> */}
+      <div className="w-screen h-screen relative flex flex-col bg-gray-200 overflow-hidden font-sans">
+        <MapSection />
       </div>
   );
 };

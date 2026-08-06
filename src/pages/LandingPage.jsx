@@ -385,19 +385,19 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#e0f2fe] flex flex-col">
+    <div className="w-screen h-screen relative overflow-hidden bg-gray-200">
       <style>{`
         .beranda-tooltip {
           background: white !important;
           border: none !important;
-          border-radius: 8px !important;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+          border-radius: 12px !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
         }
         .beranda-tooltip::before {
           display: none !important;
         }
         .leaflet-container {
-          background: transparent !important;
+          background: #e8eaed !important;
         }
         .leaflet-interactive {
           cursor: pointer !important;
@@ -408,8 +408,8 @@ const LandingPage = () => {
         }
         .leaflet-control-zoom {
           border: none !important;
-          border-radius: 8px !important;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+          border-radius: 12px !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
           display: flex;
           flex-direction: column;
           margin-right: 1rem !important;
@@ -418,74 +418,108 @@ const LandingPage = () => {
           background-color: white !important;
         }
         .leaflet-control-zoom-in, .leaflet-control-zoom-out {
-          background-color: transparent !important;
-          color: #1f2937 !important;
+          background-color: white !important;
+          color: #374151 !important;
           border: none !important;
-          width: 34px !important;
-          height: 34px !important;
+          width: 40px !important;
+          height: 40px !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
-          font-weight: 600 !important;
-          font-size: 1.2rem !important;
-          transition: background-color 0.2s !important;
+          font-weight: 400 !important;
+          font-size: 1.25rem !important;
+          transition: background-color 0.15s !important;
         }
         .leaflet-control-zoom-in {
-          border-bottom: 1px solid #e5e7eb !important;
+          border-bottom: 1px solid #f3f4f6 !important;
         }
         .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
-          background-color: #f3f4f6 !important;
+          background-color: #f9fafb !important;
         }
         .leaflet-control-attribution {
           display: none !important;
         }
-
-        /* Custom Animations */
-        @keyframes colorShift {
-          0% { color: #111827; }
-          50% { color: #6b7280; }
-          100% { color: #111827; }
+        .leaflet-bar a:active, .leaflet-bar a:focus,
+        .leaflet-bar button:active, .leaflet-bar button:focus {
+          outline: none !important;
+          box-shadow: none !important;
         }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
-        }
-        @keyframes typing {
-          from { max-width: 0; }
-          to { max-width: 100%; }
-        }
-        @keyframes colorBlink {
-          0%, 100% { background-color: #2563eb; transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-          50% { background-color: #3b82f6; transform: scale(1.02); box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.6); }
-        }
-
-        .animate-color-shift {
-          animation: colorShift 5s ease-in-out infinite;
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-          display: inline-block;
-        }
-        .animate-soft-blink {
-          animation: colorBlink 3.5s ease-in-out infinite;
-        }
-        .typewriter-text-custom {
-          display: inline-block;
-          overflow: hidden;
-          white-space: nowrap;
-          border-right: 3px solid #1e3a8a;
-          animation: typing 2s steps(20, end) forwards, blink 0.75s step-end infinite;
-          max-width: 0;
-          padding-right: 4px;
-        }
+        .panel-scroll::-webkit-scrollbar { width: 3px; }
+        .panel-scroll::-webkit-scrollbar-track { background: transparent; }
+        .panel-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
       `}</style>
 
-      {/* Top Navigation Bar - Responsive */}
-      <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-3 items-center px-4 py-3 md:px-8 md:py-4 gap-3 md:gap-4 z-[1000] bg-[#bae6fd] shadow-sm rounded-b-xl md:rounded-b-2xl">
+      {/* ── FULLSCREEN MAP ── */}
+      <div className="absolute inset-0">
+        {geojsonData ? (
+          <MapContainer
+            center={[-7.4478, 112.7183]}
+            zoom={11}
+            minZoom={11}
+            maxZoom={16}
+            zoomSnap={0.5}
+            zoomDelta={0.5}
+            maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
+            maxBoundsViscosity={1.0}
+            style={{ width: "100%", height: "100%", zIndex: 0 }}
+            zoomControl={false}
+            dragging={true}
+            scrollWheelZoom={true}
+            doubleClickZoom={true}
+          >
+            <TileLayer
+              url={activeBasemap.url}
+              attribution={activeBasemap.attribution}
+              maxZoom={activeBasemap.maxZoom}
+            />
+            <CustomMapControls
+              activeBasemap={activeBasemap}
+              setActiveBasemap={setActiveBasemap}
+              onLayerOpenChange={setIsLayerOpen}
+            />
+            <MapController geojsonData={geojsonData} selectedKecamatan={selectedKecamatan} geoJsonRef={geoJsonRef} />
+            <GeoJSON ref={geoJsonRef} data={geojsonData} style={getStyle} onEachFeature={onEachFeature} />
+            <MapClickHandler />
+          </MapContainer>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-gray-400 font-medium">Memuat peta...</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── TOP BAR OVERLAY (Google Maps style) ── */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
         
-        {/* Search Bar */}
-        <div ref={searchRef} className="w-full flex justify-center sm:justify-start relative order-2 sm:order-1">
-          <div className="relative w-full max-w-[280px]">
+        {/* INFO PANEL TOGGLE BUTTON */}
+        <button
+          onClick={() => setShowInfoPanel(!showInfoPanel)}
+          className={`shrink-0 pointer-events-auto w-11 h-11 rounded-2xl shadow-md flex items-center justify-center transition-all ${
+            showInfoPanel ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
+          }`}
+          title="Informasi Peta"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+
+        {/* Logo card */}
+        <div className="hidden md:flex bg-white rounded-2xl shadow-md px-3 py-2.5 items-center gap-2 shrink-0 pointer-events-auto">
+          <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-7 object-contain" />
+          <div className="w-px h-5 bg-gray-200 shrink-0" />
+          <img src="/pict/des-can.png" alt="Desa Cantik" className="h-7 object-contain" />
+        </div>
+
+        {/* Search bar */}
+        <div
+          ref={searchRef}
+          className="relative flex-1 max-w-xs pointer-events-auto z-[50]"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="relative">
             <input
               type="text"
@@ -493,269 +527,273 @@ const LandingPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
-              className="w-full px-4 py-2 pl-10 bg-white rounded-full shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563eb] placeholder-gray-400 font-medium text-sm md:text-base"
+              className="w-full pl-10 pr-9 py-3 bg-white rounded-2xl shadow-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-sm font-medium"
               style={{ color: "#1f2937" }}
             />
-            <svg
-              className="absolute left-3 top-2.5 h-4 w-4 md:h-5 md:w-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+            {searchTerm && (
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => { setSearchTerm(""); setSearchResults([]); setSelectedKecamatan(null); }}
+                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
           </div>
-          
-          {/* Autocomplete Dropdown */}
+          {/* Autocomplete dropdown */}
           {isSearchFocused && searchTerm.trim() !== "" && (
-            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden flex flex-col border border-gray-100">
+            <div
+              className="absolute w-full mt-1 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden"
+              style={{ zIndex: 3000, maxHeight: "150px", overflowY: "auto" }}
+            >
               {searchResults.length > 0 ? (
                 searchResults.map((result, idx) => (
                   <button
                     key={idx}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSelectSearch(result.KECAMATAN)}
-                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 cursor-pointer"
+                    className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 flex items-center gap-3"
                   >
-                    <div className="font-semibold text-sm md:text-base" style={{ color: "#1f2937" }}>Kecamatan {result.KECAMATAN}</div>
-                    <div className="text-xs" style={{ color: "#6b7280" }}>Kabupaten Sidoarjo</div>
+                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                      <svg className="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-gray-800">Kecamatan {result.KECAMATAN}</div>
+                      <div className="text-xs text-gray-400">Kabupaten Sidoarjo</div>
+                    </div>
                   </button>
                 ))
               ) : (
-                <div className="px-4 py-3 text-sm text-gray-500 text-center italic">
+                <div className="px-4 py-4 text-sm text-gray-400 text-center">
                   Kecamatan tidak ditemukan
                 </div>
               )}
             </div>
           )}
-          </div>
         </div>
 
-        {/* Center Logos */}
-        <div className="w-full flex justify-center items-center gap-3 sm:gap-6 order-1 sm:order-2 shrink-0">
-          <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-10 md:h-12 object-contain" />
-          
-          <img src="/pict/des-can.png" alt="Desa Cantik" className="h-10 md:h-12 object-contain" />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="w-full flex gap-2 justify-center sm:justify-end order-3 items-center shrink-0">
-          <button 
-            onClick={() => navigate('/bantuan')}
-            className="w-11 h-11 bg-white text-[#2563eb] rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center shrink-0"
-            title="Pusat Bantuan & Panduan"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-          </button>
-          
-          <button 
-            onClick={() => navigate('/peta-tematik')}
-            className="w-full sm:w-auto pl-5 pr-1.5 py-1.5 bg-[#2563eb] text-white rounded-full font-bold transition-all shadow-lg border-[3px] border-[#2563eb] hover:bg-[#1d4ed8] hover:border-[#1d4ed8] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center gap-3"
-          >
-            <span>Peta Tematik</span>
-            <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="13 17 18 12 13 7"></polyline>
-                <polyline points="6 17 11 12 6 7"></polyline>
-              </svg>
-            </div>
-          </button>
-          <button 
-            onClick={() => navigate('/login')}
-            className="w-full sm:w-auto px-6 py-2 bg-white rounded-full font-bold transition-all shadow-lg border-[3px] border-white hover:border-[#2563eb] hover:shadow-xl hover:-translate-y-0.5 text-sm md:text-base flex items-center justify-center"
-            style={{ color: "#1f2937" }}
-          >
-            Masuk Admin
-          </button>
-        </div>
-      </div>
-
-      {/* Header Info */}
-      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
-        <div className="animate-float">
-          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
-            Jelajahi
-          </p>
-        </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
-          Peta Statistik Kabupaten Sidoarjo
-        </h1>
-        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0 mb-4" style={{ color: "black", opacity: 1 }}>
-          {mapMode === "kepadatan" ? "Kepadatan Penduduk Sidoarjo (jiwa/km²)" : "Rasio Jenis Kelamin (Sex Ratio) Kecamatan"}
-        </p>
-
-        {/* Map Mode Dropdown */}
-        <div className={`relative flex-shrink-0 rounded-lg shadow-sm border mx-auto w-fit z-[2000] mb-4 md:mb-6 ${
-          mapMode === 'kepadatan' ? 'bg-[#1d4ed8] border-[#1d4ed8]' : 
-          'bg-[#8b5cf6] border-[#8b5cf6]'
-        } transition-colors`}>
+        {/* Map mode selector */}
+        <div
+          className={`relative bg-white rounded-2xl shadow-md shrink-0 pointer-events-auto flex items-center overflow-hidden ring-2 ${
+            mapMode === "kepadatan" ? "ring-blue-500" : "ring-purple-500"
+          }`}
+        >
           <select
             value={mapMode}
-            onChange={(e) => { 
-              if (e.target.value === "tematik") {
-                navigate('/peta-tematik');
-              } else {
-                setMapMode(e.target.value);
-              }
-            }}
-            className="w-full pl-4 pr-10 py-2 text-xs md:text-sm font-bold text-white bg-transparent outline-none appearance-none cursor-pointer focus:ring-0"
-            style={{ minWidth: '180px' }}
+            onChange={(e) => { e.stopPropagation(); setMapMode(e.target.value); }}
+            className="pl-4 pr-9 py-3 text-sm font-semibold text-gray-700 bg-transparent outline-none appearance-none cursor-pointer"
+            style={{ minWidth: "145px" }}
           >
-            <option value="kepadatan" className="text-gray-800 bg-white">Kepadatan Penduduk</option>
-            <option value="rasio" className="text-gray-800 bg-white">Rasio L/P</option>
-            <option value="tematik" className="text-gray-800 bg-white">Peta Tematik</option>
+            <option value="kepadatan">Kepadatan</option>
+            <option value="rasio">Rasio L/P</option>
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
+          <div className="absolute right-3 pointer-events-none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
             </svg>
           </div>
         </div>
+        
+        {/* Peta Tematik Button */}
+        <button
+          onClick={() => navigate("/peta-tematik")}
+          className="hidden md:flex bg-[#2563eb] rounded-2xl shadow-md px-4 py-3 text-sm font-bold text-white hover:bg-[#1d4ed8] items-center shrink-0 pointer-events-auto transition-colors gap-2"
+        >
+          <span>Peta Tematik</span>
+          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shrink-0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="13 17 18 12 13 7"></polyline>
+              <polyline points="6 17 11 12 6 7"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        {/* Help */}
+        <button
+          onClick={() => navigate("/bantuan")}
+          className="bg-white rounded-full shadow-md w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 shrink-0 pointer-events-auto transition-colors"
+          title="Panduan Penggunaan"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </button>
+
+        {/* Login */}
+        <button
+          onClick={() => navigate("/login")}
+          className="hidden sm:flex bg-white rounded-2xl shadow-md px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 items-center shrink-0 pointer-events-auto transition-colors"
+        >
+          Masuk Admin
+        </button>
       </div>
 
-      {/* Map Container */}
-      <div className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col">
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
-          {geojsonData ? (
-            <MapContainer
-              center={[-7.4478, 112.7183]}
-              zoom={11}
-              minZoom={11}
-              maxZoom={16}
-              maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
-              maxBoundsViscosity={1.0}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
-              zoomControl={false}
-              dragging={true}
-              scrollWheelZoom={true}
-            >
-              <TileLayer
-                url={activeBasemap.url}
-                attribution={activeBasemap.attribution}
-                maxZoom={activeBasemap.maxZoom}
-              />
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} />
-              <MapController 
-                geojsonData={geojsonData} 
-                selectedKecamatan={selectedKecamatan} 
-                geoJsonRef={geoJsonRef} 
-              />
-              <MapClickHandler />
-              <GeoJSON
-                ref={geoJsonRef}
-                data={geojsonData}
-                style={getStyle}
-                onEachFeature={onEachFeature}
-              />
-            </MapContainer>
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <div className="animate-pulse text-gray-500 font-semibold text-sm md:text-base">Memuat peta...</div>
+      {/* ── INFO + LEGEND PANEL (left side) ── */}
+      {showInfoPanel && (
+        <div
+          className="absolute top-[4.5rem] left-3 z-[999] w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl panel-scroll overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 6rem)" }}
+        >
+          {/* Demographics */}
+          {sidoarjoAgregat && (
+            <div className="p-4 border-b border-gray-50">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">Demografi Sidoarjo</p>
+              <div className="bg-blue-50 rounded-xl px-3 py-2.5 mb-2">
+                <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
+                <div className="font-extrabold text-lg text-blue-800 leading-tight">
+                  {sidoarjoAgregat.total.toLocaleString("id-ID")}
+                  <span className="text-sm font-semibold ml-1 text-blue-600">Jiwa</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-2">
+                <div className="bg-sky-50 rounded-xl px-3 py-2">
+                  <div className="text-[10px] text-sky-500 font-bold">Laki-laki</div>
+                  <div className="font-bold text-sm text-sky-800">{sidoarjoAgregat.L.toLocaleString("id-ID")}</div>
+                </div>
+                <div className="bg-pink-50 rounded-xl px-3 py-2">
+                  <div className="text-[10px] text-pink-500 font-bold">Perempuan</div>
+                  <div className="font-bold text-sm text-pink-800">{sidoarjoAgregat.P.toLocaleString("id-ID")}</div>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-xl px-3 py-2">
+                <div className="text-[10px] text-gray-400 font-bold uppercase">Total KK</div>
+                <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString("id-ID")}</div>
+              </div>
             </div>
           )}
 
-          {/* Info Toggle Button */}
-          <button
-            onClick={() => setShowInfoPanel(!showInfoPanel)}
-            className={`absolute top-4 left-4 z-[1000] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all border-2 ${showInfoPanel ? 'bg-white text-blue-600 border-white hover:bg-gray-50' : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'}`}
-            title="Toggle Informasi Peta"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
-
-          {/* Dashboard Ringkasan */}
-          {sidoarjoAgregat && showInfoPanel && (
-            <div className="absolute top-16 left-4 z-[1000] bg-white/95 backdrop-blur-xl shadow-xl rounded-2xl p-4 border border-gray-100/50 max-h-[45%] overflow-y-auto no-scrollbar pointer-events-auto">
-              <h3 className="font-extrabold text-sm text-gray-800 mb-2">Ringkasan Demografi Sidoarjo</h3>
+          {/* Legend */}
+          <div className="p-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">
+              {mapMode === "kepadatan" ? "Kepadatan (Jiwa/km²)" : "Rasio Jenis Kelamin"}
+            </p>
+            {mapMode === "kepadatan" && (
               <div className="flex flex-col gap-2">
-                <div className="bg-blue-50 px-3 py-2 rounded-lg">
-                  <div className="text-[10px] text-blue-600 font-bold uppercase">Total Populasi</div>
-                  <div className="font-extrabold text-lg text-blue-900">{sidoarjoAgregat.total.toLocaleString('id-ID')} Jiwa</div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="bg-sky-50 px-3 py-2 rounded-lg flex-1">
-                    <div className="text-[10px] text-sky-600 font-bold uppercase">Laki-laki</div>
-                    <div className="font-bold text-sm text-sky-900">{sidoarjoAgregat.L.toLocaleString('id-ID')}</div>
+                {[
+                  { color: "#1e3a8a", label: "> 7.000" },
+                  { color: "#1d4ed8", label: "5.000 – 7.000" },
+                  { color: "#2563eb", label: "3.500 – 5.000" },
+                  { color: "#3b82f6", label: "2.500 – 3.500" },
+                  { color: "#60a5fa", label: "1.500 – 2.500" },
+                  { color: "#93c5fd", label: "1.000 – 1.500" },
+                  { color: "#bfdbfe", label: "500 – 1.000" },
+                  { color: "#dbeafe", label: "< 500" },
+                ].map(({ color, label }) => (
+                  <div key={label} className="flex items-center gap-2.5">
+                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
+                    <span className="text-xs text-gray-600">{label}</span>
                   </div>
-                  <div className="bg-pink-50 px-3 py-2 rounded-lg flex-1">
-                    <div className="text-[10px] text-pink-600 font-bold uppercase">Perempuan</div>
-                    <div className="font-bold text-sm text-pink-900">{sidoarjoAgregat.P.toLocaleString('id-ID')}</div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 px-3 py-2 rounded-lg mt-1">
-                  <div className="text-[10px] text-gray-500 font-bold uppercase">Total KK</div>
-                  <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString('id-ID')}</div>
-                </div>
+                ))}
               </div>
-            </div>
-          )}
+            )}
+            {mapMode === "rasio" && (
+              <div className="flex flex-col gap-2">
+                {[
+                  { color: "#1e3a8a", label: ">105 Dominan L" },
+                  { color: "#3b82f6", label: "102–105 Lebih L" },
+                  { color: "#9ca3af", label: "98–102 Seimbang" },
+                  { color: "#ec4899", label: "95–98 Lebih P" },
+                  { color: "#be185d", label: "<95 Dominan P" },
+                ].map(({ color, label }) => (
+                  <div key={label} className="flex items-center gap-2.5">
+                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
+                    <span className="text-xs text-gray-600">{label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-          {/* Map Legends */}
-          {mapMode === "kepadatan" && showInfoPanel && (
-            <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/90 backdrop-blur-md shadow-2xl rounded-xl p-2.5 border border-gray-100/50 text-[10px] max-h-[45%] overflow-y-auto no-scrollbar max-w-[160px]`}>
-              <div className="font-bold text-gray-700 mb-1.5 text-[10px]">Kepadatan (Jiwa/km²)</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#1e3a8a]"></span> &gt; 7.000</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#1d4ed8]"></span> 5.000–7.000</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#2563eb]"></span> 3.500–5.000</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#3b82f6]"></span> 2.500–3.500</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#60a5fa]"></span> 1.500–2.500</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#93c5fd]"></span> 1.000–1.500</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#bfdbfe]"></span> 500–1.000</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded shrink-0 bg-[#dbeafe]"></span> &lt; 500</div>
-            </div>
-          )}
-          {mapMode === "rasio" && showInfoPanel && (
-            <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/90 backdrop-blur-md shadow-2xl rounded-xl p-2.5 border border-gray-100/50 text-[10px] max-h-[45%] overflow-y-auto no-scrollbar max-w-[165px]`}>
-              <div className="font-bold text-gray-700 mb-1.5 text-[10px]">Rasio L/P (Sex Ratio)</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#1e3a8a]"></span> &gt;105 Dominan L</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#3b82f6]"></span> 102–105 Lebih L</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#9ca3af]"></span> 98–102 Seimbang</div>
-              <div className="flex items-center gap-1.5 mb-1"><span className="w-3 h-3 rounded shrink-0 bg-[#ec4899]"></span> 95–98 Lebih P</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded shrink-0 bg-[#be185d]"></span> &lt;95 Dominan P</div>
-            </div>
-          )}
-          {/* AI Insight Overlay — bottom right corner, description icon */}
-          <AIInsightBox 
-            featureName={selectedKecamatan} 
-            data={selectedKecamatan && statsData ? statsData.find(s => (s.kecamatan || s.KECAMATAN || "").toUpperCase() === selectedKecamatan.toUpperCase()) : {}} 
-            contextType="statistik_kecamatan" 
-            requireClick={true}
-            customClass="bottom-4 right-4" 
-          />
-          {/* Selected Kecamatan Action Card */}
-          <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${selectedKecamatan ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
-            <div className="bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-4 md:p-5 flex flex-col items-center gap-3 border border-gray-100/50 max-w-sm w-[90vw]">
-              <div className="text-center">
-                <h3 className="font-extrabold text-lg md:text-xl text-gray-800">{selectedKecamatan}</h3>
-                <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
-                  {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()]
-                    ? `Kumpulan desa di Kecamatan ${selectedKecamatan.charAt(0).toUpperCase() + selectedKecamatan.slice(1).toLowerCase()}`
-                    : 'Kecamatan di Kabupaten Sidoarjo'}
-                </p>
+      {/* ── SELECTED KECAMATAN CARD (Google Maps style — bottom left) ── */}
+      <div
+        className={`absolute bottom-6 left-3 z-[1000] w-72 transition-all duration-300 ease-out ${
+          selectedKecamatan ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+          {/* Header */}
+          <div className="px-5 pt-5 pb-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-base text-gray-900 leading-tight">
+                  Kecamatan {selectedKecamatan ? selectedKecamatan.charAt(0).toUpperCase() + selectedKecamatan.slice(1).toLowerCase() : ""}
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">Kabupaten Sidoarjo</p>
               </div>
-              {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()] ? (
-                <button
-                  onClick={() => handleNavigateKecamatan(selectedKecamatan)}
-                  className="w-full py-2.5 px-6 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center"
-                >
-                  <span>Lihat Detail Kecamatan</span>
-                </button>
-              ) : (
-                <div className="w-full py-2 px-4 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium">
-                  Data detail belum tersedia
-                </div>
-              )}
+              <button
+                onClick={() => setSelectedKecamatan(null)}
+                className="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 transition-colors"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
           </div>
 
+          {/* Kecamatan Stats */}
+          {selectedKecamatan && statsData && statsData.find(s => s.kecamatan.toUpperCase() === selectedKecamatan.toUpperCase()) && (() => {
+            const stats = getDistrictStats(selectedKecamatan);
+            if (!stats) return null;
+            return (
+              <div className="px-5 py-3 border-t border-gray-50 grid grid-cols-2 gap-3 text-center">
+                <div>
+                  <div className="text-[10px] text-gray-400 font-medium mb-0.5">Penduduk</div>
+                  <div className="font-bold text-sm text-gray-800">
+                    {stats.jumlah_penduduk.toLocaleString("id-ID")}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-gray-400 font-medium mb-0.5">Kepadatan</div>
+                  <div className="font-bold text-sm text-gray-800">
+                    {Math.round(stats.kepadatan_penduduk).toLocaleString("id-ID")}/km²
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* CTA button */}
+          <div className="px-4 py-3 border-t border-gray-50">
+            {selectedKecamatan && kecamatanWithDetail[selectedKecamatan?.toUpperCase()] ? (
+              <button
+                onClick={() => handleNavigateKecamatan(selectedKecamatan)}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z" />
+                  <path d="M8 2v16M16 6v16" />
+                </svg>
+                Lihat Detail Kecamatan
+              </button>
+            ) : (
+              <div className="w-full py-2.5 bg-gray-100 text-gray-400 rounded-xl text-center text-sm font-medium">
+                Data detail belum tersedia
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* ── AI INSIGHT BOX ── */}
+      <AIInsightBox 
+        featureName={selectedKecamatan} 
+        data={selectedKecamatan && statsData ? statsData.find(s => (s.kecamatan || "").toUpperCase() === selectedKecamatan.toUpperCase()) : {}} 
+        contextType="statistik_kecamatan" 
+        requireClick={true}
+        customClass="bottom-6 right-4" 
+      />
     </div>
   );
 };

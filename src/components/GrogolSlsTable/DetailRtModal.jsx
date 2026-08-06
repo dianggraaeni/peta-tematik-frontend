@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import {
   Modal,
   ModalBody,
@@ -16,40 +16,42 @@ import { formatNumberWithSpace } from "../../utils/formatNumberWithSpace";
 const RtDetail = ({ rt, geojson = null }) => {
   const mapRef = useRef();
 
-  if (geojson && mapRef.current) {
-    const map = mapRef.current;
+  useEffect(() => {
+    if (geojson && mapRef.current) {
+      const map = mapRef.current;
 
-    // Remove existing GeoJSON layers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.GeoJSON) {
-        map.removeLayer(layer);
-      }
-    });
-
-    // Add new GeoJSON layer
-    const geoJsonLayer = new L.GeoJSON(geojson, {
-      onEachFeature: (feature, layer) => {
-        layer.on({
-          click: () => {
-            map.fitBounds(layer.getBounds());
-          },
-        });
-
-        // Add label
-        if (feature.properties && feature.properties.label) {
-          const label = feature.properties.label;
-          const labelIcon = L.divIcon({
-            className: "geojson-label",
-            html: `<div class="font-inter font-bold text-white text-center w-full">${label}</div>`,
-            iconSize: [300, 40],
-          });
-          L.marker(layer.getBounds().getCenter(), { icon: labelIcon }).addTo(map);
+      // Remove existing GeoJSON layers and labels
+      map.eachLayer((layer) => {
+        if (layer instanceof L.GeoJSON || layer instanceof L.Marker) {
+          map.removeLayer(layer);
         }
-      },
-    });
-    geoJsonLayer.addTo(map);
-    map.fitBounds(geoJsonLayer.getBounds());
-  }
+      });
+
+      // Add new GeoJSON layer
+      const geoJsonLayer = new L.GeoJSON(geojson, {
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            click: () => {
+              map.fitBounds(layer.getBounds());
+            },
+          });
+
+          // Add label
+          if (feature.properties && feature.properties.label) {
+            const label = feature.properties.label;
+            const labelIcon = L.divIcon({
+              className: "geojson-label",
+              html: `<div class="font-inter font-bold text-white text-center w-full">${label}</div>`,
+              iconSize: [300, 40],
+            });
+            L.marker(layer.getBounds().getCenter(), { icon: labelIcon }).addTo(map);
+          }
+        },
+      });
+      geoJsonLayer.addTo(map);
+      map.fitBounds(geoJsonLayer.getBounds());
+    }
+  }, [geojson]);
 
   const tableColumns = [
     { label: 'Kode', value: rt.kode },

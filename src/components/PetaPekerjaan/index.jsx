@@ -11,6 +11,7 @@ import L from "leaflet";
 
 import api6 from "../../utils/api6.js";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 // Auto Zoom
 const AutoZoom = ({ geojsonData }) => {
@@ -34,6 +35,7 @@ const AutoZoom = ({ geojsonData }) => {
 };
 
 const Dashboard = ({ desaName: propsDesaName }) => {
+  const navigate = useNavigate();
   // === STATE ===
   const [geojsonData, setGeojsonData] = useState(null);
   const [allRawData, setAllRawData] = useState([]);
@@ -715,21 +717,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-inter overflow-x-hidden">
-      {/* Header Info */}
-      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
-        <div className="animate-float">
-          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
-            Jelajahi
-          </p>
-        </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
-          Peta Pekerjaan Desa {desaName || "Sidoarjo"}
-        </h1>
-        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
-          Arahkan kursor ke wilayah untuk melihat informasi singkat
-        </p>
-      </div>
+    <>
       <style jsx global>{`
         * {
           scrollbar-width: none;
@@ -846,53 +834,88 @@ const Dashboard = ({ desaName: propsDesaName }) => {
         }
       `}</style>
 
-      {/* Map Container — same classes and responsive structure as LandingPage */}
-      <div 
-        className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6" 
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Outer frame of map */}
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm min-h-[600px]">
-          {geojsonData ? (
-            <MapContainer
-              center={[-7.379, 112.73]}
-              zoom={13}
-              minZoom={12}
-              maxZoom={18}
-              zoomSnap={0.5}
-              zoomDelta={0.5}
-              maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
-              maxBoundsViscosity={1.0}
-              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
-              doubleClickZoom={true}
-              zoomControl={false}
-              scrollWheelZoom={true}
-            >
-              <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
-              <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
-              <AutoZoom geojsonData={geojsonData} />
-              {enrichedGeojsonData && (
-                <GeoJSON
-                  ref={geoJsonRef}
-                  key={`geojson-${allOriginalData.length}-${JSON.stringify(activeFilters)}`}
-                  data={enrichedGeojsonData}
-                  style={(feature) => getMapStyle(feature.properties)}
-                  onEachFeature={onEachFeature}
-                />
-              )}
-            </MapContainer>
-          ) : (
-            <div className="flex items-center justify-center h-full bg-gray-100">
-              <BeatLoader color="#4A90E2" size={10} />
-            </div>
+      {/* ── TOP BAR OVERLAY ── */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/detail-kecamatan/buduran')}
+          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+          title="Kembali ke Kecamatan Buduran"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        {/* Title Card */}
+        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName.toUpperCase()}</div>
+        </div>
+      </div>
+
+      {geojsonData ? (
+        <MapContainer
+          center={[-7.379, 112.73]}
+          zoom={13}
+          minZoom={12}
+          maxZoom={18}
+          zoomSnap={0.5}
+          zoomDelta={0.5}
+          maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
+          maxBoundsViscosity={1.0}
+          className="w-full h-full absolute inset-0 z-0"
+          doubleClickZoom={true}
+          zoomControl={false}
+          scrollWheelZoom={true}
+        >
+          <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true}
+            legendSlot={
+              <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden`}>
+                <div className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
+                  {!isLegendMinimized && <span>Legenda Pekerjaan</span>}
+                  <button title={isLegendMinimized ? 'Buka Legenda' : 'Tutup Legenda'} className="text-gray-500 hover:text-gray-800">
+                    {isLegendMinimized ? (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>) : (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>)}
+                  </button>
+                </div>
+                {!isLegendMinimized && (
+                  <div className="p-3 pt-2 text-[10px] space-y-1">
+                    <div className="flex items-center gap-2 mb-1"><div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors['tidak bekerja'] }}></div><span className="text-gray-700">Tidak Bekerja</span></div>
+                    <div className="flex items-center gap-2 mb-1"><div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors['bekerja'] }}></div><span className="text-gray-700">Bekerja</span></div>
+                    <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-2">
+                      <div className="flex justify-between"><span className="text-gray-600">Area:</span><span className="font-medium text-blue-700 truncate ml-1 max-w-[60px]">{selectedAreaTitle}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-600">Data:</span><span className="font-medium text-blue-700">{processedData.totalPenduduk || 0}</span></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            }
+          />
+          <AutoZoom geojsonData={geojsonData} />
+          {enrichedGeojsonData && (
+            <GeoJSON
+              ref={geoJsonRef}
+              key={`geojson-${allOriginalData.length}-${JSON.stringify(activeFilters)}`}
+              data={enrichedGeojsonData}
+              style={(feature) => getMapStyle(feature.properties)}
+              onEachFeature={onEachFeature}
+            />
           )}
+        </MapContainer>
+      ) : (
+        <div className="flex items-center justify-center w-full h-full bg-gray-100 absolute inset-0 z-0">
+          <BeatLoader color="#4A90E2" size={10} />
+        </div>
+      )}
 
           {/* ── LEFT PANEL — inside map, top left, scrollable, made narrower (w-44) */}
           <div
-            className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${
+            className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
               isPanelMinimized ? "w-10 h-10" : "w-44"
             }`}
-            style={!isPanelMinimized ? { maxHeight: "calc(100% - 2rem)" } : {}}
+            style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
           >
             <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
               <div
@@ -955,67 +978,36 @@ const Dashboard = ({ desaName: propsDesaName }) => {
             </div>
           </div>
 
-          {/* 📍 LEGEND - inside map, top right, smaller max-w */}
-          <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
-            <div 
-              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+
+          {/* ── FILTER — fixed icon below zoom (+/-), panel expands LEFT */}
+          <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+            <button
+              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
             >
-              {!isLegendMinimized && <span>Legenda Pekerjaan</span>}
-              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
-                {isLegendMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            {!isLegendMinimized && (
-              <div className="p-3 pt-2 text-[10px] space-y-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors["tidak bekerja"] }}></div>
-                  <span className="text-gray-700">Tidak Bekerja</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              {(activeFilters.gender || activeFilters.ageGroup || activeFilters.employment || activeFilters.workField) && (
+                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
+              )}
+            </button>
+            {!isFilterMinimized && (
+              <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-blue-600 font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span>Filter Data</span>
+                  </div>
+                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
                 </div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors["bekerja"] }}></div>
-                  <span className="text-gray-700">Bekerja</span>
-                </div>
-                <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-2">
-                  <div className="flex justify-between"><span className="text-gray-600">Area:</span><span className="font-medium text-blue-700 truncate ml-1 max-w-[60px]">{selectedAreaTitle}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-600">Data:</span><span className="font-medium text-blue-700">{processedData.totalPenduduk || 0}</span></div>
-                </div>
+                <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
               </div>
             )}
           </div>
 
-          {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
-          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden flex flex-col`}>
-            <div 
-              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
-            >
-              {!isFilterMinimized && (
-                <div className="flex items-center gap-2 text-blue-600">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                  <span>Filter Data</span>
-                </div>
-              )}
-              {isFilterMinimized && (activeFilters.gender || activeFilters.ageGroup || activeFilters.employment || activeFilters.workField) && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
-              )}
-              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
-                {isFilterMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            
-            {!isFilterMinimized && (
-              <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
-            )}
-          </div>
+
 
           {/* ── AI INSIGHT — inside map, bottom right */}
           <AIInsightBox 
@@ -1033,10 +1025,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
               perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
             }}
           />
-
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 

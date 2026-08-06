@@ -8,11 +8,8 @@ const PetaPekerjaanSidokepung = () => {
   const desaName = searchParams.get("desa") || "SIDOARJO";
 
   return (
-    <div className="w-full min-h-screen relative flex flex-col bg-slate-50 overflow-x-hidden">
-      <NavbarPetaSidokepung desaName={desaName} />
-      <div className="flex-1 w-full relative z-0 flex flex-col min-h-[600px]">
-        <MapSection desaName={desaName} />
-      </div>
+    <div className="w-screen h-screen relative flex flex-col bg-gray-200 overflow-hidden font-sans">
+      <MapSection desaName={desaName} />
     </div>
   );
 };

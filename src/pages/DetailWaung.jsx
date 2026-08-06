@@ -3,7 +3,7 @@ import { MapContainer, GeoJSON, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import NavbarPetaWaung from '../components/NavbarPeta/waung';
+import { useNavigate } from 'react-router-dom';
 import CustomMapControls, { useBasemap } from '../components/CustomMapControls';
 import { Select, SelectItem } from '@nextui-org/react';
 import AIInsightBox from '../components/AIInsightBox';
@@ -20,6 +20,7 @@ const AutoZoom = ({ geojsonData, selectedRT }) => {
 };
 
 export default function DetailWaung() {
+  const navigate = useNavigate();
   const [geojsonData, setGeojsonData] = useState(null);
   const [tabulasi1, setTabulasi1] = useState([]);
   const [tabulasi2, setTabulasi2] = useState([]);
@@ -161,38 +162,87 @@ export default function DetailWaung() {
   const PIE_COLORS = ['#3b82f6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#8b5cf6'];
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 overflow-x-hidden font-sans">
-      <NavbarPetaWaung />
+    <div className="w-screen h-screen relative flex flex-col overflow-hidden bg-gray-200 font-sans">
+      <style>{`
+        .leaflet-control-zoom {
+          border: none !important;
+          border-radius: 12px !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+          display: flex;
+          flex-direction: column;
+          margin-right: 1rem !important;
+          margin-bottom: 1rem !important;
+          overflow: hidden !important;
+          background-color: white !important;
+        }
+        .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+          background-color: white !important;
+          color: #374151 !important;
+          border: none !important;
+          width: 40px !important;
+          height: 40px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-weight: 400 !important;
+          font-size: 1.25rem !important;
+          transition: background-color 0.15s !important;
+        }
+        .leaflet-control-zoom-in {
+          border-bottom: 1px solid #f3f4f6 !important;
+        }
+        .leaflet-control-zoom-in:hover, .leaflet-control-zoom-out:hover {
+          background-color: #f9fafb !important;
+        }
+        .leaflet-control-attribution { display: none !important; }
+        .no-scrollbar::-webkit-scrollbar { width: 3px; }
+        .no-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .no-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+      `}</style>
       
-      {/* Header Matches Sidokepung exactly */}
-      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
-        <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 text-blue-600">
-          JELAJAHI
-        </p>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none text-gray-900">
-          Peta Tematik Desa WAUNG
-        </h1>
-        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
-          Arahkan kursor ke wilayah untuk melihat informasi singkat
-        </p>
-      </div>
-
-      {/* Wrapper exactly like Sidokepung */}
-      <div className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6">
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
-          
-          <MapContainer 
-            center={[-7.498, 112.636]} 
-            zoom={15} 
-            minZoom={14}
-            maxZoom={22}
-            maxBounds={[[-7.54, 112.63], [-7.48, 112.69]]}
-            maxBoundsViscosity={1.0}
-            zoomControl={false} 
-            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "transparent", zIndex: 0 }}
-          >
-            <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true} onLayerOpenChange={setIsLayerOpen} />
+      {/* ── FULLSCREEN MAP ── */}
+      <MapContainer 
+        center={[-7.498, 112.636]} 
+        zoom={15} 
+        minZoom={14}
+        maxZoom={22}
+        maxBounds={[[-7.54, 112.63], [-7.48, 112.69]]}
+        maxBoundsViscosity={1.0}
+        zoomControl={false} 
+        className="w-full h-full absolute inset-0 z-0"
+      >
+        <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true} onLayerOpenChange={setIsLayerOpen} 
+              legendSlot={
+                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden`}>
+                  <div className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-500 hover:bg-gray-50' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
+                    {!isLegendMinimized && <span>{colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}</span>}
+                    <button title={isLegendMinimized ? 'Buka Legenda' : 'Tutup Legenda'} className="text-gray-400">
+                      {isLegendMinimized ? (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>) : (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>)}
+                    </button>
+                  </div>
+                  {!isLegendMinimized && (
+                    <div className="p-3 pt-2 text-[10px]">
+                      {colorMode === 'keluarga' ? (
+                        <>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
+                          <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#064e3b] shadow-sm"></span> &gt; 70 m&sup2;</div>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#059669] shadow-sm"></span> 50 - 70 m&sup2;</div>
+                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#34d399] shadow-sm"></span> 30 - 50 m&sup2;</div>
+                          <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#a7f3d0] shadow-sm"></span> &lt; 30 m&sup2;</div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              }
+            />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
               <GeoJSON
@@ -205,8 +255,29 @@ export default function DetailWaung() {
             )}
           </MapContainer>
 
+      {/* ── TOP BAR OVERLAY ── */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/detail-kecamatan/krembung')}
+          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+          title="Kembali ke Kecamatan Krembung"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        {/* Title Card */}
+        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">WAUNG</div>
+        </div>
+      </div>
+
           {/* LEFT FLOATING PANEL (Charts) */}
-          <div className={`absolute top-4 left-4 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? 'w-10 h-10' : 'w-80 md:w-96'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 flex flex-col max-h-[85%] overflow-hidden`}>
+          <div className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? 'w-10 h-10' : 'w-80 md:w-96'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 flex flex-col max-h-[85%] overflow-hidden`}>
             <div 
               className={`bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition-colors shrink-0 flex items-center ${isPanelMinimized ? 'w-10 h-10 justify-center p-0 rounded-2xl' : 'px-3 h-12 justify-between rounded-t-2xl'}`}
               onClick={() => setIsPanelMinimized(!isPanelMinimized)}
@@ -342,84 +413,46 @@ export default function DetailWaung() {
             )}
           </div>
 
-          {/* RIGHT FLOATING PANEL (Filter) */}
-          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-64 md:w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
-            <div 
-              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+          {/* RIGHT FLOATING PANEL (Filter) - fixed icon below zoom, panel expands LEFT */}
+          <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+            <button
+              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
             >
-              {!isFilterMinimized && (
-                <div className="flex items-center gap-2 text-blue-600">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                  <span>Filter Data</span>
-                </div>
-              )}
-              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
-                {isFilterMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            </button>
             {!isFilterMinimized && (
-              <div className="p-4 flex flex-col gap-4">
-                <Select 
-                  selectedKeys={[colorMode]}
-                  onChange={(e) => setColorMode(e.target.value)}
-                  size="sm"
-                  className="w-full"
-                  aria-label="Pilih Data"
-                >
-                  <SelectItem key="keluarga" value="keluarga" className="text-sm">Jumlah Keluarga</SelectItem>
-                  <SelectItem key="luas_lantai" value="luas_lantai" className="text-sm">Rata-rata Luas Lantai</SelectItem>
-                </Select>
-                {selectedRT && (
-                  <button 
-                    onClick={() => { setSelectedRT(null); }}
-                    className="w-full py-2 bg-red-50 text-red-600 font-bold rounded-xl text-sm border border-red-100 hover:bg-red-100 transition-colors"
-                  >
-                    Reset Pilihan RT
+              <div className="absolute top-0 right-full mr-2 w-64 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-blue-600 font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span>Filter Data</span>
+                  </div>
+                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* TOP RIGHT FLOATING PANEL (Legend) */}
-          <div className={`absolute top-4 right-16 z-[1000] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-8 h-8' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden`}>
-            <div 
-              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-            >
-              {!isLegendMinimized && <span>{colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}</span>}
-              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
-                {isLegendMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            
-            {!isLegendMinimized && (
-              <div className="p-3 pt-2 text-[10px]">
-                {colorMode === 'keluarga' ? (
-                  <>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
-                    <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#064e3b] shadow-sm"></span> &gt; 70 m&sup2;</div>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#059669] shadow-sm"></span> 50 - 70 m&sup2;</div>
-                    <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#34d399] shadow-sm"></span> 30 - 50 m&sup2;</div>
-                    <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#a7f3d0] shadow-sm"></span> &lt; 30 m&sup2;</div>
-                  </>
-                )}
+                </div>
+                <div className="p-4 flex flex-col gap-4">
+                  <Select 
+                    selectedKeys={[colorMode]}
+                    onChange={(e) => setColorMode(e.target.value)}
+                    size="sm"
+                    className="w-full"
+                    aria-label="Pilih Data"
+                  >
+                    <SelectItem key="keluarga" value="keluarga" className="text-sm">Jumlah Keluarga</SelectItem>
+                    <SelectItem key="luas_lantai" value="luas_lantai" className="text-sm">Rata-rata Luas Lantai</SelectItem>
+                  </Select>
+                  {selectedRT && (
+                    <button 
+                      onClick={() => { setSelectedRT(null); }}
+                      className="w-full py-2 bg-red-50 text-red-600 font-bold rounded-xl text-sm border border-red-100 hover:bg-red-100 transition-colors"
+                    >
+                      Reset Pilihan RT
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -433,9 +466,6 @@ export default function DetailWaung() {
             customClass="bottom-4 right-4" 
             data={{ rukunTetangga: selectedRT, detail: selectedRT ? processedWaungData.find(d => d.rt === selectedRT) : null }} 
           />
-
-        </div>
-      </div>
     </div>
   );
 }

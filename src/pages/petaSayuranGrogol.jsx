@@ -5,10 +5,8 @@ import MapSection from "../components/PetaSayuran";
 const PetaSayuranGrogol = () => {
   return (
   
-      <div className="w-full h-full relative">
-      <NavbarPetaGrogol />
-      <MapSection />
-      {/* <Footer /> */}
+      <div className="w-screen h-screen relative flex flex-col bg-gray-200 overflow-hidden font-sans">
+        <MapSection />
       </div>
   );
 };

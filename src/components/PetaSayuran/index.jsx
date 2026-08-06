@@ -22,8 +22,10 @@ import { message } from "antd";
 import CountUp from "react-countup";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { BeatLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 export default function MapSection() {
+  const navigate = useNavigate();
   const [selectedClassification, setSelectedClassification] = useState("all");
   const [selectedtUsaha, setSelectedtUsaha] = useState("all");
   const [selectedJenisPupuk, setSelectedJenisPupuk] = useState("all");
@@ -574,8 +576,27 @@ export default function MapSection() {
   };
 
   return (
-    <div className="relative w-full h-[89vh] font-sfProDisplay">
-      <div className="absolute top-0 left-0 z-0 w-full h-full">
+    <>
+      {/* ── TOP BAR OVERLAY ── */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none font-sfProDisplay">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/detail-kecamatan/tulangan')}
+          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+          title="Kembali ke Kecamatan Tulangan"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        {/* Title Card */}
+        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">GROGOL</div>
+        </div>
+      </div>
         <MapContainer
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
@@ -594,7 +615,37 @@ export default function MapSection() {
             attribution={activeBasemap.attribution}
             maxZoom={activeBasemap.maxZoom}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true}
+            legendSlot={
+              <div className="w-auto p-2 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto transition-all duration-300">
+                <div className="flex items-center justify-center">
+                  <button
+                    className={`py-1 px-2 rounded-md justify-center items-center text-center text-sm mr-4 ${
+                      showRT ? "bg-[#68B92E] text-white" : "bg-gray-200 text-gray-800"
+                    }`}
+                    onClick={toggleRT}
+                  >
+                    {showRT ? (
+                      <div className="flex items-center">
+                        <span className="mr-2 text-xl material-icons">
+                          visibility
+                        </span>{" "}
+                        RT/RW
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <span className="mr-2 text-xl material-icons">
+                          visibility_off
+                        </span>{" "}
+                        RT/RW
+                      </div>
+                    )}
+                  </button>
+                  <LegendMenu />
+                </div>
+              </div>
+            }
+          />
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (
@@ -639,24 +690,27 @@ export default function MapSection() {
             </MarkerClusterGroup>
           )}
         </MapContainer>
-      </div>
 
-      <div className="mx-[10%] font-sfProDisplay">
-        <button
-          className="absolute top-4 right-[10%] z-10 px-11 py-2 bg-[#68B92E] text-white rounded-xl shadow-md flex items-center"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
-        >
-          <span className="mr-2 material-icons">filter_list</span>
-          Filter
-        </button>
+      <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
+        <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+          <button
+            className="w-11 h-11 bg-white/95 backdrop-blur-xl border border-gray-100 text-[#68B92E] hover:bg-gray-50 rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-95"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            title={isFilterOpen ? 'Tutup Filter' : 'Buka Filter'}
+          >
+            <span className="material-icons text-[18px]">filter_list</span>
+          </button>
+        </div>
 
-        <button
-          className="absolute top-4 left-[10%] z-10 px-12 py-2 bg-[#68B92E] text-white rounded-xl shadow-md flex items-center"
-          onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
-        >
-          <span className="mr-2 material-icons">analytics</span>
-          Statistik
-        </button>
+        <div className="absolute top-[4.5rem] left-3 z-10 flex gap-2">
+          <button
+            className="px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-[#68B92E] rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
+            onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
+          >
+            <span className="mr-2 material-icons text-[#68B92E]">analytics</span>
+            Statistik
+          </button>
+        </div>
 
         <Transition
           show={isFilterOpen}
@@ -666,7 +720,7 @@ export default function MapSection() {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 right-[10%] z-10 w-64 p-4 bg-[#eaffdb] rounded-md shadow-md text-[#065f46]"
+          className="absolute top-36 right-16 z-[1000] w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto"
         >
           <div>
             <div className="grid grid-cols-2 gap-4">
@@ -769,7 +823,7 @@ export default function MapSection() {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 left-[10%] z-10 w-64 max-h-[77vh] p-4 bg-[#eaffdb] rounded-md shadow-md text-white overflow-y-auto"
+          className="absolute top-[4.5rem] left-3 z-[1000] w-64 max-h-[80vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl overflow-y-auto pointer-events-auto custom-scrollbar"
         >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
@@ -929,39 +983,7 @@ export default function MapSection() {
             ) : null}
           </div>
         </Transition>
-        <div
-          className="absolute bottom-4 right-4 z-10 w-auto p-2 mr-[8%] bg-white rounded-md shadow-md text-gray-800"
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.7)", // Semi-transparent background
-            backdropFilter: "blur(12px)", // Blur effect
-          }}
-        >
-          <div className="flex items-center justify-center">
-            <button
-              className={`py-1 px-2 rounded-md justify-center items-center text-center text-sm mr-4 ${
-                showRT ? "bg-[#68B92E] text-white" : "bg-gray-200 text-gray-800"
-              }`}
-              onClick={toggleRT}
-            >
-              {showRT ? (
-                <div className="flex items-center">
-                  <span className="mr-2 text-xl material-icons">
-                    visibility
-                  </span>{" "}
-                  RT/RW
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <span className="mr-2 text-xl material-icons">
-                    visibility_off
-                  </span>{" "}
-                  RT/RW
-                </div>
-              )}
-            </button>
-            <LegendMenu />
-          </div>
-        </div>
+
 
         {/* ── AI INSIGHT — inside map, bottom right */}
         <AIInsightBox 
@@ -973,7 +995,6 @@ export default function MapSection() {
           data={dataAgregat}
         />
       </div>
-      </div>
-    </div>
+    </>
   );
 }

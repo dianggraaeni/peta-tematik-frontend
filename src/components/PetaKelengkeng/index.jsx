@@ -18,6 +18,7 @@ import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
 import api6 from "../../utils/api6.js";
+import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import CountUp from "react-countup";
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -26,6 +27,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import * as turf from "@turf/turf";
 
 export default function MapSection() {
+  const navigate = useNavigate();
   const [selectedClassification, setSelectedClassification] = useState("all");
   const [selectedtUsaha, setSelectedtUsaha] = useState("all");
   const [mapInstance, setMapInstance] = useState(null);
@@ -504,22 +506,7 @@ export default function MapSection() {
 
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-inter overflow-x-hidden">
-      {/* Header Info */}
-      <div className="text-center shrink-0 z-10 mt-4 md:mt-6 flex flex-col items-center px-4">
-        <div className="animate-float">
-          <p className="font-bold tracking-[0.3em] uppercase text-base md:text-lg mb-1 typewriter-text-custom" style={{ color: "#2563eb", opacity: 1 }}>
-            Jelajahi
-          </p>
-        </div>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight leading-none animate-color-shift cursor-default">
-          Peta Potensi Kelengkeng Desa SIMOKETAWANG
-        </h1>
-        <p className="italic text-sm sm:text-base md:text-lg font-medium m-0" style={{ color: "black", opacity: 1 }}>
-          Arahkan kursor ke wilayah untuk melihat informasi singkat
-        </p>
-      </div>
-
+    <>
       <style jsx global>{`
         * {
           scrollbar-width: none;
@@ -539,12 +526,26 @@ export default function MapSection() {
         }
       `}</style>
 
-      {/* Map Container */}
-      <div 
-        className="flex-1 w-full relative z-0 min-h-[500px] px-4 md:px-12 pb-4 flex flex-col mt-6" 
-      >
-        <div className="flex-1 w-full bg-gray-300/60 border-[3px] border-gray-400/40 rounded-2xl overflow-hidden shadow-sm relative backdrop-blur-sm">
-          <div className="absolute top-0 left-0 z-0 w-full h-full font-sfProDisplay">
+      {/* ── TOP BAR OVERLAY ── */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/detail-kecamatan/wonoayu')}
+          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+          title="Kembali ke Kecamatan Wonoayu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        {/* Title Card */}
+        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">SIMOKETAWANG</div>
+        </div>
+      </div>
             <MapContainer
               center={[-7.446033620089397, 112.60262064240202]}
               zoom={16}
@@ -565,34 +566,93 @@ export default function MapSection() {
             maxNativeZoom={activeBasemap.maxZoom || 19}
             maxZoom={24}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
-          
-          {/* ── FILTER — outside MapContainer, inside absolute frame at top-[160px] */}
-          <div className={`absolute top-[160px] right-4 z-[1000] pointer-events-auto transition-all duration-300 ${isFilterMinimized ? 'w-8 h-8' : 'w-72'} bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden flex flex-col`}>
-            <div 
-              className={`font-bold text-gray-800 ${isFilterMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
-            >
-              {!isFilterMinimized && (
-                <div className="flex items-center gap-2 text-emerald-600">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                  <span>Filter Data</span>
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true}
+            legendSlot={
+              <div className={`flex flex-col gap-2 transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
+                <div className="flex bg-white/95 backdrop-blur-xl p-1 rounded-xl shadow-2xl border border-gray-100 h-10">
+                  <button
+                    className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
+                      showRT ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+                    }`}
+                    onClick={toggleRT}
+                    title="Toggle RT"
+                  >
+                    <span className="text-[10px]">RT</span>
+                  </button>
+                  <button
+                    className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
+                      showIndividu ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+                    }`}
+                    onClick={() => setIndividu(!showIndividu)}
+                    title="Toggle Individu"
+                  >
+                    <span className="text-[10px]">IND</span>
+                  </button>
                 </div>
+                
+                <div className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-48'} flex flex-col`}>
+                  <div 
+                    className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+                    onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+                  >
+                    {!isLegendMinimized && <span>Legenda Potensi</span>}
+                    <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
+                      {isLegendMinimized ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      )}
+                    </button>
+                  </div>
+                  {!isLegendMinimized && (
+                    <div className="p-3 pt-2 text-left">
+                      <div className="mb-1 text-xs font-semibold text-right">
+                        Jumlah Usaha
+                      </div>
+                      <div className="relative h-6 mb-1 rounded-full">
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            background: "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
+                            borderRadius: "99px",
+                          }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs font-bold text-gray-700">
+                        <span>Min</span>
+                        <span>Max</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            }
+          />
+          
+          {/* ── FILTER — fixed icon below zoom, panel expands LEFT */}
+          <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+            <button
+              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              {(selectedClassification !== "all" || selectedtUsaha !== "all" || selectedRT !== "desa") && (
+                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"/>
               )}
-              {isFilterMinimized && (selectedClassification !== "all" || selectedtUsaha !== "all" || selectedRT !== "desa") && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full"></span>
-              )}
-              <button title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"} className="text-gray-500 hover:text-gray-800">
-                {isFilterMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            
+            </button>
             {!isFilterMinimized && (
-              <div className="p-4 flex flex-col gap-4 text-left">
+              <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-emerald-600 font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span>Filter Data</span>
+                  </div>
+                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <div className="p-4 flex flex-col gap-4 text-left">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
@@ -673,6 +733,7 @@ export default function MapSection() {
                     ))}
                   </select>
                 </div>
+                </div>
               </div>
             )}
           </div>
@@ -723,26 +784,27 @@ export default function MapSection() {
             </MarkerClusterGroup>
           )}
         </MapContainer>
-      </div>
 
       <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
-        <button
-          className="absolute top-4 left-4 z-10 px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-emerald-600 rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
-          onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
-        >
-          <span className="mr-2 material-icons text-emerald-500">analytics</span>
-          Statistik
-        </button>
+        <div className="absolute top-[4.5rem] left-3 z-10 flex gap-2">
+          <button
+            className="px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-emerald-600 rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
+            onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
+          >
+            <span className="mr-2 material-icons text-emerald-500">analytics</span>
+            Statistik
+          </button>
+        </div>
 
         <Transition
           show={isVisualizationOpen}
-          enter="transition ease-out duration-300"
-          enterFrom="opacity-0 transform scale-95"
-          enterTo="opacity-100 transform scale-100"
-          leave="transition ease-in duration-200"
-          leaveFrom="opacity-100 transform scale-100"
-          leaveTo="opacity-0 transform scale-95"
-          className="absolute top-16 left-4 z-10 w-64 max-h-[77vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 overflow-y-auto pointer-events-auto custom-scrollbar"
+          enter="transition-transform duration-300"
+          enterFrom="-translate-x-full"
+          enterTo="translate-x-0"
+          leave="transition-transform duration-300"
+          leaveFrom="translate-x-0"
+          leaveTo="-translate-x-full"
+          className="absolute top-[4.5rem] left-3 z-[1000] w-64 max-h-[80vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 overflow-y-auto pointer-events-auto custom-scrollbar"
         >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
@@ -896,66 +958,7 @@ export default function MapSection() {
           </div>
         </Transition>
 
-        <div
-          className={`absolute top-4 right-16 z-[1000] flex gap-2 pointer-events-auto transition-all duration-300 ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
-        >
-          <div className="flex bg-white/95 backdrop-blur-xl p-1 rounded-xl shadow-2xl border border-gray-100 h-10">
-            <button
-              className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
-                showRT ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={toggleRT}
-              title="Toggle RT"
-            >
-              <span className="text-[10px]">RT</span>
-            </button>
-            <button
-              className={`w-10 h-8 rounded-lg flex items-center justify-center font-semibold transition-colors ${
-                showIndividu ? "bg-emerald-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => setIndividu(!showIndividu)}
-              title="Toggle Individu"
-            >
-              <span className="text-[10px]">IND</span>
-            </button>
-          </div>
-          
-          <div className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-48'} flex flex-col`}>
-            <div 
-              className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-              onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-            >
-              {!isLegendMinimized && <span>Legenda Potensi</span>}
-              <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
-                {isLegendMinimized ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                )}
-              </button>
-            </div>
-            {!isLegendMinimized && (
-              <div className="p-3 pt-2 text-left">
-                <div className="mb-1 text-xs font-semibold text-right">
-                  Jumlah Usaha
-                </div>
-                <div className="relative h-6 mb-1 rounded-full">
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
-                      borderRadius: "99px",
-                    }}
-                  ></div>
-                </div>
-                <div className="flex justify-between px-1">
-                  <span className="text-[10px] font-bold text-gray-500">0</span>
-                  <span className="text-[10px] font-bold text-gray-500">50+</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+
 
         {/* ── AI INSIGHT — inside map, bottom right */}
         <AIInsightBox 
@@ -967,8 +970,6 @@ export default function MapSection() {
           data={dataAgregat}
         />
       </div>
-      </div>
-      </div>
-    </div>
+    </>
   );
 }
