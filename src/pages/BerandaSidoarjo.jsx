@@ -293,12 +293,22 @@ const BerandaSidoarjo = () => {
   }, [selectedDesa, activeThemes, pendudukData, mapMode]);
 
   const MapClickHandler = () => {
+    const map = useMap();
     useMapEvents({
       click: () => {
         if (!isFeatureClicked.current) {
           setSelectedDesa(null);
           setSelectedDesaId(null);
         }
+      },
+      dragstart: () => {
+        // Close all open tooltips when user starts dragging the map
+        if (geoJsonRef.current) {
+          geoJsonRef.current.eachLayer((layer) => {
+            layer.closeTooltip();
+          });
+        }
+        map.closeTooltip();
       },
     });
     return null;
@@ -351,10 +361,12 @@ const BerandaSidoarjo = () => {
         const l = e.target;
         l.setStyle(getHoverStyleRef.current(feature));
         l.bringToFront();
+        l.openTooltip();
       },
       mouseout: (e) => {
         const l = e.target;
         l.setStyle(getStyleRef.current(feature));
+        l.closeTooltip();
       },
       click: (e) => {
         isFeatureClicked.current = true;
@@ -502,7 +514,7 @@ const BerandaSidoarjo = () => {
           
           {/* Autocomplete Dropdown */}
           {isSearchFocused && searchTerm.trim() !== "" && (
-            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl overflow-hidden flex flex-col border border-gray-100">
+            <div className="absolute w-full mt-2 bg-white rounded-xl shadow-xl flex flex-col border border-gray-100" style={{ zIndex: 3000, maxHeight: "150px", overflowY: "auto" }}>
               {searchResults.length > 0 ? (
                 searchResults.map((result, idx) => {
                   let desaName = result.DESA || result.nmdesa;
@@ -512,6 +524,7 @@ const BerandaSidoarjo = () => {
                   return (
                   <button
                     key={idx}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleSelectSearch(result.DESA || result.nmdesa)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0"
                   >
@@ -732,7 +745,6 @@ const BerandaSidoarjo = () => {
               geoJsonRef={geoJsonRef} 
             />
             <GeoJSON
-              key={`geojson-${activeThemes.join("-")}`}
               ref={geoJsonRef}
               data={geojsonData}
               style={getStyle}
