@@ -530,7 +530,7 @@ export default function MapSection() {
       <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/detail-kecamatan/wonoayu')}
+          onClick={() => navigate('/peta-tematik')}
           className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
           title="Kembali ke Kecamatan Wonoayu"
         >

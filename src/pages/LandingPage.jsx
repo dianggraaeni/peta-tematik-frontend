@@ -11,21 +11,17 @@ import { fetchKabupatenData } from "../utils/openDataApi";
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
   const map = useMap();
   
-  // Initial zoom to fit Sidoarjo or reset when selection cleared
   useEffect(() => {
     if (geojsonData && map && !selectedKecamatan) {
-      // Fixed view to prevent zooming out too far on wide screens
       map.setView([-7.4478, 112.7183], 11);
     }
   }, [geojsonData, map, selectedKecamatan]);
 
-  // Zoom to selected Kecamatan
   useEffect(() => {
     if (selectedKecamatan && geoJsonRef.current && map) {
       geoJsonRef.current.eachLayer((layer) => {
         if (layer.feature.properties.KECAMATAN === selectedKecamatan) {
           map.flyToBounds(layer.getBounds(), { padding: [50, 50], duration: 1.5 });
-          // Optionally open tooltip
           layer.openTooltip();
         }
       });
@@ -38,7 +34,7 @@ const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
 const LandingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [statsData, setStatsData] = useState([]);
-  const [pendudukData, setPendudukData] = useState(null); // Kept for legacy/fallback
+  const [pendudukData, setPendudukData] = useState(null);
   const [apiKabupatenData, setApiKabupatenData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -47,16 +43,16 @@ const LandingPage = () => {
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [mapMode, setMapMode] = useState("kepadatan"); // "kepadatan" | "rasio"
+  const [mapMode, setMapMode] = useState("kepadatan");
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
+  const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const searchRef = useRef(null);
   const geoJsonRef = useRef(null);
   const selectedKecamatanRef = useRef(null);
   const isFeatureClicked = useRef(false);
   const navigate = useNavigate();
 
-  // Kecamatan yang bisa diklik untuk melihat batas desanya
   const kecamatanWithDetail = {
     "TARIK": "tarik",
     "PRAMBON": "prambon",
@@ -86,25 +82,21 @@ const LandingPage = () => {
   };
 
   useEffect(() => {
-    // Fetch the boundaries GeoJSON from public folder
     fetch("/data/Administrasi_Kecamatan.geojson")
       .then((res) => res.json())
       .then((data) => setGeojsonData(data))
       .catch((err) => console.error("Error loading boundaries:", err));
 
-    // Fetch statistical data (provides Luas Wilayah)
     fetch("/data/statistikSidoarjo.json")
       .then((res) => res.json())
       .then((data) => setStatsData(data))
       .catch((err) => console.error("Error loading stats:", err));
 
-    // Fetch demographic data for aggregation (fallback)
     fetch("/data/penduduk.json")
       .then((res) => res.json())
       .then((data) => setPendudukData(data))
       .catch((err) => console.error("Error loading penduduk:", err));
       
-    // Fetch live API data for Kecamatan aggregate
     fetchKabupatenData().then(data => {
       if (data && data.length > 0) {
         setApiKabupatenData(data);
@@ -112,7 +104,6 @@ const LandingPage = () => {
     });
   }, []);
 
-  // Handle clicking outside the search box to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -125,7 +116,6 @@ const LandingPage = () => {
     };
   }, []);
 
-  // Filter search results
   useEffect(() => {
     if (searchTerm.trim() === "" || !geojsonData) {
       setSearchResults([]);
@@ -138,9 +128,8 @@ const LandingPage = () => {
         const kecamatan = (props.KECAMATAN || "").toLowerCase();
         return kecamatan.includes(term);
       })
-      .slice(0, 5); // Limit to 5 results for clean UI
+      .slice(0, 5);
     
-    // Remove duplicates if any
     const uniqueResults = [];
     const seen = new Set();
     for (const res of results) {
@@ -160,7 +149,6 @@ const LandingPage = () => {
     setIsSearchFocused(false);
   };
 
-  // Helper function to get stats for a district, merged with live API data if available
   const getDistrictStats = (kecamatanName) => {
     if (!kecamatanName || !statsData.length) return null;
     const baseStat = statsData.find(
@@ -168,7 +156,6 @@ const LandingPage = () => {
     );
     if (!baseStat) return null;
 
-    // Merge with API data
     if (apiKabupatenData) {
       const liveData = apiKabupatenData.find(d => d.kecamatan === baseStat.kecamatan.toUpperCase());
       if (liveData) {
@@ -184,7 +171,6 @@ const LandingPage = () => {
     return baseStat;
   };
 
-  // Aggregate stats
   const totalLuas = statsData.reduce((sum, stat) => sum + stat.luas_wilayah, 0);
   const totalPenduduk = apiKabupatenData 
     ? apiKabupatenData.reduce((sum, d) => sum + d.total, 0)
@@ -198,7 +184,7 @@ const LandingPage = () => {
         L += d.L;
         P += d.P;
         total += d.total;
-        kk += Math.round(d.total / 3.8); // Estimate KK
+        kk += Math.round(d.total / 3.8);
       });
     } else if (pendudukData) {
       Object.values(pendudukData).forEach((desa) => {
@@ -211,7 +197,6 @@ const LandingPage = () => {
     return { L, P, total, kk };
   }, [apiKabupatenData, pendudukData]);
 
-  // Choropleth color scale based on map mode
   const getKepadatanColor = (density) => {
     return density > 7000 ? '#1e3a8a' :
            density > 5000 ? '#1d4ed8' :
@@ -236,12 +221,10 @@ const LandingPage = () => {
   const kecamatanDemografi = React.useMemo(() => {
     const agg = {};
     if (apiKabupatenData) {
-      // Use Live API Data
       apiKabupatenData.forEach(d => {
         agg[d.kecamatan] = { L: d.L, P: d.P, total: d.total };
       });
     } else if (pendudukData) {
-      // Fallback to local dummy data
       Object.values(pendudukData).forEach((desa) => {
         const kec = (desa.Kecamatan || "").toUpperCase();
         if (!agg[kec]) {
@@ -281,7 +264,7 @@ const LandingPage = () => {
 
   const getHoverStyle = (feature) => {
     return {
-      fillColor: "#facc15", // bright yellow for hover
+      fillColor: "#facc15",
       weight: selectedKecamatan === feature.properties.KECAMATAN ? 3 : 2,
       color: selectedKecamatan === feature.properties.KECAMATAN ? "#ffffff" : "#1e293b",
       dashArray: "",
@@ -297,7 +280,6 @@ const LandingPage = () => {
     getHoverStyleRef.current = getHoverStyle;
   }, [getStyle, getHoverStyle]);
 
-  // Update styles dynamically without unmounting the GeoJSON layer
   useEffect(() => {
     if (geoJsonRef.current) {
       geoJsonRef.current.eachLayer((layer) => {
@@ -372,7 +354,6 @@ const LandingPage = () => {
         click: (e) => {
           isFeatureClicked.current = true;
           if (selectedKecamatanRef.current === props.KECAMATAN && kecamatanWithDetail[props.KECAMATAN?.toUpperCase()]) {
-            // Double click on kecamatan with data -> navigate
             handleNavigateKecamatan(props.KECAMATAN);
           } else {
             setSelectedKecamatan(props.KECAMATAN);
@@ -476,6 +457,48 @@ const LandingPage = () => {
               activeBasemap={activeBasemap}
               setActiveBasemap={setActiveBasemap}
               onLayerOpenChange={setIsLayerOpen}
+              legendSlot={
+                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} bg-white/95 backdrop-blur-md shadow-md border border-gray-100 overflow-hidden`}>
+                  <div
+                    className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`}
+                    onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+                  >
+                    {!isLegendMinimized && <span>{mapMode === "kepadatan" ? "Kepadatan" : "Rasio Kelamin"}</span>}
+                    <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
+                      {isLegendMinimized ? (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      )}
+                    </button>
+                  </div>
+                  {!isLegendMinimized && (
+                    <div className="p-3 pt-2 text-[10px] space-y-1">
+                      {mapMode === "kepadatan" && [
+                        { color: "#1e3a8a", label: "> 7.000" },
+                        { color: "#1d4ed8", label: "5.000 – 7.000" },
+                        { color: "#2563eb", label: "3.500 – 5.000" },
+                        { color: "#3b82f6", label: "2.500 – 3.500" },
+                        { color: "#60a5fa", label: "1.500 – 2.500" },
+                        { color: "#93c5fd", label: "1.000 – 1.500" },
+                        { color: "#bfdbfe", label: "500 – 1.000" },
+                        { color: "#dbeafe", label: "< 500" },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
+                      ))}
+                      {mapMode === "rasio" && [
+                        { color: "#1e3a8a", label: ">105 Dominan L" },
+                        { color: "#3b82f6", label: "102–105 Lebih L" },
+                        { color: "#9ca3af", label: "98–102 Seimbang" },
+                        { color: "#ec4899", label: "95–98 Lebih P" },
+                        { color: "#be185d", label: "<95 Dominan P" },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              }
             />
             <MapController geojsonData={geojsonData} selectedKecamatan={selectedKecamatan} geoJsonRef={geoJsonRef} />
             <GeoJSON ref={geoJsonRef} data={geojsonData} style={getStyle} onEachFeature={onEachFeature} />
@@ -637,15 +660,14 @@ const LandingPage = () => {
         </button>
       </div>
 
-      {/* ── INFO + LEGEND PANEL (left side) ── */}
+      {/* ── INFO PANEL (left side – demografi only) ── */}
       {showInfoPanel && (
         <div
           className="absolute top-[4.5rem] left-3 z-[999] w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl panel-scroll overflow-y-auto"
           style={{ maxHeight: "calc(100vh - 6rem)" }}
         >
-          {/* Demographics */}
           {sidoarjoAgregat && (
-            <div className="p-4 border-b border-gray-50">
+            <div className="p-4">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">Demografi Sidoarjo</p>
               <div className="bg-blue-50 rounded-xl px-3 py-2.5 mb-2">
                 <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
@@ -670,48 +692,6 @@ const LandingPage = () => {
               </div>
             </div>
           )}
-
-          {/* Legend */}
-          <div className="p-4">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">
-              {mapMode === "kepadatan" ? "Kepadatan (Jiwa/km²)" : "Rasio Jenis Kelamin"}
-            </p>
-            {mapMode === "kepadatan" && (
-              <div className="flex flex-col gap-2">
-                {[
-                  { color: "#1e3a8a", label: "> 7.000" },
-                  { color: "#1d4ed8", label: "5.000 – 7.000" },
-                  { color: "#2563eb", label: "3.500 – 5.000" },
-                  { color: "#3b82f6", label: "2.500 – 3.500" },
-                  { color: "#60a5fa", label: "1.500 – 2.500" },
-                  { color: "#93c5fd", label: "1.000 – 1.500" },
-                  { color: "#bfdbfe", label: "500 – 1.000" },
-                  { color: "#dbeafe", label: "< 500" },
-                ].map(({ color, label }) => (
-                  <div key={label} className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
-                    <span className="text-xs text-gray-600">{label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {mapMode === "rasio" && (
-              <div className="flex flex-col gap-2">
-                {[
-                  { color: "#1e3a8a", label: ">105 Dominan L" },
-                  { color: "#3b82f6", label: "102–105 Lebih L" },
-                  { color: "#9ca3af", label: "98–102 Seimbang" },
-                  { color: "#ec4899", label: "95–98 Lebih P" },
-                  { color: "#be185d", label: "<95 Dominan P" },
-                ].map(({ color, label }) => (
-                  <div key={label} className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
-                    <span className="text-xs text-gray-600">{label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       )}
 

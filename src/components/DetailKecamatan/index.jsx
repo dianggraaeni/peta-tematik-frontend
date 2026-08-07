@@ -330,6 +330,41 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           setActiveBasemap={setActiveBasemap}
           isLayerOpen={isLayerOpen}
           setIsLayerOpen={setIsLayerOpen}
+          legendSlot={
+            isDummyData && (
+              <div className={`pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} bg-white/95 backdrop-blur-md shadow-md border border-gray-100 overflow-hidden`}>
+                <div 
+                  className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
+                  onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+                >
+                  {!isLegendMinimized && <span>Legenda Kepadatan</span>}
+                  <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
+                    {isLegendMinimized ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    )}
+                  </button>
+                </div>
+                {!isLegendMinimized && (
+                  <div className="p-3 pt-2 text-[10px] space-y-1">
+                    {[
+                      { color: "#1e3a8a", label: "> 80% tertinggi" },
+                      { color: "#1d4ed8", label: "60–80%" },
+                      { color: "#3b82f6", label: "40–60%" },
+                      { color: "#60a5fa", label: "20–40%" },
+                      { color: "#93c5fd", label: "< 20% terendah" },
+                    ].map(({ color, label }) => (
+                      <div key={label} className="flex items-center gap-2 mb-1">
+                        <div className="w-3 h-3 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: color }}></div>
+                        <span className="text-gray-600 font-medium">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          }
         />
         
         {/* Hint */}
@@ -346,7 +381,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/peta-tematik')}
+          onClick={() => navigate('/')}
           className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
           title="Kembali ke Peta Statistik"
         >
@@ -393,7 +428,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           )}
           
           {!isPanelMinimized && (
-            <div className="overflow-y-auto custom-scrollbar bg-transparent flex flex-col">
+            <div className="overflow-y-auto custom-scrollbar bg-transparent flex flex-col flex-1 min-h-0">
               {/* Kecamatan Summary */}
               <div className="p-4 border-b border-gray-100">
                 <p className="text-gray-500 text-xs mb-3 font-medium">
@@ -505,42 +540,6 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
         </div>
       )}
 
-      {/* =========================================
-          LEGEND (Floating Right)
-      ========================================= */}
-      {isDummyData && (
-        <div className={`absolute top-[4.5rem] right-3 z-[999] pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11' : 'w-48'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100 pointer-events-auto'} bg-white/95 backdrop-blur-md shadow-xl rounded-2xl border border-gray-100 overflow-hidden`}>
-          <div 
-            className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-500 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-            onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-          >
-            {!isLegendMinimized && <span>Legenda Kepadatan</span>}
-            <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-400">
-              {isLegendMinimized ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              )}
-            </button>
-          </div>
-          {!isLegendMinimized && (
-            <div className="p-3 pt-2 text-[10px] space-y-1">
-              {[
-                { color: "#1e3a8a", label: "> 80% tertinggi" },
-                { color: "#1d4ed8", label: "60–80%" },
-                { color: "#3b82f6", label: "40–60%" },
-                { color: "#60a5fa", label: "20–40%" },
-                { color: "#93c5fd", label: "< 20% terendah" },
-              ].map(({ color, label }) => (
-                <div key={label} className="flex items-center gap-2 mb-1">
-                  <div className="w-3 h-3 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: color }}></div>
-                  <span className="text-gray-600 font-medium">{label}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

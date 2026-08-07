@@ -78,6 +78,7 @@ const BerandaSidoarjo = () => {
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
+  const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   
   const searchRef = useRef(null);
@@ -475,6 +476,52 @@ const BerandaSidoarjo = () => {
               activeBasemap={activeBasemap}
               setActiveBasemap={setActiveBasemap}
               onLayerOpenChange={setIsLayerOpen}
+              legendSlot={
+                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} bg-white/95 backdrop-blur-md shadow-md border border-gray-100 overflow-hidden`}>
+                  <div
+                    className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`}
+                    onClick={() => setIsLegendMinimized(!isLegendMinimized)}
+                  >
+                    {!isLegendMinimized && <span>{mapMode === "kepadatan" ? "Kepadatan" : mapMode === "rasio" ? "Rasio Kelamin" : "Legenda Tema"}</span>}
+                    <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
+                      {isLegendMinimized ? (
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      )}
+                    </button>
+                  </div>
+                  {!isLegendMinimized && (
+                    <div className="p-3 pt-2 text-[10px] space-y-1">
+                      {mapMode === "kepadatan" && [
+                        { color: "#1e3a8a", label: "> 10.000" },
+                        { color: "#1d4ed8", label: "7.000 – 10.000" },
+                        { color: "#3b82f6", label: "4.000 – 7.000" },
+                        { color: "#60a5fa", label: "2.000 – 4.000" },
+                        { color: "#93c5fd", label: "> 0" },
+                        { color: "#e5e7eb", label: "Tidak ada data" },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
+                      ))}
+                      {mapMode === "rasio" && [
+                        { color: "#1e3a8a", label: ">105 Dominan L" },
+                        { color: "#3b82f6", label: "102–105 Lebih L" },
+                        { color: "#9ca3af", label: "98–102 Seimbang" },
+                        { color: "#ec4899", label: "95–98 Lebih P" },
+                        { color: "#be185d", label: "<95 Dominan P" },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
+                      ))}
+                      {mapMode === "tematik" && [
+                        { color: "#fbbf24", label: "Desa Tematik" },
+                        { color: "#e5e7eb", label: "Desa Lainnya" },
+                      ].map(({ color, label }) => (
+                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              }
             />
             <MapController geojsonData={geojsonData} selectedDesa={selectedDesa} geoJsonRef={geoJsonRef} />
             <GeoJSON ref={geoJsonRef} data={geojsonData} style={getStyle} onEachFeature={onEachFeature} />
@@ -507,7 +554,11 @@ const BerandaSidoarjo = () => {
         </button>
 
         {/* Logo card */}
-        <div className="hidden md:flex bg-white rounded-2xl shadow-md px-3 py-2.5 items-center gap-2 shrink-0 pointer-events-auto">
+        <div 
+          onClick={() => navigate("/")}
+          className="hidden md:flex bg-white rounded-2xl shadow-md px-3 py-2.5 items-center gap-2 shrink-0 pointer-events-auto cursor-pointer hover:bg-gray-50 transition-colors"
+          title="Kembali ke Peta Statistik"
+        >
           <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-7 object-contain" />
           <div className="w-px h-5 bg-gray-200 shrink-0" />
           <img src="/pict/des-can.png" alt="Desa Cantik" className="h-7 object-contain" />
@@ -698,7 +749,7 @@ const BerandaSidoarjo = () => {
         </button>
       </div>
 
-      {/* ── INFO + LEGEND PANEL (left side) ── */}
+      {/* ── INFO PANEL (left side – demografi only) ── */}
       {showInfoPanel && (
         <div
           className="absolute top-[4.5rem] left-3 z-[999] w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl panel-scroll overflow-y-auto"
@@ -706,7 +757,7 @@ const BerandaSidoarjo = () => {
         >
           {/* Demographics */}
           {sidoarjoAgregat && (
-            <div className="p-4 border-b border-gray-50">
+            <div className="p-4">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">Demografi Sidoarjo</p>
               <div className="bg-blue-50 rounded-xl px-3 py-2.5 mb-2">
                 <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
@@ -731,58 +782,6 @@ const BerandaSidoarjo = () => {
               </div>
             </div>
           )}
-
-          {/* Legend */}
-          <div className="p-4">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">
-              {mapMode === "kepadatan" ? "Kepadatan (Jiwa/km²)" : mapMode === "rasio" ? "Rasio Jenis Kelamin" : "Legenda Tema"}
-            </p>
-            {mapMode === "kepadatan" && (
-              <div className="flex flex-col gap-2">
-                {[
-                  { color: "#1e3a8a", label: "> 10.000" },
-                  { color: "#1d4ed8", label: "7.000 – 10.000" },
-                  { color: "#3b82f6", label: "4.000 – 7.000" },
-                  { color: "#60a5fa", label: "2.000 – 4.000" },
-                  { color: "#93c5fd", label: "> 0" },
-                  { color: "#e5e7eb", label: "Tidak ada data" },
-                ].map(({ color, label }) => (
-                  <div key={label} className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
-                    <span className="text-xs text-gray-600">{label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {mapMode === "rasio" && (
-              <div className="flex flex-col gap-2">
-                {[
-                  { color: "#1e3a8a", label: ">105 Dominan L" },
-                  { color: "#3b82f6", label: "102–105 Lebih L" },
-                  { color: "#9ca3af", label: "98–102 Seimbang" },
-                  { color: "#ec4899", label: "95–98 Lebih P" },
-                  { color: "#be185d", label: "<95 Dominan P" },
-                ].map(({ color, label }) => (
-                  <div key={label} className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded shrink-0" style={{ background: color }} />
-                    <span className="text-xs text-gray-600">{label}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {mapMode === "tematik" && (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded shrink-0 bg-amber-400" />
-                  <span className="text-xs text-gray-600">Desa Tematik</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded shrink-0 bg-gray-200" />
-                  <span className="text-xs text-gray-600">Desa Lainnya</span>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       )}
 
@@ -871,26 +870,17 @@ const BerandaSidoarjo = () => {
       </div>
 
       {/* ── AI INSIGHT BOX ── */}
-      <AIInsightBox
-        desaName={selectedDesa || "SIDOARJO"}
-        featureName={selectedDesa ? `Desa ${selectedDesa}` : "Kabupaten Sidoarjo"}
-        contextType="demografi"
-        requireClick={true}
-        customClass="bottom-6 right-16"
-        data={sidoarjoAgregat}
-      />
+      {selectedDesa && (
+        <AIInsightBox
+          desaName={selectedDesa}
+          featureName={`Desa ${selectedDesa}`}
+          contextType="demografi"
+          requireClick={true}
+          customClass="bottom-6 right-4"
+          data={sidoarjoAgregat}
+        />
+      )}
 
-      {/* ── BACK TO PETA STATISTIK ── */}
-      <button
-        onClick={() => navigate("/")}
-        className="absolute bottom-6 right-4 z-[1000] bg-white rounded-full shadow-md w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-        title="Kembali ke Peta Statistik"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-      </button>
     </div>
   );
 };
