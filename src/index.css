@@ -21,11 +21,9 @@
 
 /* Fix Leaflet fractional zoom gaps (white lines between tiles) */
 .leaflet-tile-container img.leaflet-tile {
-    /* More aggressive fix for Vercel/Chrome scaling issues */
-    margin-top: -1px !important;
-    margin-left: -1px !important;
-    width: calc(100% + 2px) !important;
-    height: calc(100% + 2px) !important;
+    /* Safe fix for sub-pixel gaps without breaking layout */
+    outline: 1px solid transparent;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    transform: scale(1.005);
 }
