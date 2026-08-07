@@ -18,3 +18,11 @@
 .leaflet-interactive:focus {
     outline: none !important;
 }
+
+/* Fix Leaflet fractional zoom gaps (white lines between tiles) */
+.leaflet-tile-container img.leaflet-tile {
+    /* Slightly stretch the tiles to cover sub-pixel rounding gaps */
+    transform: scale(1.005);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
