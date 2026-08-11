@@ -29,10 +29,10 @@ const SummaryTab = ({ nama_desa }) => {
         const desaUpper = (nama_desa || "").toUpperCase();
         
         if (desaUpper === "GROGOL") {
-          const response = await api4.get("/api/sls/all/aggregate");
+          const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${desaUpper}`);
           setData(response.data.data);
         } else if (desaUpper === "SIMOKETAWANG" || desaUpper === "KETAWANG") {
-          const response = await api3.get("/api/sls/all/aggregate");
+          const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${desaUpper}`);
           setData(response.data.data);
         } else if (desaUpper === "SIMOANGINANGIN") {
           const response = await api.get("/api/rt/all/aggregate");

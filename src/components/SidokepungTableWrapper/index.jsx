@@ -20,11 +20,8 @@ import api6 from "../../utils/api6";
 import DataTable from "../SidokepungTable/DataTable";
 import FormModal from "../SidokepungTable/FormModal";
 import DeleteModal from "../SidokepungTable/DeleteModal";
-import UploadModal from "../SidokepungTable/UploadModal";
 // Hooks
-import { useFileUpload } from "../../hooks/useFileUpload";
 // Utils & Constants
-import { downloadTemplate } from "../SidokepungTable/fileUtils";
 import {
   jenisKelaminOptions,
   statusPekerjaanOptions,
@@ -58,25 +55,8 @@ const SidokepungTableWrapper = () => {
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
-  const {
-    isOpen: isUploadOpen,
-    onOpen: onUploadOpen,
-    onClose: onUploadClose,
-  } = useDisclosure();
 
   const navigate = useNavigate();
-
-  // File upload hook
-  const {
-    uploadProgress,
-    isUploading,
-    uploadResults,
-    previewData,
-    fileInputRef,
-    handleFileSelect,
-    handleBulkUpload,
-    resetUpload,
-  } = useFileUpload();
 
   useEffect(() => {
     const token = localStorage.getItem("token-sidokepung");
@@ -266,44 +246,6 @@ const SidokepungTableWrapper = () => {
     }
   };
 
-  // File upload handlers
-  const onFileSelectSuccess = (formattedData) => {
-    if (formattedData.length > 0) {
-      onUploadOpen();
-    }
-  };
-
-  const onFileSelectError = (errorMessage) => {
-    setError(errorMessage);
-  };
-
-  const onUploadSuccess = async (results) => {
-    if (results.success > 0) {
-      setSuccess(
-        `Berhasil mengupload ${results.success} data${
-          results.failed > 0 ? `, ${results.failed} data gagal` : ""
-        }`
-      );
-      await fetchData();
-    }
-
-    setTimeout(() => {
-      onUploadClose();
-      resetUpload();
-    }, 3000);
-  };
-
-  const onUploadError = (errorMessage) => {
-    setError(errorMessage);
-  };
-
-  const handleDownloadTemplate = () => {
-    downloadTemplate((message) => {
-      setSuccess(message);
-      setTimeout(() => setSuccess(""), 3000);
-    });
-  };
-
   // Filter and pagination
   const filteredData = data.filter(
     (item) =>
@@ -331,7 +273,7 @@ const SidokepungTableWrapper = () => {
           {success}
         </div>
       )}
-      {error && !isOpen && !isUploadOpen && (
+      {error && !isOpen && (
         <div className="p-4 mb-4 text-red-700 bg-red-100 border border-red-300 rounded-lg">
           <p className="font-semibold">Error:</p>
           <p>{error}</p>
@@ -349,72 +291,22 @@ const SidokepungTableWrapper = () => {
             className="w-full sm:w-80"
           />
           <div className="flex gap-2 flex-wrap">
-            <Button
-              color="primary"
-              startContent={<AiOutlinePlus />}
-              onClick={handleAdd}
-              className="bg-green-600"
-            >
-              Tambah Data
-            </Button>
-            <Button
-              color="secondary"
-              variant="flat"
-              startContent={<AiOutlineUpload />}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Upload CSV/JSON
-            </Button>
-            <Button
-              color="default"
-              variant="flat"
-              startContent={<AiOutlineDownload />}
-              onClick={handleDownloadTemplate}
-            >
-              Download Template
-            </Button>
-          </div>
-        </div>
-
-        {/* Upload Info Card */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardBody className="p-4">
-            <div className="flex items-start gap-3">
-              <AiOutlineFileText className="text-blue-600 text-xl mt-1" />
-              <div>
-                <h4 className="font-semibold text-blue-800 mb-1">
-                  Upload Data Massal
-                </h4>
-                <p className="text-sm text-blue-700 mb-2">
-                  Upload file CSV atau JSON untuk menambahkan banyak data
-                  sekaligus.
-                </p>
-                <p className="text-xs text-blue-600">
-                  Format kolom: rt, rw, umur, jenis_kelamin,
-                  status_pekerjaan_utama, bidang_pekerjaan, nama_anggota
-                </p>
-              </div>
+              <Button
+                color="primary"
+                startContent={<AiOutlinePlus />}
+                onClick={onOpen}
+              >
+                Tambah Data
+              </Button>
             </div>
-          </CardBody>
-        </Card>
-
-        {/* Hidden file input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv,.json"
-          onChange={(e) =>
-            handleFileSelect(e, onFileSelectSuccess, onFileSelectError)
-          }
-          style={{ display: "none" }}
-        />
+          </div>
       </div>
 
       {/* Data Table */}
       <div className="p-6 bg-white shadow-md rounded-xl">
         <DataTable
           data={paginatedData}
-          loading={loading && !isOpen && !isUploadOpen}
+          loading={loading && !isOpen}
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
@@ -437,17 +329,6 @@ const SidokepungTableWrapper = () => {
         jenisKelaminOptions={jenisKelaminOptions}
         statusPekerjaanOptions={statusPekerjaanOptions}
         bidangPekerjaanOptions={bidangPekerjaanOptions}
-      />
-
-      <UploadModal
-        isOpen={isUploadOpen}
-        onClose={onUploadClose}
-        previewData={previewData}
-        uploadProgress={uploadProgress}
-        isUploading={isUploading}
-        uploadResults={uploadResults}
-        error={error}
-        onUpload={() => handleBulkUpload(onUploadSuccess, onUploadError)}
       />
 
       <DeleteModal

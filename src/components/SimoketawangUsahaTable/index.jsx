@@ -32,7 +32,7 @@ import "leaflet/dist/leaflet.css";
 import AddRutaModal from "./AddRutaModal";
 import DetailRutaModal from "./DetailRutaModal";
 import EditRutaModal from "./EditRutaModal";
-import api3 from "../../utils/api3";
+import api6 from "../../utils/api6";
 import { useMediaQuery } from "react-responsive";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
@@ -68,99 +68,27 @@ const SimoketawangUsahaTable = ({ fetchDataAggregate }) => {
     setLoading(true); // Mulai loading
     try {
       const [rtResponse, rutaResponse] = await Promise.all([
-        api3.get("/api/sls"),
-        api3.get("/api/usahaKlengkeng"),
+        { data: { data: [] } }, // Dummy SLS data
+        api6.get("/api/pertanian/usahasayuran?nmdesa=SIMOKETAWANG"),
       ]);
-      setDataRt(rtResponse.data.data);
+      setDataRt(rtResponse.data.data || []);
       console.log("Check dataRt", rtResponse.data.data);
-      setDataRuta(rutaResponse.data.data);
+      setDataRuta(rutaResponse.data.data || []);
       console.log("Check dataRuta", rutaResponse.data.data);
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(`Terjadi kesalahan: ${error.message}`, 5);
-      }
+      console.error("Gagal mengambil data:", error);
+      message.error("Terjadi kesalahan saat memuat data.");
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false); // Selesai loading
     }
   };
 
   const deleteData = async (ruta) => {
-    setLoading(true);
-    try {
-      await api3.delete(`/api/usahaKlengkeng/${ruta._id}`);
-      setDataRuta(dataRuta.filter((item) => item._id !== ruta._id));
-      message.success(
-        `Usaha ${ruta.nama_kepala_keluarga} berhasil dihapus.`,
-        5
-      );
-      fetchData();
-      fetchDataAggregate();
-    } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(
-          `Terjadi kesalahan pada proses hapus data: ${error.response.data.message}`,
-          5
-        );
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(
-          `Terjadi kesalahan pada proses hapus data: ${error.message}`,
-          5
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
+    message.error("Maaf, penghapusan data satuan dinonaktifkan. Silakan gunakan tab Manajemen File Data untuk mengupdate data secara massal.");
   };
 
   const deleteManyData = async (idsArray) => {
-    setLoading(true);
-    try {
-      await api3.delete(`/api/usahaKlengkeng/many`, {
-        data: idsArray,
-      });
-      const successMessage = idsArray.includes("all")
-        ? "Berhasil menghapus semua usaha."
-        : `Berhasil menghapus ${idsArray.length} usaha.`;
-
-      message.success(successMessage, 5);
-      setSelectedKeys(new Set([]));
-      fetchData();
-      fetchDataAggregate();
-    } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        message.error(
-          `Terjadi kesalahan pada proses hapus data: ${error.response.data.message}`,
-          5
-        );
-      } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
-        message.error(
-          `Terjadi kesalahan pada proses hapus data: ${error.message}`,
-          5
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
+    message.error("Maaf, penghapusan data massal dinonaktifkan. Silakan gunakan tab Manajemen File Data untuk mengupdate data secara massal.");
   };
 
   useEffect(() => {
@@ -380,15 +308,6 @@ const SimoketawangUsahaTable = ({ fetchDataAggregate }) => {
           onChange={handleSearchChange}
         />
         <div className="flex gap-2">
-          <Button
-            color="primary"
-            className="text-[14px] font-semibold text-white"
-            startContent={<FaPlus className="text-[20px] text-white" />}
-            // onMouseEnter={() => !isMobile && setDropdownVisible(true)}
-            onClick={handleSatuanAddModal}
-          >
-            Tambah
-          </Button>
           <Button
             color="success"
             className="text-[14px] font-semibold text-white"

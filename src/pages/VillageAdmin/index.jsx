@@ -5,15 +5,12 @@ import { Tabs, Tab } from "@nextui-org/react";
 import { useMediaQuery } from "react-responsive";
 import api6 from "../../utils/api6"; // Using our centralized backend for themes
 
-import SidokepungTableWrapper from "../../components/SidokepungTableWrapper";
-import SimoketawangSlsTable from "../../components/SimoketawangSlsTable";
-import SimoketawangUsahaTable from "../../components/SimoketawangUsahaTable";
-import GrogolSlsTable from "../../components/GrogolSlsTable";
-import GrogolUsahaTable from "../../components/GrogolUsahaTable";
-import RtTable from "../../components/RtTable"; 
-import RutaTable from "../../components/RutaTable"; 
 import SummaryTab from "./SummaryTab";
 import InsightManagementTab from "./InsightManagementTab";
+import DataUploader from "../../components/DataUploader";
+import SidokepungTableWrapper from "../../components/SidokepungTableWrapper";
+import SimoketawangUsahaTable from "../../components/SimoketawangUsahaTable";
+import GrogolUsahaTable from "../../components/GrogolUsahaTable";
 
 const VillageAdmin = () => {
   const { nama_desa } = useParams();
@@ -46,29 +43,6 @@ const VillageAdmin = () => {
     fetchThemes();
   }, [nama_desa]);
 
-  const desaUpper = (nama_desa || "").toUpperCase();
-
-  let slsContent = null;
-  let umkmContent = null;
-  let taniContent = null;
-
-  if (desaUpper === "GROGOL") {
-    slsContent = <GrogolSlsTable fetchDataAggregate={() => {}} />;
-    if (themes.includes("Pertanian Pertambangan")) {
-      taniContent = <GrogolUsahaTable />;
-    }
-  } else if (desaUpper === "SIMOKETAWANG" || desaUpper === "KETAWANG") {
-    slsContent = <SimoketawangSlsTable fetchDataAggregate={() => {}} />;
-    if (themes.includes("Ekonomi Perdagangan")) {
-      umkmContent = <SimoketawangUsahaTable />;
-    }
-  } else if (desaUpper === "SIMOANGINANGIN") {
-    slsContent = <RtTable />;
-    if (themes.includes("Ekonomi Perdagangan")) {
-      umkmContent = <RutaTable />;
-    }
-  }
-
   const tabs = [
     {
       id: "ringkasan",
@@ -79,16 +53,13 @@ const VillageAdmin = () => {
       id: "insight",
       label: isMobile ? "Insight" : "Manajemen Insight",
       content: <InsightManagementTab nama_desa={nama_desa} />,
+    },
+    {
+      id: "upload",
+      label: isMobile ? "Upload" : "Manajemen File Data",
+      content: <DataUploader nama_desa={nama_desa} />,
     }
   ];
-
-  if (slsContent) {
-    tabs.push({
-      id: "sls",
-      label: isMobile ? "SLS" : "Satuan Lingkungan Setempat",
-      content: slsContent,
-    });
-  }
 
   if (themes.includes("Sosial Kependudukan")) {
     tabs.push({
@@ -98,19 +69,19 @@ const VillageAdmin = () => {
     });
   }
 
-  if (umkmContent) {
+  if (themes.includes("Ekonomi Perdagangan")) {
     tabs.push({
       id: "ekonomi",
       label: isMobile ? "UMKM" : "Data UMKM",
-      content: umkmContent,
+      content: <SimoketawangUsahaTable />,
     });
   }
 
-  if (taniContent) {
+  if (themes.includes("Pertanian Pertambangan")) {
     tabs.push({
       id: "pertanian",
       label: isMobile ? "Tani" : "Usaha Tani",
-      content: taniContent,
+      content: <GrogolUsahaTable />,
     });
   }
 

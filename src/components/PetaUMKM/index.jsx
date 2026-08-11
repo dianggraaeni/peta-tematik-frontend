@@ -69,9 +69,9 @@ const AutoZoom = ({ geojsonData }) => {
   return null;
 };
 
-const Dashboard = ({ initialDesaName }) => {
+const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const navigate = useNavigate();
-  const [desaName] = useState(initialDesaName || "SIMOANGINANGIN");
+  const [desaName] = useState(propsDesaName || "SIMOANGINANGIN");
   const [geojsonData, setGeojsonData] = useState(null);
   const [allRawData, setAllRawData] = useState([]);
   const [allOriginalData, setAllOriginalData] = useState([]);
@@ -272,7 +272,7 @@ const Dashboard = ({ initialDesaName }) => {
         <button
           onClick={() => navigate('/peta-tematik')}
           className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-          title="Kembali ke Kecamatan Sidoarjo"
+          title="Kembali"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -364,93 +364,98 @@ const Dashboard = ({ initialDesaName }) => {
         </div>
       )}
 
-          {/* ── LEFT PANEL — inside map, top left, scrollable, made narrower (w-44) */}
-          <div
-            className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
-              isPanelMinimized ? "w-10 h-10" : "w-44"
-            }`}
-            style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
-          >
-            <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
-              <div
-                className="bg-blue-600 text-white px-2 py-1.5 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
-                onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-              >
-                <h2 className={`font-medium text-[11px] truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }}
-                  className="text-white hover:text-gray-200 shrink-0 ml-1"
-                  title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
-                >
-                  {isPanelMinimized ? (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  ) : (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                  )}
-                </button>
-              </div>
-              {!isPanelMinimized && (
-                <div className="overflow-y-auto p-1.5" style={{ maxHeight: "calc(100% - 32px)" }}>
-                  <div className="flex gap-1 mb-1.5">
-                    <button onClick={handleReset} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 rounded text-[10px] font-semibold transition-colors rounded-md shadow-sm">
-                      Reset
-                    </button>
-                  </div>
-                  <h2 className="text-[11px] font-bold text-gray-800 text-center mb-1.5 pb-0.5 border-b border-blue-100">Data UMKM</h2>
-                  <div className="bg-blue-50 rounded-lg p-1.5 mb-1.5 border border-blue-100">
-                    <p className="text-[9px] text-gray-500 font-medium text-center">Total UMKM</p>
-                    <p className="text-lg font-extrabold text-blue-600 text-center my-0">
-                      <CountUp end={processedData?.totalPenduduk || 0} duration={2} separator="." />
-                    </p>
-                    {selectedArea.rt && selectedArea.rw && (
-                      <p className="text-[8px] text-gray-400 text-center">RT {selectedArea.rt} / RW {selectedArea.rw}</p>
-                    )}
-                  </div>
-                  <div className="w-full">
-                    <UmkmCharts data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ── FILTER — fixed icon below zoom, panel expands LEFT */}
-          <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
-            <button
-              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
-              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
-              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
+          {/* 👈👈 LEFT PANEL 👉👉 inside map, top left, scrollable, made narrower (w-44) */}
+          {!hideCards && (
+            <div
+              className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
+                isPanelMinimized ? "w-10 h-10" : "w-44"
+              }`}
+              style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-              {activeKbliFilter && (
-                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
-              )}
-            </button>
-            {!isFilterMinimized && (
-              <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
-                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-blue-600 font-bold">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                    <span>Filter Data</span>
-                  </div>
-                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
+                <div
+                  className="bg-blue-600 text-white px-2 py-1.5 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
+                  onClick={() => setIsPanelMinimized(!isPanelMinimized)}
+                >
+                  <h2 className={`font-medium text-[11px] truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }}
+                    className="text-white hover:text-gray-200 shrink-0 ml-1"
+                    title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
+                  >
+                    {isPanelMinimized ? (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    ) : (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    )}
                   </button>
                 </div>
-                <FilterPanelUmkm onFilterChange={(filters) => setActiveKbliFilter(filters.kbliDominan)} filteredCount={processedData.totalPenduduk || 0} totalCount={allRawData.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)} kbliColors={kbliColors} getKbliName={getKbliName} />
+                {!isPanelMinimized && (
+                  <div className="overflow-y-auto p-1.5" style={{ maxHeight: "calc(100% - 32px)" }}>
+                    <div className="flex gap-1 mb-1.5">
+                      <button onClick={handleReset} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 rounded text-[10px] font-semibold transition-colors rounded-md shadow-sm">
+                        Reset
+                      </button>
+                    </div>
+                    <h2 className="text-[11px] font-bold text-gray-800 text-center mb-1.5 pb-0.5 border-b border-blue-100">Data UMKM</h2>
+                    <div className="bg-blue-50 rounded-lg p-1.5 mb-1.5 border border-blue-100">
+                      <p className="text-[9px] text-gray-500 font-medium text-center">Total UMKM</p>
+                      <p className="text-lg font-extrabold text-blue-600 text-center my-0">
+                        <CountUp end={processedData?.totalPenduduk || 0} duration={2} separator="." />
+                      </p>
+                      {selectedArea.rt && selectedArea.rw && (
+                        <p className="text-[8px] text-gray-400 text-center">RT {selectedArea.rt} / RW {selectedArea.rw}</p>
+                      )}
+                    </div>
+                    <div className="w-full">
+                      <UmkmCharts data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} />
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* ── AI INSIGHT — inside map, bottom right */}
-          <AIInsightBox 
-            desaName={desaName} 
-            featureName={selectedAreaTitle} 
-            contextType="umkm" 
-            requireClick={true} 
-            customClass="bottom-4 right-4" 
-            data={{ totalUmkm: processedData.totalUmkm, dominanKbli: getKbliName(processedData.dominantKbli) }} 
-          />
+          {/* ── FILTER — fixed icon below zoom, panel expands LEFT ── */}
+
+      {!hideCards && (
+        <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
+          <button
+            className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+            onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+            title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            {activeKbliFilter && (
+              <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
+            )}
+          </button>
+          {!isFilterMinimized && (
+            <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+              <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                <div className="flex items-center gap-2 text-blue-600 font-bold">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  <span>Filter Data</span>
+                </div>
+                <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <FilterPanelUmkm onFilterChange={(filters) => setActiveKbliFilter(filters.kbliDominan)} filteredCount={processedData.totalPenduduk || 0} totalCount={allRawData.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)} kbliColors={kbliColors} getKbliName={getKbliName} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── AI INSIGHT — inside map, bottom right ── */}
+      {!hideCards && <AIInsightBox 
+        desaName={desaName} 
+        featureName={selectedAreaTitle} 
+        contextType="umkm" 
+        requireClick={true} 
+        customClass="bottom-4 right-4" 
+        data={{ totalUmkm: processedData.totalUmkm, dominanKbli: getKbliName(processedData.dominantKbli) }} 
+      />}
     </>
   );
 };

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, CheckboxGroup, Checkbox, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, CheckboxGroup, Checkbox, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure, Select, SelectItem } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
-import api4 from "../../utils/api4";
+import api6 from "../../utils/api6";
 import api5 from "../../utils/api5"; // Assuming api5 is used for auth based on Login/index.jsx
 import { message } from "antd";
 
@@ -13,7 +13,11 @@ const availableThemes = [
 ];
 
 const AdminPusat = () => {
-  const [villages, setVillages] = useState(["SIMOKETAWANG", "GROGOL", "SIMOANGINANGIN", "SIDOKEPUNG"]);
+  const [villagesByKecamatan, setVillagesByKecamatan] = useState({});
+  const [kecamatanList, setKecamatanList] = useState([]);
+  const [selectedKecamatan, setSelectedKecamatan] = useState("");
+  const [villages, setVillages] = useState([]);
+
   const [themeSettings, setThemeSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const [savingState, setSavingState] = useState({}); // Track saving per village
@@ -27,26 +31,41 @@ const AdminPusat = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchThemes();
+    fetchData();
   }, []);
 
-  const fetchThemes = async () => {
+  const fetchData = async () => {
     try {
-      const response = await api4.get("/api/village-themes");
-      const data = response.data || {};
-      setThemeSettings(data);
+      const [themesRes, villagesRes] = await Promise.all([
+        api6.get("/api/village-themes"),
+        api6.get("/api/villages/by-kecamatan")
+      ]);
+
+      const themesData = themesRes.data || {};
+      setThemeSettings(themesData);
+
+      const villagesData = villagesRes.data || {};
+      setVillagesByKecamatan(villagesData);
       
-      // Update villages list if there are new villages in the DB
-      const existingVillages = new Set(villages);
-      Object.keys(data).forEach(k => existingVillages.add(k.toUpperCase()));
-      setVillages(Array.from(existingVillages));
+      const kecamatans = Object.keys(villagesData).sort();
+      setKecamatanList(kecamatans);
       
+      if (kecamatans.length > 0) {
+        setSelectedKecamatan(kecamatans[0]);
+        setVillages(villagesData[kecamatans[0]]);
+      }
     } catch (error) {
-      console.error("Error fetching themes:", error);
-      message.error("Gagal mengambil pengaturan tema");
+      console.error("Error fetching data:", error);
+      message.error("Gagal mengambil data pengaturan tema atau desa");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKecamatanChange = (e) => {
+    const kec = e.target.value;
+    setSelectedKecamatan(kec);
+    setVillages(villagesByKecamatan[kec] || []);
   };
 
   const handleThemeChange = (desa, selectedThemes) => {
@@ -59,7 +78,7 @@ const AdminPusat = () => {
   const handleSave = async (desa) => {
     setSavingState(prev => ({ ...prev, [desa]: true }));
     try {
-      await api4.post("/api/village-themes", {
+      await api6.post("/api/village-themes", {
         desa_name: desa,
         themes: themeSettings[desa] || []
       });
@@ -118,9 +137,22 @@ const AdminPusat = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-1">Manajemen Desa Cantik</h2>
               <p className="text-gray-600 text-sm">Pilih desa dan atur tema potensi yang aktif untuk mengkonfigurasi panel admin mereka.</p>
             </div>
-            <Button color="primary" onPress={onOpen} className="font-semibold shadow-md">
-              + Tambah Admin Desa
-            </Button>
+            <div className="flex items-center gap-4">
+              <Select
+                label="Pilih Kecamatan"
+                className="w-48"
+                size="sm"
+                selectedKeys={[selectedKecamatan]}
+                onChange={handleKecamatanChange}
+              >
+                {kecamatanList.map(kec => (
+                  <SelectItem key={kec} value={kec}>{kec}</SelectItem>
+                ))}
+              </Select>
+              <Button color="primary" onPress={onOpen} className="font-semibold shadow-md">
+                + Tambah Admin Desa
+              </Button>
+            </div>
           </div>
 
           <Table aria-label="Tabel Pengaturan Desa" className="w-full">

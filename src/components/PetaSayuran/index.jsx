@@ -16,18 +16,19 @@ import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import AIInsightBox from "../AIInsightBox";
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
+import { Select, Space, Collapse, message } from "antd";
+import api6 from "../../utils/api6.js";
 import { Transition } from "@headlessui/react";
-import api2 from "../../utils/api4.js";
-import { message } from "antd";
 import CountUp from "react-countup";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { BeatLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 
-export default function MapSection() {
+export default function MapSection({ desaName: propsDesaName, hideCards }) {
   const navigate = useNavigate();
   const [selectedClassification, setSelectedClassification] = useState("all");
   const [selectedtUsaha, setSelectedtUsaha] = useState("all");
+  const [desaName] = useState(propsDesaName || "Simoanginangin");
   const [selectedJenisPupuk, setSelectedJenisPupuk] = useState("all");
   const [mapInstance, setMapInstance] = useState(null);
   const [isDataOpen, setIsDataOpen] = useState(false);
@@ -50,71 +51,58 @@ export default function MapSection() {
   const changeVisualization = (type) => setVisualization(type);
 
   const fetchData = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
-      const response = await api2.get("/api/sls/all/geojson");
-      setData(response.data.data); // Update state dengan data dari API
-      console.log("Data fetched:", response.data.data);
+      const response = await api6.get(`/api/peta?nmdesa=${encodeURIComponent(desaName)}`);
+      // Peta endpoint directly returns array of features, but PetaSayuran expects an array of FeatureCollections
+      const featureCollections = response.data.map(feature => ({
+        type: "FeatureCollection",
+        features: [feature]
+      }));
+      setData(featureCollections); 
+      console.log("Data fetched:", featureCollections);
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data && error.response.data.message) {
         message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
       } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
         message.error(`Terjadi kesalahan: ${error.message}`, 5);
       }
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false);
     }
   };
 
   const fetchDataAgregat = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
-      const response = await api2.get("/api/sls/all/aggregate");
-      setDataAgregat(response.data.data); // Update state dengan data dari API
+      const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${encodeURIComponent(desaName)}`);
+      setDataAgregat(response.data.data || []); 
       console.log("Data fetched:", response.data.data);
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data && error.response.data.message) {
         message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
       } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
         message.error(`Terjadi kesalahan: ${error.message}`, 5);
       }
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false);
     }
   };
 
   const fetchDataRumahTangga = async () => {
-    setLoading(true); // Mulai loading
+    setLoading(true);
     try {
-      const response = await api2.get("/api/usahasayuran");
-      setDataRumahTangga(response.data.data); // Update state dengan data dari API
+      const response = await api6.get(`/api/pertanian/usahasayuran?nmdesa=${encodeURIComponent(desaName)}`);
+      setDataRumahTangga(response.data.data || []); 
       console.log("Data fetched:", response.data.data);
     } catch (error) {
-      // Cek jika error memiliki respons body
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error.response && error.response.data && error.response.data.message) {
         message.error(`Terjadi kesalahan: ${error.response.data.message}`, 5);
       } else {
-        // Jika error tidak memiliki respons body yang dapat diakses
         message.error(`Terjadi kesalahan: ${error.message}`, 5);
       }
     } finally {
-      setLoading(false); // Akhiri loading
+      setLoading(false);
     }
   };
 
@@ -578,6 +566,7 @@ export default function MapSection() {
   return (
     <>
       {/* ── TOP BAR OVERLAY ── */}
+      {!hideCards && (
       <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none font-sfProDisplay">
         {/* Back Button */}
         <button
@@ -594,9 +583,10 @@ export default function MapSection() {
         {/* Title Card */}
         <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
-          <div className="font-extrabold text-sm text-gray-800 leading-none">GROGOL</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName.toUpperCase()}</div>
         </div>
       </div>
+      )}
         <MapContainer
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
@@ -691,6 +681,7 @@ export default function MapSection() {
           )}
         </MapContainer>
 
+      {!hideCards && (
       <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
         <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
           <button
@@ -917,7 +908,7 @@ export default function MapSection() {
                         <span className="mr-1 text-[#065f46] text-sm material-icons">
                           location_on
                         </span>
-                        Desa Grogol
+                        Desa {desaName}
                       </p>
                     </div>
 
@@ -987,7 +978,7 @@ export default function MapSection() {
 
         {/* ── AI INSIGHT — inside map, bottom right */}
         <AIInsightBox 
-          desaName="Simoanginangin"
+          desaName={desaName}
           featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
           contextType="sayuran"
           requireClick={true}
@@ -995,6 +986,7 @@ export default function MapSection() {
           data={dataAgregat}
         />
       </div>
+      )}
     </>
   );
 }

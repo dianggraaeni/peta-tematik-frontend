@@ -34,7 +34,7 @@ const AutoZoom = ({ geojsonData }) => {
   return null;
 };
 
-const Dashboard = ({ desaName: propsDesaName }) => {
+const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const navigate = useNavigate();
   // === STATE ===
   const [geojsonData, setGeojsonData] = useState(null);
@@ -718,7 +718,7 @@ const Dashboard = ({ desaName: propsDesaName }) => {
 
   return (
     <>
-      <style jsx global>{`
+      <style>{`
         * {
           scrollbar-width: none;
           -ms-overflow-style: none;
@@ -909,122 +909,122 @@ const Dashboard = ({ desaName: propsDesaName }) => {
           <BeatLoader color="#4A90E2" size={10} />
         </div>
       )}
-
-          {/* ── LEFT PANEL — inside map, top left, scrollable, made narrower (w-44) */}
-          <div
-            className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
-              isPanelMinimized ? "w-10 h-10" : "w-44"
-            }`}
-            style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
-          >
-            <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
-              <div
-                className="bg-blue-600 text-white px-2.5 py-2 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
-                onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-              >
-                <h2 className={`font-medium text-xs truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
-                <button onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} className="text-white hover:text-gray-200 shrink-0 ml-1" title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}>
-                  {isPanelMinimized ? (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  ) : (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                  )}
-                </button>
-              </div>
-              {!isPanelMinimized && (
-                <div className="overflow-y-auto" style={{ maxHeight: "calc(100% - 38px)" }}>
-                  <div className="p-2 border-b border-gray-200">
-                    <button onClick={handleResetView} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 px-2.5 rounded-lg transition-all font-medium text-xs">
-                      Reset Tampilan
-                    </button>
-                  </div>
-                  <div className="p-2 border-b border-gray-200">
-                    <h3 className="font-medium text-gray-800 mb-1 text-[10px]">Data Pekerjaan</h3>
-                    {loading ? (
-                      <div className="flex justify-center items-center h-10"><BeatLoader color="#4A90E2" size={6} /></div>
+          {/* 👈👈 LEFT PANEL 👉👉 inside map, top left, scrollable, made narrower (w-44) */}
+          {!hideCards && (
+            <div
+              className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
+                isPanelMinimized ? "w-10 h-10" : "w-44"
+              }`}
+              style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
+            >
+              <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
+                <div
+                  className="bg-blue-600 text-white px-2.5 py-2 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
+                  onClick={() => setIsPanelMinimized(!isPanelMinimized)}
+                >
+                  <h2 className={`font-medium text-xs truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
+                  <button onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} className="text-white hover:text-gray-200 shrink-0 ml-1" title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}>
+                    {isPanelMinimized ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     ) : (
-                      <div className="bg-blue-50 p-1.5 rounded-lg text-center">
-                        <p className="text-[10px] text-gray-600 mb-0.5">Total Penduduk 15-64 Thn</p>
-                        <p className="text-lg font-bold text-blue-600"><CountUp end={processedData.totalPenduduk || 0} duration={1.5} /></p>
-                        {filteredData.length > 0 && <p className="text-[9px] text-gray-500">dari {allRawData.length} total</p>}
-                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     )}
-                  </div>
-                  <div className="p-2 border-b border-gray-200">
-                    <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
-                      {["jenisKelamin","statusPekerjaan","umur"].map(key => (
-                        <button key={key} onClick={() => setCurrentDataKey(key)} className={`px-1 py-1 text-[9px] font-medium rounded-md transition-all ${currentDataKey === key ? "bg-blue-600 text-white shadow-md" : "text-gray-600 hover:bg-gray-200"}`}>
-                          {key === "jenisKelamin" ? "J. Kelamin" : key === "statusPekerjaan" ? "Pekerjaan" : "Umur"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="p-2 border-b border-gray-200">
-                    <div className="grid grid-cols-2 gap-1">
-                      {["bar","doughnut"].map(type => (
-                        <button key={type} onClick={() => setChartType(type)} className={`py-1 px-1.5 rounded-lg text-[9px] font-medium transition-all ${chartType === type ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
-                          {type === "bar" ? "Batang" : "Lingkaran"}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="p-2">
-                    <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
-                      {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
-                    </div>
-                  </div>
+                  </button>
                 </div>
-              )}
+                {!isPanelMinimized && (
+                  <div className="overflow-y-auto" style={{ maxHeight: "calc(100% - 38px)" }}>
+                    <div className="p-2 border-b border-gray-200">
+                      <button onClick={handleResetView} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 px-2.5 rounded-lg transition-all font-medium text-xs">
+                        Reset Tampilan
+                      </button>
+                    </div>
+                    <div className="p-2 border-b border-gray-200">
+                      <h3 className="font-medium text-gray-800 mb-1 text-[10px]">Data Pekerjaan</h3>
+                      {loading ? (
+                        <div className="flex justify-center items-center h-10"><BeatLoader color="#4A90E2" size={6} /></div>
+                      ) : (
+                        <div className="bg-blue-50 p-1.5 rounded-lg text-center">
+                          <p className="text-[10px] text-gray-600 mb-0.5">Total Penduduk 15-64 Thn</p>
+                          <p className="text-lg font-bold text-blue-600"><CountUp end={processedData.totalPenduduk || 0} duration={1.5} /></p>
+                          {filteredData.length > 0 && <p className="text-[9px] text-gray-500">dari {allRawData.length} total</p>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2 border-b border-gray-200">
+                      <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
+                        {["jenisKelamin","statusPekerjaan","umur"].map(key => (
+                          <button key={key} onClick={() => setCurrentDataKey(key)} className={`px-1 py-1 text-[9px] font-medium rounded-md transition-all ${currentDataKey === key ? "bg-blue-600 text-white shadow-md" : "text-gray-600 hover:bg-gray-200"}`}>
+                            {key === "jenisKelamin" ? "J. Kelamin" : key === "statusPekerjaan" ? "Pekerjaan" : "Umur"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-2 border-b border-gray-200">
+                      <div className="grid grid-cols-2 gap-1">
+                        {["bar","doughnut"].map(type => (
+                          <button key={type} onClick={() => setChartType(type)} className={`py-1 px-1.5 rounded-lg text-[9px] font-medium transition-all ${chartType === type ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+                            {type === "bar" ? "Batang" : "Lingkaran"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
+                        {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
 
           {/* ── FILTER — fixed icon below zoom (+/-), panel expands LEFT */}
-          <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
-            <button
-              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
-              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
-              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-              {(activeFilters.gender || activeFilters.ageGroup || activeFilters.employment || activeFilters.workField) && (
-                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
-              )}
-            </button>
-            {!isFilterMinimized && (
-              <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
-                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-blue-600 font-bold">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                    <span>Filter Data</span>
+
+          {!hideCards && (
+            <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
+              <button
+                className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+                onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+                title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                {(activeFilters.gender || activeFilters.ageGroup || activeFilters.employment || activeFilters.workField) && (
+                  <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
+                )}
+              </button>
+              {!isFilterMinimized && (
+                <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                  <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-blue-600 font-bold">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                      <span>Filter Data</span>
+                    </div>
+                    <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                   </div>
-                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
+                  <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
                 </div>
-                <FilterPanel onFilterChange={handleFilterChange} filteredCount={filteredData.length} totalCount={allRawData.length} />
-              </div>
-            )}
-          </div>
-
-
+              )}
+            </div>
+          )}
 
           {/* ── AI INSIGHT — inside map, bottom right */}
-          <AIInsightBox 
+          {!hideCards && <AIInsightBox 
             desaName={desaName}
             featureName={selectedAreaTitle}
             contextType="pekerjaan"
             requireClick={true}
             customClass="bottom-4 right-4"
             data={{
-              totalPenduduk: filteredData.length,
-              dominanPekerjaan: filteredData.length > 0 
-                ? (Object.entries(filteredData.reduce((acc, curr) => { const status = categorizeEmploymentStatus(curr.status_pekerjaan_utama); acc[status] = (acc[status] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0] || [])[0] || "Tidak diketahui"
-                : "Tidak ada data",
-              lakiLaki: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "laki-laki").length,
-              perempuan: filteredData.filter(d => (d.jenis_kelamin || "").toLowerCase() === "perempuan").length
+              pekerjaan: processedData.pekerjaan,
+              umur: processedData.umur,
+              jenisKelamin: processedData.jenisKelamin,
+              totalPenduduk: processedData.pekerjaan.reduce((a, b) => a + b, 0)
             }}
-          />
+          />}
     </>
   );
 };

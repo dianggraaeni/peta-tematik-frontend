@@ -10,6 +10,7 @@ import PotensiAdmin from "./pages/potensiAdmin";
 import PetaTematik from "./pages/PetaPekerjaanSidokepung";
 import PetaUmkmSimoanginangin from "./pages/PetaUmkmSimoanginangin";
 import PetaKelengkengSimoketawang from "./pages/petaKelengkengSimoketawang";
+import UniversalDetail from "./pages/UniversalDetail";
 import DetailWaung from "./pages/DetailWaung";
 import DetailKecamatan from "./pages/DetailKecamatan";
 import BerandaSidoarjo from "./pages/BerandaSidoarjo";
@@ -33,7 +34,7 @@ function App() {
         
         {/* Thematic Map Route */}
         <Route path="/peta-tematik" element={<BerandaSidoarjo />} />
-        <Route path="/detail" element={<PetaTematik />} />
+        <Route path="/detail" element={<UniversalDetail />} />
         <Route path="/detail-simoanginangin" element={<PetaUmkmSimoanginangin />} />
         <Route path="/detail-simoketawang" element={<PetaKelengkengSimoketawang />} />
         <Route path="/detail-waung" element={<DetailWaung />} />

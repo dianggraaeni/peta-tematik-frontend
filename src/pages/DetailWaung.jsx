@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomMapControls, { useBasemap } from '../components/CustomMapControls';
 import { Select, SelectItem } from '@nextui-org/react';
 import AIInsightBox from '../components/AIInsightBox';
+import api6 from '../utils/api6';
 
 const AutoZoom = ({ geojsonData, selectedRT }) => {
   const map = useMap();
@@ -35,20 +36,45 @@ export default function DetailWaung() {
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
 
+  const [activeThemes, setActiveThemes] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resGeo, resT1, resT2, resKU] = await Promise.all([
-          fetch('/data/waung/peta_waung.geojson'),
-          fetch('/data/waung/tabulasi_1_clean.json'),
-          fetch('/data/waung/tabulasi_2_clean.json'),
-          fetch('/data/waung/kelompok_umur_clean.json')
-        ]);
+        let dbData = {};
+        let themesMap = {};
         
-        setGeojsonData(await resGeo.json());
-        setTabulasi1(await resT1.json());
-        setTabulasi2(await resT2.json());
-        setKelompokUmur(await resKU.json());
+        try {
+          const [resThemes, resData] = await Promise.all([
+            api6.get('/api/village-themes'),
+            api6.get('/api/village-data/waung')
+          ]);
+          themesMap = resThemes.data || {};
+          dbData = resData.data || {};
+        } catch (apiErr) {
+          console.warn("Backend API not reachable or data missing, falling back to static");
+        }
+
+        setActiveThemes(themesMap['WAUNG'] || []);
+
+        const fetchFallback = async (path) => {
+          try {
+             const res = await fetch(path);
+             return await res.json();
+          } catch(e) {
+             return null;
+          }
+        };
+
+        const geojson = dbData.geojson || await fetchFallback('/data/waung/peta_waung.geojson');
+        const tab1 = dbData.keluarga || await fetchFallback('/data/waung/tabulasi_1_clean.json') || [];
+        const tab2 = dbData.sanitasi_air || await fetchFallback('/data/waung/tabulasi_2_clean.json') || [];
+        const kUmur = dbData.kelompok_umur || await fetchFallback('/data/waung/kelompok_umur_clean.json') || [];
+
+        setGeojsonData(geojson);
+        setTabulasi1(tab1);
+        setTabulasi2(tab2);
+        setKelompokUmur(kUmur);
       } catch (err) {
         console.error("Failed to load Waung data", err);
       }
@@ -201,8 +227,19 @@ export default function DetailWaung() {
       `}</style>
       
       {/* ── FULLSCREEN MAP ── */}
-      <MapContainer 
-        center={[-7.498, 112.636]} 
+      {/* Peta Content */}
+      <div className="flex-grow relative h-full w-full">
+        {(!activeThemes.includes("Sosial Kependudukan") && activeThemes.length > 0) ? (
+          <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-gray-100/80 backdrop-blur-sm">
+             <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm text-center">
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Peta Kependudukan Nonaktif</h3>
+                <p className="text-gray-600 text-sm">Admin Pusat belum mengaktifkan tema Sosial Kependudukan untuk Desa Waung.</p>
+             </div>
+          </div>
+        ) : null}
+        
+        <MapContainer 
+          center={[-7.472719, 112.716186]} 
         zoom={15} 
         minZoom={14}
         maxZoom={22}
@@ -254,6 +291,7 @@ export default function DetailWaung() {
               />
             )}
           </MapContainer>
+      </div>
 
       {/* ── TOP BAR OVERLAY ── */}
       <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
