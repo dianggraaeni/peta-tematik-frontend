@@ -502,7 +502,7 @@ export default function DetailWaung() {
             contextType="waung" 
             requireClick={true} 
             customClass="bottom-4 right-4" 
-            data={{ rukunTetangga: selectedRT, detail: selectedRT ? processedWaungData.find(d => d.rt === selectedRT) : null }} 
+            data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null }} 
           />
     </div>
   );
