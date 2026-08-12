@@ -17,16 +17,34 @@ const DataUploader = ({ nama_desa }) => {
     { value: 'kelompok_umur', label: 'Kelompok Umur' },
     { value: 'pekerjaan', label: 'Data Pekerjaan' },
     { value: 'umkm', label: 'Data UMKM' },
+    { value: 'pertanian_usahasayuran', label: 'Data Usaha Pertanian / Kelengkeng' },
+    { value: 'pertanian_aggregate', label: 'Data Agregat Pertanian (Grogol)' },
     { value: 'geojson', label: 'Batas Wilayah (GeoJSON)' }
   ];
 
   // Standar kolom wajib untuk Auto-Extract (huruf kecil semua)
   const requiredColumns = {
-    'keluarga': ['rt/rw', 'jumlah keluarga'],
-    'sanitasi_air': ['rt/rw'],
-    'kelompok_umur': ['rt', 'rw', 'umur', 'jenis_kelamin'],
+    'keluarga': ['rt/rw', 'jumlah keluarga', 'rata-rata anggota keluarga', 'rata-rata luas lantai'],
+    'sanitasi_air': [
+      'rt/rw',
+      'lantai marmer', 'lantai keramik', 'lantai parket', 'lantai ubin', 'lantai kayu', 'lantai semen', 'lantai bambu', 'lantai tanah', 'lantai lainnya',
+      'dinding tembok', 'dinding kawat', 'dinding kayu', 'dinding anyaman bambu', 'dinding batang kayu', 'dinding bambu', 'dinding lainnya',
+      'atap beton', 'atap genteng', 'atap seng', 'atap asbes', 'atap bambu', 'atap kayu', 'atap jerami', 'atap lainnya'
+    ],
+    'kelompok_umur': [
+      'kelompok',
+      'luar_waung_L', 'luar_waung_P', 'luar_waung_total',
+      'domisili_waung_L', 'domisili_waung_P', 'domisili_waung_total'
+    ],
     'pekerjaan': ['rt', 'rw', 'umur', 'jenis_kelamin', 'status_pekerjaan_utama', 'bidang_pekerjaan'],
-    'umkm': ['rt', 'rw', 'nama_usaha', 'dusun', 'jml_ruta', 'jml_umkm']
+    'umkm': ['rt', 'rw', 'nama_usaha', 'dusun', 'jml_ruta', 'jml_umkm'],
+    'pertanian_usahasayuran': [
+      'kode', 'kodesls', 'rt_rw_dusun', 'nama_kepala_keluarga', 'alamat', 
+      'latitude', 'longitude', 'jml_pohon', 'jml_pohon_new_crystal', 
+      'jml_pohon_pingpong', 'jml_pohon_metalada', 'jml_pohon_diamond_river', 
+      'jml_pohon_merah', 'volume_produksi', 'pemanfaatan_produk', 'catatan', 'url_img'
+    ],
+    'pertanian_aggregate': ['rt_rw_dusun', 'jumlah_ruta', 'volume_produksi']
   };
 
   const handleFileChange = (e) => {
@@ -87,29 +105,8 @@ const DataUploader = ({ nama_desa }) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const reqCols = requiredColumns[dataType] || ['rt', 'rw'];
         
-        // Pencarian Baris Header Dinamis (karena terkadang Excel Tabulasi memiliki baris kosong / judul di baris awal)
-        const rawGrid = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        let headerRowIndex = 0;
-        let maxMatch = 0;
-        
-        for (let i = 0; i < Math.min(rawGrid.length, 10); i++) {
-            const rowArr = rawGrid[i] || [];
-            const rowStrArr = rowArr.map(cell => String(cell).toLowerCase());
-            
-            let matchCount = 0;
-            for (let col of reqCols) {
-                if (rowStrArr.some(cell => cell.includes(col.toLowerCase()))) {
-                    matchCount++;
-                }
-            }
-            if (matchCount > maxMatch) {
-                maxMatch = matchCount;
-                headerRowIndex = i;
-            }
-        }
-
-        // Parse ulang menggunakan baris header yang paling relevan
-        const rawJsonData = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
+        // Mode Template Ketat: Asumsikan baris pertama (index 0) adalah header
+        const rawJsonData = XLSX.utils.sheet_to_json(worksheet, { range: 0 });
 
         if (rawJsonData.length === 0) {
            message.error('File Excel kosong atau format tidak sesuai.');
@@ -132,29 +129,28 @@ const DataUploader = ({ nama_desa }) => {
         
         if (missingCols.length > 0) {
            message.error({
-             content: `Penolakan Otomatis! Kolom wajib tidak ditemukan: ${missingCols.join(', ')}`,
-             duration: 5,
+             content: `Format tidak sesuai template! Kolom yang hilang: ${missingCols.join(', ')}. Silakan unduh template yang disediakan.`,
+             duration: 8,
            });
            setLoading(false);
            return;
         }
 
-        // Bersihkan data: HANYA ambil kolom yang diwajibkan (buang kolom kotor/sisa dari SPSS)
+        // Bersihkan data: HANYA ambil kolom yang diwajibkan
         if (dataType === 'keluarga') {
-           // Adapter khusus untuk Tabulasi Keluarga (Waung)
            jsonData = normalizedData.map(row => ({
-              rt: row['rt/rw'] || row['rt'],
-              jumlah_keluarga: row['jumlah keluarga'] || row['jumlah_keluarga'],
-              rata_anggota: row['rata-rata jumlah anggota keluarga'] || row['rata_anggota'] || 0,
-              rata_luas_lantai: row['rata-rata luas lantai (m2)'] || row['rata_luas_lantai'] || row['rata-rata luas lantai'] || 0
+              rt: row['rt/rw'],
+              jumlah_keluarga: row['jumlah keluarga'],
+              rata_anggota: row['rata-rata anggota keluarga'] || 0,
+              rata_luas_lantai: row['rata-rata luas lantai'] || 0
            })).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
         } else if (dataType === 'sanitasi_air') {
-           // Adapter sementara untuk Sanitasi Air (jika user mengunggah Tabulasi)
            jsonData = normalizedData.map(row => {
-              let cleanRow = { rt: row['rt/rw'] || row['rt'] };
-              // Simpan semua keys karena strukturnya kompleks
+              let cleanRow = { rt: row['rt/rw'], lantai: {}, dinding: {}, atap: {} };
               for (let key in row) {
-                 if (key !== 'rt/rw' && key !== 'rt') cleanRow[key] = row[key];
+                 if (key.startsWith('lantai ')) cleanRow.lantai[key.replace('lantai ', '').replace(/ /g, '_')] = row[key] || 0;
+                 else if (key.startsWith('dinding ')) cleanRow.dinding[key.replace('dinding ', '').replace(/ /g, '_')] = row[key] || 0;
+                 else if (key.startsWith('atap ')) cleanRow.atap[key.replace('atap ', '').replace(/ /g, '_')] = row[key] || 0;
               }
               return cleanRow;
            }).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
@@ -217,8 +213,9 @@ const DataUploader = ({ nama_desa }) => {
   };
 
   return (
-    <Card className="shadow-sm border border-gray-200">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 flex flex-col items-start gap-1 p-5">
+    <div className="flex flex-col gap-6">
+      <Card className="shadow-sm border border-gray-200">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 flex flex-col items-start gap-1 p-5">
         <h3 className="font-bold text-blue-900 text-lg flex items-center gap-2">
           <FaUpload className="text-blue-600" /> Manajemen File Data
         </h3>
@@ -234,8 +231,6 @@ const DataUploader = ({ nama_desa }) => {
               selectedKeys={[dataType]}
               onChange={(e) => {
                 setDataType(e.target.value);
-                setFile(null);
-                if (fileInputRef.current) fileInputRef.current.value = "";
               }}
               className="max-w-xs"
             >
@@ -260,12 +255,12 @@ const DataUploader = ({ nama_desa }) => {
           </div>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex gap-3 text-amber-800 text-sm items-start">
-          <FaInfoCircle className="mt-0.5 shrink-0 text-amber-500" />
-          <p>
-            <b>Fitur Sortir Otomatis Aktif:</b> Anda dapat langsung mengunggah file Excel mentah yang memiliki banyak kolom berlebih. Sistem akan dengan pintar menyaring dan hanya mengambil kolom yang sesuai dengan format baku (sesuai template), lalu mengabaikan sisanya. Pastikan judul kolom (header) diketik dengan benar.
-          </p>
-        </div>
+          <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex gap-3 text-amber-800 text-sm items-start">
+            <FaInfoCircle className="mt-0.5 shrink-0 text-amber-500" />
+            <p>
+              <b>Wajib Menggunakan Template:</b> Sistem kini diatur ke Mode Ketat. Pastikan baris pertama (Baris 1) pada file Excel/CSV Anda berisi judul kolom (header) yang <b>SAMA PERSIS</b> dengan template yang bisa diunduh melalui tombol di atas. Jika ejaan atau format header berbeda, data akan otomatis ditolak.
+            </p>
+          </div>
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-bold text-gray-700">
@@ -341,6 +336,9 @@ const DataUploader = ({ nama_desa }) => {
         </div>
       </CardBody>
     </Card>
+
+
+    </div>
   );
 };
 

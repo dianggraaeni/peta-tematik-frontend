@@ -7,6 +7,7 @@ import { BeatLoader } from "react-spinners";
 import DemographicsChart from "./DemographicsChart";
 import FilterPanel from "./FilterPanel";
 import AIInsightBox from "../AIInsightBox";
+import RightSidebar from "../RightSidebar";
 import L from "leaflet";
 
 import api6 from "../../utils/api6.js";
@@ -50,7 +51,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const selectedAreaRef = useRef({ rt: null, rw: null, nmdesa: null });
   const geoJsonRef = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [isPanelMinimized, setIsPanelMinimized] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [chartType, setChartType] = useState("doughnut");
@@ -717,7 +718,8 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   };
 
   return (
-    <>
+    <div className="flex w-full h-full overflow-hidden relative">
+      <div className="flex-grow relative h-full">
       <style>{`
         * {
           scrollbar-width: none;
@@ -834,27 +836,6 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
         }
       `}</style>
 
-      {/* ── TOP BAR OVERLAY ── */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/peta-tematik')}
-          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-          title="Kembali ke Kecamatan Buduran"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </button>
-
-        {/* Title Card */}
-        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
-          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
-          <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName.toUpperCase()}</div>
-        </div>
-      </div>
-
       {geojsonData ? (
         <MapContainer
           center={[-7.379, 112.73]}
@@ -909,77 +890,6 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           <BeatLoader color="#4A90E2" size={10} />
         </div>
       )}
-          {/* 👈👈 LEFT PANEL 👉👉 inside map, top left, scrollable, made narrower (w-44) */}
-          {!hideCards && (
-            <div
-              className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${
-                isPanelMinimized ? "w-10 h-10" : "w-44"
-              }`}
-              style={!isPanelMinimized ? { maxHeight: "calc(100% - 6rem)" } : {}}
-            >
-              <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden flex flex-col" style={{ maxHeight: "inherit" }}>
-                <div
-                  className="bg-blue-600 text-white px-2.5 py-2 flex justify-between items-center cursor-pointer hover:bg-blue-700 transition-colors shrink-0"
-                  onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-                >
-                  <h2 className={`font-medium text-xs truncate ${isPanelMinimized ? "hidden" : "block"}`}>{selectedAreaTitle}</h2>
-                  <button onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} className="text-white hover:text-gray-200 shrink-0 ml-1" title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}>
-                    {isPanelMinimized ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    )}
-                  </button>
-                </div>
-                {!isPanelMinimized && (
-                  <div className="overflow-y-auto" style={{ maxHeight: "calc(100% - 38px)" }}>
-                    <div className="p-2 border-b border-gray-200">
-                      <button onClick={handleResetView} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1 px-2.5 rounded-lg transition-all font-medium text-xs">
-                        Reset Tampilan
-                      </button>
-                    </div>
-                    <div className="p-2 border-b border-gray-200">
-                      <h3 className="font-medium text-gray-800 mb-1 text-[10px]">Data Pekerjaan</h3>
-                      {loading ? (
-                        <div className="flex justify-center items-center h-10"><BeatLoader color="#4A90E2" size={6} /></div>
-                      ) : (
-                        <div className="bg-blue-50 p-1.5 rounded-lg text-center">
-                          <p className="text-[10px] text-gray-600 mb-0.5">Total Penduduk 15-64 Thn</p>
-                          <p className="text-lg font-bold text-blue-600"><CountUp end={processedData.totalPenduduk || 0} duration={1.5} /></p>
-                          {filteredData.length > 0 && <p className="text-[9px] text-gray-500">dari {allRawData.length} total</p>}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2 border-b border-gray-200">
-                      <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
-                        {["jenisKelamin","statusPekerjaan","umur"].map(key => (
-                          <button key={key} onClick={() => setCurrentDataKey(key)} className={`px-1 py-1 text-[9px] font-medium rounded-md transition-all ${currentDataKey === key ? "bg-blue-600 text-white shadow-md" : "text-gray-600 hover:bg-gray-200"}`}>
-                            {key === "jenisKelamin" ? "J. Kelamin" : key === "statusPekerjaan" ? "Pekerjaan" : "Umur"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="p-2 border-b border-gray-200">
-                      <div className="grid grid-cols-2 gap-1">
-                        {["bar","doughnut"].map(type => (
-                          <button key={type} onClick={() => setChartType(type)} className={`py-1 px-1.5 rounded-lg text-[9px] font-medium transition-all ${chartType === type ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
-                            {type === "bar" ? "Batang" : "Lingkaran"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="p-2">
-                      <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
-                        {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-
           {/* ── FILTER — fixed icon below zoom (+/-), panel expands LEFT */}
 
           {!hideCards && (
@@ -1022,10 +932,70 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
               pekerjaan: processedData.pekerjaan,
               umur: processedData.umur,
               jenisKelamin: processedData.jenisKelamin,
-              totalPenduduk: processedData.pekerjaan.reduce((a, b) => a + b, 0)
+              totalPenduduk: processedData.pekerjaan ? processedData.pekerjaan.reduce((a, b) => a + b, 0) : 0
             }}
           />}
-    </>
+          
+          {!isSidebarOpen && !hideCards && (
+             <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+             </button>
+          )}
+      </div>
+
+      {!hideCards && (
+        <RightSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} desaName={desaName} themeName="PEKERJAAN" themeIcon="/pict/des-can.png">
+          <div className="flex flex-col gap-4 p-4">
+            <h2 className="font-medium text-sm truncate">{selectedAreaTitle}</h2>
+            
+            <div className="border-b border-gray-200 pb-2">
+              <button onClick={handleResetView} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 px-2.5 rounded-lg transition-all font-medium text-xs">
+                Reset Tampilan
+              </button>
+            </div>
+            
+            <div className="border-b border-gray-200 pb-2">
+              <h3 className="font-medium text-gray-800 mb-1 text-[10px]">Data Pekerjaan</h3>
+              {loading ? (
+                <div className="flex justify-center items-center h-10"><BeatLoader color="#4A90E2" size={6} /></div>
+              ) : (
+                <div className="bg-blue-50 p-2 rounded-lg text-center">
+                  <p className="text-[10px] text-gray-600 mb-0.5">Total Penduduk 15-64 Thn</p>
+                  <p className="text-lg font-bold text-blue-600"><CountUp end={processedData.totalPenduduk || 0} duration={1.5} /></p>
+                  {filteredData.length > 0 && <p className="text-[9px] text-gray-500">dari {allRawData.length} total</p>}
+                </div>
+              )}
+            </div>
+            
+            <div className="border-b border-gray-200 pb-2">
+              <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-lg">
+                {["jenisKelamin","statusPekerjaan","umur"].map(key => (
+                  <button key={key} onClick={() => setCurrentDataKey(key)} className={`px-1 py-1.5 text-[9px] font-medium rounded-md transition-all ${currentDataKey === key ? "bg-blue-600 text-white shadow-md" : "text-gray-600 hover:bg-gray-200"}`}>
+                    {key === "jenisKelamin" ? "J. Kelamin" : key === "statusPekerjaan" ? "Pekerjaan" : "Umur"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="border-b border-gray-200 pb-2">
+              <div className="grid grid-cols-2 gap-1">
+                {["bar","doughnut"].map(type => (
+                  <button key={type} onClick={() => setChartType(type)} className={`py-1.5 px-1.5 rounded-lg text-[9px] font-medium transition-all ${chartType === type ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}>
+                    {type === "bar" ? "Batang" : "Lingkaran"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
+                {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
+              </div>
+            </div>
+          </div>
+        </RightSidebar>
+      )}
+    </div>
   );
 };
 

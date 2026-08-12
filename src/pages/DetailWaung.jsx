@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomMapControls, { useBasemap } from '../components/CustomMapControls';
 import { Select, SelectItem } from '@nextui-org/react';
 import AIInsightBox from '../components/AIInsightBox';
+import RightSidebar from '../components/RightSidebar';
 import api6 from '../utils/api6';
 
 const AutoZoom = ({ geojsonData, selectedRT }) => {
@@ -30,7 +31,7 @@ export default function DetailWaung() {
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [colorMode, setColorMode] = useState('keluarga'); // 'keluarga' or 'luas_lantai'
   const [selectedRT, setSelectedRT] = useState(null);
-  const [isPanelMinimized, setIsPanelMinimized] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isFilterMinimized, setIsFilterMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
@@ -188,7 +189,7 @@ export default function DetailWaung() {
   const PIE_COLORS = ['#3b82f6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#8b5cf6'];
 
   return (
-    <div className="w-screen h-screen relative flex flex-col overflow-hidden bg-gray-200 font-sans">
+    <div className="flex w-screen h-screen overflow-hidden bg-gray-200 font-sans relative">
       <style>{`
         .leaflet-control-zoom {
           border: none !important;
@@ -226,9 +227,8 @@ export default function DetailWaung() {
         .no-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
       `}</style>
       
-      {/* ── FULLSCREEN MAP ── */}
-      {/* Peta Content */}
-      <div className="flex-grow relative h-full w-full">
+      {/* ── MAIN MAP AREA ── */}
+      <div className="flex-grow relative h-full">
         {(!activeThemes.includes("Sosial Kependudukan") && activeThemes.length > 0) ? (
           <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-gray-100/80 backdrop-blur-sm">
              <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm text-center">
@@ -291,168 +291,9 @@ export default function DetailWaung() {
               />
             )}
           </MapContainer>
-      </div>
 
-      {/* ── TOP BAR OVERLAY ── */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/peta-tematik')}
-          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-          title="Kembali ke Kecamatan Krembung"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </button>
-
-        {/* Title Card */}
-        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
-          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
-          <div className="font-extrabold text-sm text-gray-800 leading-none">WAUNG</div>
-        </div>
-      </div>
-
-          {/* LEFT FLOATING PANEL (Charts) */}
-          <div className={`absolute top-[4.5rem] left-3 z-[1000] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? 'w-10 h-10' : 'w-80 md:w-96'} bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 flex flex-col max-h-[85%] overflow-hidden`}>
-            <div 
-              className={`bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition-colors shrink-0 flex items-center ${isPanelMinimized ? 'w-10 h-10 justify-center p-0 rounded-2xl' : 'px-3 h-12 justify-between rounded-t-2xl'}`}
-              onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-            >
-              <div className={`${isPanelMinimized ? 'hidden' : 'block'}`}>
-                <h2 className="font-bold text-sm md:text-base leading-tight">{selectedRT ? `Statistik ${selectedRT}` : "Desa Waung"}</h2>
-              </div>
-              
-              <div className={`flex items-center gap-2 ${isPanelMinimized ? 'm-0 p-0' : ''}`}>
-                {selectedRT && !isPanelMinimized && (
-                  <button onClick={(e) => { e.stopPropagation(); setSelectedRT(null); }} className="bg-white/20 hover:bg-white/30 p-1 rounded-lg transition-colors" title="Tutup Detail">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
-                )}
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(!isPanelMinimized); }} 
-                  className="text-white hover:text-gray-200 shrink-0 flex items-center justify-center w-6 h-6 transition-all"
-                  title={isPanelMinimized ? "Buka Panel" : "Tutup Panel"}
-                >
-                  {isPanelMinimized ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {!isPanelMinimized && (
-            <div className="p-4 overflow-y-auto no-scrollbar">
-              {selectedRT && selT1 ? (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-sky-50 rounded-xl p-3 border border-sky-100 text-center">
-                      <p className="text-sky-600 text-[10px] font-bold uppercase">Total Keluarga</p>
-                      <p className="text-sky-900 text-2xl font-extrabold">{selT1.jumlah_keluarga}</p>
-                    </div>
-                    <div className="bg-green-50 rounded-xl p-3 border border-green-100 text-center">
-                      <p className="text-green-600 text-[10px] font-bold uppercase">Rata Anggota</p>
-                      <p className="text-green-900 text-2xl font-extrabold">{selT1.rata_anggota.toFixed(1)}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
-                    <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Lantai Dominan</p>
-                    <div className="h-[140px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie data={lantaiData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
-                            {lantaiData.map((e, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                          </Pie>
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
-                          <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
-                    <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Atap Dominan</p>
-                    <div className="h-[140px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie data={atapData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
-                            {atapData.map((e, i) => <Cell key={i} fill={PIE_COLORS[(i+2) % PIE_COLORS.length]} />)}
-                          </Pie>
-                          <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
-                          <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
-                    <p className="text-center font-bold text-gray-700 text-sm mb-4">Distribusi Kelompok Umur</p>
-                    <div className="h-[220px] flex w-full">
-                      {/* Laki-Laki */}
-                      <div className="flex-none flex flex-col" style={{ width: 'calc(50% + 22.5px)' }}>
-                        <p className="text-center font-bold text-gray-600 text-[10px] mb-1 pr-[45px]">Laki-laki</p>
-                        <div className="flex-1 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 20 }}>
-                              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
-                              <XAxis type="number" reversed domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
-                              <YAxis 
-                                type="category" 
-                                dataKey="kelompok" 
-                                orientation="right" 
-                                tick={({x, y, payload}) => (
-                                  <text x={x} y={y} dy={3} textAnchor="middle" fill="#374151" fontSize={9} fontWeight={600}>
-                                    {payload.value}
-                                  </text>
-                                )} 
-                                tickMargin={22.5}
-                                tickSize={0}
-                                width={45} 
-                                interval={0} 
-                                axisLine={false} 
-                                tickLine={false} 
-                              />
-                              <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                              <Bar dataKey="domisili_waung_L" name="Laki-Laki" fill="#3b82f6" radius={[4, 0, 0, 4]} />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-
-                      {/* Perempuan */}
-                      <div className="flex-none flex flex-col" style={{ width: 'calc(50% - 22.5px)' }}>
-                        <p className="text-center font-bold text-gray-600 text-[10px] mb-1">Perempuan</p>
-                        <div className="flex-1 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 20 }}>
-                              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
-                              <XAxis type="number" domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
-                              <YAxis type="category" dataKey="kelompok" hide />
-                              <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                              <Bar dataKey="domisili_waung_P" name="Perempuan" fill="#ec4899" radius={[0, 4, 4, 0]} />
-                            </BarChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
-                    <p className="text-xs text-blue-800 text-center">Silakan klik area RT pada peta untuk melihat detail spesifik per wilayah.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            )}
-          </div>
-
-          {/* RIGHT FLOATING PANEL (Filter) - fixed icon below zoom, panel expands LEFT */}
-          <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
+          {/* RIGHT FLOATING PANEL (Filter) MOVED TO TOP LEFT */}
+          <div className="absolute top-3 left-3 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -461,7 +302,7 @@ export default function DetailWaung() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
             </button>
             {!isFilterMinimized && (
-              <div className="absolute top-0 right-full mr-2 w-64 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+              <div className="absolute top-0 left-full ml-2 w-64 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
                 <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
                   <div className="flex items-center gap-2 text-blue-600 font-bold">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
@@ -495,6 +336,12 @@ export default function DetailWaung() {
             )}
           </div>
 
+          {!isSidebarOpen && (
+            <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md pointer-events-auto">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+          )}
+
           {/* AI INSIGHT - inside map, bottom right */}
           <AIInsightBox 
             desaName="Waung" 
@@ -504,6 +351,119 @@ export default function DetailWaung() {
             customClass="bottom-4 right-4" 
             data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null }} 
           />
+      </div>
+
+      <RightSidebar 
+        isOpen={isSidebarOpen} 
+        setIsOpen={setIsSidebarOpen} 
+        desaName="WAUNG" 
+        themeName="SOSIAL KEPENDUDUKAN" 
+        themeIcon="/pict/des-can.png"
+      >
+        <div className="flex flex-col gap-4">
+          {selectedRT && selT1 ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-sky-50 rounded-xl p-3 border border-sky-100 text-center">
+                  <p className="text-sky-600 text-[10px] font-bold uppercase">Total Keluarga</p>
+                  <p className="text-sky-900 text-2xl font-extrabold">{selT1.jumlah_keluarga}</p>
+                </div>
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100 text-center">
+                  <p className="text-green-600 text-[10px] font-bold uppercase">Rata Anggota</p>
+                  <p className="text-green-900 text-2xl font-extrabold">{selT1.rata_anggota.toFixed(1)}</p>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
+                <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Lantai Dominan</p>
+                <div className="h-[140px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={lantaiData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
+                        {lantaiData.map((e, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
+                      <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
+                <p className="text-center font-bold text-gray-700 text-sm mb-2">Bahan Atap Dominan</p>
+                <div className="h-[140px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={atapData} innerRadius={35} outerRadius={60} paddingAngle={2} dataKey="value" label={false}>
+                        {atapData.map((e, i) => <Cell key={i} fill={PIE_COLORS[(i+2) % PIE_COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', padding: '4px 8px' }} />
+                      <Legend layout="vertical" verticalAlign="middle" align="right" iconSize={8} wrapperStyle={{ fontSize: '10px', lineHeight: '20px' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-3">
+                <p className="text-center font-bold text-gray-700 text-sm mb-4">Distribusi Kelompok Umur</p>
+                <div className="h-[220px] flex w-full">
+                  {/* Laki-Laki */}
+                  <div className="flex-none flex flex-col" style={{ width: 'calc(50% + 22.5px)' }}>
+                    <p className="text-center font-bold text-gray-600 text-[10px] mb-1 pr-[45px]">Laki-laki</p>
+                    <div className="flex-1 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                          <XAxis type="number" reversed domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
+                          <YAxis 
+                            type="category" 
+                            dataKey="kelompok" 
+                            orientation="right" 
+                            tick={({x, y, payload}) => (
+                              <text x={x} y={y} dy={3} textAnchor="middle" fill="#374151" fontSize={9} fontWeight={600}>
+                                {payload.value}
+                              </text>
+                            )} 
+                            tickMargin={22.5}
+                            tickSize={0}
+                            width={45} 
+                            interval={0} 
+                            axisLine={false} 
+                            tickLine={false} 
+                          />
+                          <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                          <Bar dataKey="domisili_waung_L" name="Laki-Laki" fill="#3b82f6" radius={[4, 0, 0, 4]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Perempuan */}
+                  <div className="flex-none flex flex-col" style={{ width: 'calc(50% - 22.5px)' }}>
+                    <p className="text-center font-bold text-gray-600 text-[10px] mb-1">Perempuan</p>
+                    <div className="flex-1 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={[...kelompokUmur].reverse()} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
+                          <XAxis type="number" domain={[0, Math.max(...kelompokUmur.flatMap(d => [Number(d.domisili_waung_L) || 0, Number(d.domisili_waung_P) || 0]), 1)]} tick={{fontSize: 9}} />
+                          <YAxis type="category" dataKey="kelompok" hide />
+                          <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                          <Bar dataKey="domisili_waung_P" name="Perempuan" fill="#ec4899" radius={[0, 4, 4, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                <p className="text-xs text-blue-800 text-center">Silakan klik area RT pada peta untuk melihat detail spesifik per wilayah.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </RightSidebar>
     </div>
   );
 }

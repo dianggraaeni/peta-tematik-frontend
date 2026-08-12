@@ -23,6 +23,7 @@ import CountUp from "react-countup";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { BeatLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
+import RightSidebar from "../RightSidebar";
 
 export default function MapSection({ desaName: propsDesaName, hideCards }) {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   const [isDataOpen, setIsDataOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
   const [dataAgregat, setDataAgregat] = useState([]);
@@ -564,29 +565,8 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   };
 
   return (
-    <>
-      {/* ── TOP BAR OVERLAY ── */}
-      {!hideCards && (
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none font-sfProDisplay">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/peta-tematik')}
-          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-          title="Kembali ke Kecamatan Tulangan"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </button>
-
-        {/* Title Card */}
-        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
-          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
-          <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName.toUpperCase()}</div>
-        </div>
-      </div>
-      )}
+    <div className="flex w-screen h-screen overflow-hidden bg-gray-200 font-sans relative">
+      <div className="flex-grow relative h-full">
         <MapContainer
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
@@ -681,9 +661,9 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
           )}
         </MapContainer>
 
-      {!hideCards && (
-      <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
-        <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+        {!hideCards && (
+          <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
+            <div className="absolute top-3 right-3 z-[1000] pointer-events-auto">
           <button
             className="w-11 h-11 bg-white/95 backdrop-blur-xl border border-gray-100 text-[#68B92E] hover:bg-gray-50 rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-95"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -693,17 +673,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
           </button>
         </div>
 
-        <div className="absolute top-[4.5rem] left-3 z-10 flex gap-2">
-          <button
-            className="px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-[#68B92E] rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
-            onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
-          >
-            <span className="mr-2 material-icons text-[#68B92E]">analytics</span>
-            Statistik
-          </button>
-        </div>
-
-        <Transition
+            <Transition
           show={isFilterOpen}
           enter="transition ease-out duration-300"
           enterFrom="opacity-0 transform scale-95"
@@ -805,16 +775,26 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
             </select>
           </div>
         </Transition>
+            
+            <AIInsightBox 
+          desaName={desaName}
+          featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
+          contextType="sayuran"
+          requireClick={true}
+          customClass="bottom-4 right-4"
+          data={dataAgregat}
+        />
+          </div>
+        )}
+      </div>
 
-        <Transition
-          show={isVisualizationOpen}
-          enter="transition ease-out duration-300"
-          enterFrom="opacity-0 transform scale-95"
-          enterTo="opacity-100 transform scale-100"
-          leave="transition ease-in duration-200"
-          leaveFrom="opacity-100 transform scale-100"
-          leaveTo="opacity-0 transform scale-95"
-          className="absolute top-[4.5rem] left-3 z-[1000] w-64 max-h-[80vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl overflow-y-auto pointer-events-auto custom-scrollbar"
+      {!hideCards && (
+        <RightSidebar
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          desaName={desaName}
+          themeName="PETA SAYURAN"
+          themeIcon="/pict/des-can.png"
         >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
@@ -973,20 +953,8 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
               </>
             ) : null}
           </div>
-        </Transition>
-
-
-        {/* ── AI INSIGHT — inside map, bottom right */}
-        <AIInsightBox 
-          desaName={desaName}
-          featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
-          contextType="sayuran"
-          requireClick={true}
-          customClass="bottom-4 right-4"
-          data={dataAgregat}
-        />
-      </div>
+        </RightSidebar>
       )}
-    </>
+    </div>
   );
 }

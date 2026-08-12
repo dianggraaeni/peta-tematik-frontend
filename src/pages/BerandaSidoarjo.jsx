@@ -5,6 +5,7 @@ import L from "leaflet";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
+import RightSidebar from "../components/RightSidebar";
 
 const getKepadatanColor = (pop) => {
   if (pop > 10000) return "#1e3a8a";
@@ -78,6 +79,7 @@ const BerandaSidoarjo = () => {
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   
@@ -138,262 +140,86 @@ const BerandaSidoarjo = () => {
       .filter((props) => {
         const desa = (props.DESA || props.nmdesa || props.KECAMATAN || "").toLowerCase();
         return desa.includes(term);
-      })
-      .slice(0, 5); // Limit to 5 results for clean UI
-    
-    // Remove duplicates if any
-    const uniqueResults = [];
-    const seen = new Set();
-    for (const res of results) {
-      const nm = res.DESA || res.nmdesa;
-      if (!seen.has(nm)) {
-        seen.add(nm);
-        uniqueResults.push(res);
-      }
-    }
-    
-    setSearchResults(uniqueResults);
+      });
+    setSearchResults(results.slice(0, 5)); // limit to 5 results
   }, [searchTerm, geojsonData]);
-
-
-
-  const handleNavigateDetail = (desaName) => {
-    const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
-
-    
-    // Prioritaskan Detail Desa jika desa ini adalah Desa Tematik
-    const isTematik = desaTematikInfo[desaName.toUpperCase()] || desaTematikInfo[normalizedName];
-    
-    if (isTematik) {
-      if (normalizedName === "SIMOANGINANGIN") {
-        navigate("/detail-simoanginangin");
-      } else if (normalizedName === "SIMOKETAWANG") {
-        navigate("/detail-simoketawang");
-      } else if (normalizedName === "WAUNG") {
-        navigate("/detail-waung");
-      } else {
-        // Fallback untuk desa tematik lain (misal Sidokepung, Grogol)
-        navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
-      }
-      return;
-    }
-
-    // Jika tidak ada di keduanya
-    navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
-  };
-
-  const handleSelectSearch = (desaName) => {
-    if (selectedDesa === desaName) {
-      handleNavigateDetail(desaName);
-    } else {
-      setSelectedDesa(desaName);
-      setSearchTerm(desaName);
-      setIsSearchFocused(false);
-    }
-  };
 
   const toggleTheme = (theme) => {
     setActiveThemes((prev) =>
-      prev.includes(theme)
-        ? prev.filter((t) => t !== theme)
-        : [...prev, theme]
+      prev.includes(theme) ? prev.filter((t) => t !== theme) : [...prev, theme]
     );
   };
 
   const getStyle = (feature) => {
-    const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
-    const desaName = rawName.toUpperCase();
-    const iddesa = feature.properties.iddesa;
-    const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
+    const desa = (feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "").toUpperCase();
     
-    let fillColor;
+    // Map Mode: Kepadatan
     if (mapMode === "kepadatan") {
-      const pData = pendudukData && pendudukData[iddesa];
-      fillColor = getKepadatanColor(pData ? pData.total_penduduk : 0);
-    } else if (mapMode === "rasio") {
-      const pData = pendudukData && pendudukData[iddesa];
-      fillColor = pData ? getRasioColor(pData.L, pData.P) : "#e5e7eb";
-    } else {
-      const isTematik = desaTematikInfo[desaName] !== undefined;
-      const villageThemes = desaTematikInfo[desaName] || [];
-      const isHighlighted = activeThemes.length === 0 
-        ? isTematik 
-        : villageThemes.some(t => activeThemes.includes(t));
-      
-      if (activeThemes.length > 0) {
-        fillColor = isHighlighted ? "#f59e0b" : "#e5e7eb"; // Amber for matching, grey for others
-      } else {
-        fillColor = isTematik ? "#fbbf24" : "#e5e7eb";
-      }
+      const data = pendudukData && pendudukData[desa];
+      const color = data ? getKepadatanColor(data.kepadatan) : "#e5e7eb";
+      return { fillColor: color, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
     }
-
-    return {
-      fillColor,
-      opacity: 1,
-      color: isSelected ? (mapMode === "tematik" ? "#FFD700" : "#ffffff") : "#475569", // Gold for tematik selected, else white
-      weight: isSelected ? 3 : 2,
-      dashArray: isSelected ? "" : "3",
-      fillOpacity: (mapMode === "tematik" && activeThemes.length > 0 && !fillColor.includes("f59e0b")) ? 0.3 : (isSelected ? 0.7 : 0.5),
-    };
-  };
-
-  const getHoverStyle = (feature) => {
-    const rawName = feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "";
-    const desaName = rawName.toUpperCase();
-    const isTematik = desaTematikInfo[desaName] !== undefined;
-    const villageThemes = desaTematikInfo[desaName] || [];
-    const isSelected = selectedDesa === desaName || (selectedDesa && selectedDesa.toUpperCase() === desaName);
     
-    if (mapMode === "kepadatan" || mapMode === "rasio") {
-        return {
-          ...getStyle(feature),
-          weight: isSelected ? 3 : 2,
-          color: isSelected ? "#ffffff" : "#1e293b",
-          dashArray: "",
-          fillOpacity: 0.7
-        };
+    // Map Mode: Rasio
+    if (mapMode === "rasio") {
+      const data = pendudukData && pendudukData[desa];
+      const color = data ? getRasioColor(data.rasio) : "#e5e7eb";
+      return { fillColor: color, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
+    }
+
+    // Map Mode: Tematik
+    const isDesaTematik = desaTematikInfo[desa] && desaTematikInfo[desa].length > 0;
+    let matchesTheme = true;
+    if (activeThemes.length > 0) {
+      if (!desaTematikInfo[desa]) {
+        matchesTheme = false;
+      } else {
+        matchesTheme = activeThemes.some(theme => desaTematikInfo[desa].includes(theme));
       }
+    }
 
-    const isHighlighted = activeThemes.length === 0 
-      ? isTematik 
-      : villageThemes.some(t => activeThemes.includes(t));
-
-    const fillColor = (activeThemes.length > 0) 
-      ? (isHighlighted ? "#d97706" : "#cbd5e1")
-      : (isHighlighted ? "#eab308" : "#cbd5e1");
-
-    return {
-      ...getStyle(feature),
-      fillColor: fillColor,
-      weight: isSelected ? 3 : 2,
-      color: isSelected ? (mapMode === "tematik" ? "#FFD700" : "#ffffff") : "#1e293b",
-      dashArray: "",
-      fillOpacity: 0.8,
-    };
+    let fillColor = "#e5e7eb";
+    if (isDesaTematik) fillColor = "#fbbf24";
+    if (!matchesTheme) fillColor = "#e5e7eb";
+    
+    return { fillColor, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
   };
 
-  const getStyleRef = useRef(getStyle);
-  const getHoverStyleRef = useRef(getHoverStyle);
-
-  useEffect(() => {
-    getStyleRef.current = getStyle;
-    getHoverStyleRef.current = getHoverStyle;
-  }, [getStyle, getHoverStyle]);
-
-  // Update styles dynamically without unmounting the GeoJSON layer
-  useEffect(() => {
-    if (geoJsonRef.current) {
-      geoJsonRef.current.eachLayer((layer) => {
-        layer.setStyle(getStyle(layer.feature));
-        const layerDesa = layer.feature.properties.DESA || layer.feature.properties.nmdesa || layer.feature.properties.KECAMATAN;
-        if (selectedDesa && layerDesa === selectedDesa) {
-          layer.bringToFront();
+  const onEachFeature = (feature, layer) => {
+    const desa = (feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "").toUpperCase();
+    
+    layer.on({
+      mouseover: (e) => {
+        const l = e.target;
+        l.setStyle({ weight: 3, color: '#666', fillOpacity: 0.9 });
+        l.bringToFront();
+      },
+      mouseout: (e) => {
+        if (geoJsonRef.current) {
+          geoJsonRef.current.resetStyle(e.target);
         }
-      });
-    }
-  }, [selectedDesa, activeThemes, pendudukData, mapMode]);
+      },
+      click: (e) => {
+        const kec = feature.properties.KECAMATAN || "";
+        setSelectedDesa(desa);
+        setSelectedDesaId(desa);
+        setSelectedKecamatan(kec);
+      }
+    });
+  };
 
   const MapClickHandler = () => {
-    const map = useMap();
     useMapEvents({
       click: () => {
-        if (!isFeatureClicked.current) {
-          setSelectedDesa(null);
-          setSelectedDesaId(null);
-        }
-      },
-      dragstart: () => {
-        // Close all open tooltips when user starts dragging the map
-        if (geoJsonRef.current) {
-          geoJsonRef.current.eachLayer((layer) => {
-            layer.closeTooltip();
-          });
-        }
-        map.closeTooltip();
-      },
+        setIsSearchFocused(false);
+      }
     });
     return null;
   };
 
-  const onEachFeature = (feature, layer) => {
-    const props = feature.properties;
-    const rawName = props.DESA || props.nmdesa || props.KECAMATAN || "";
-    const desaName = rawName.toUpperCase();
-    let displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
-    
-    if (displayName && !displayName.toLowerCase().startsWith("desa ") && !displayName.toLowerCase().startsWith("kelurahan ")) {
-      displayName = "Desa " + displayName;
-    }
-    
-    const iddesa = props.iddesa;
-    const villageThemes = desaTematikInfo[desaName] || [];
-    const temaString = villageThemes.length > 0 ? villageThemes.join(", ") : null;
-    const pData = pendudukData && pendudukData[iddesa] ? pendudukData[iddesa] : null;
-
-    let tooltipContent = `
-      <div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
-        <div style="font-weight: bold; font-size: 14px;">${displayName}</div>
-        <div style="font-size: 11px; color: #666;">Kecamatan ${props.KECAMATAN || props.nmkec || ""}</div>
-        ${temaString ? `<div style="font-size: 11px; font-weight: bold; color: #1e40af; margin-top: 4px; padding: 2px 6px; background: #eff6ff; border-radius: 4px; border: 1px solid #bfdbfe;">Tema: ${temaString}</div>` : ''}
-    `;
-
-    if (pData) {
-      tooltipContent += `
-        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e5e7eb; font-size: 11px; text-align: left;">
-          <div style="display: flex; justify-content: space-between;"><span>Penduduk:</span> <strong>${pData.total_penduduk.toLocaleString('id-ID')} Jiwa</strong></div>
-          <div style="display: flex; justify-content: space-between;"><span>L/P:</span> <strong>${pData.L.toLocaleString('id-ID')} / ${pData.P.toLocaleString('id-ID')}</strong></div>
-          <div style="display: flex; justify-content: space-between;"><span>Jumlah KK:</span> <strong>${pData.total_kk.toLocaleString('id-ID')}</strong></div>
-        </div>
-      `;
-    }
-
-    tooltipContent += `</div>`;
-
-    layer.bindTooltip(tooltipContent, {
-      permanent: false,
-      direction: "top",
-      className: "beranda-tooltip",
-      sticky: true,
-      opacity: 1
-    });
-
-    layer.on({
-      mouseover: (e) => {
-        const l = e.target;
-        l.setStyle(getHoverStyleRef.current(feature));
-        l.bringToFront();
-        l.openTooltip();
-      },
-      mouseout: (e) => {
-        const l = e.target;
-        l.setStyle(getStyleRef.current(feature));
-        l.closeTooltip();
-      },
-      click: (e) => {
-        isFeatureClicked.current = true;
-        const nmkec = props.KECAMATAN || props.nmkec || "";
-        if (selectedDesaRef.current === desaName) {
-          handleNavigateDetail(desaName, nmkec);
-        } else {
-          setSelectedDesa(desaName);
-          setSelectedDesaId(iddesa);
-          setSelectedKecamatan(nmkec);
-        }
-        setTimeout(() => { isFeatureClicked.current = false; }, 50);
-      },
-    });
-  };
-
   return (
-    <div className="w-screen h-screen relative overflow-hidden bg-gray-200">
+    <div className="flex w-screen h-screen overflow-hidden bg-gray-200 font-sans relative">
       <style>{`
-        .beranda-tooltip {
-          background: white !important;
-          border: none !important;
-          border-radius: 12px !important;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
-        }
-        .beranda-tooltip::before {
           display: none !important;
         }
         .leaflet-container {
@@ -449,441 +275,403 @@ const BerandaSidoarjo = () => {
         .panel-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
       `}</style>
 
-      {/* ── FULLSCREEN MAP ── */}
-      <div className="absolute inset-0">
-        {geojsonData ? (
-          <MapContainer
-            center={[-7.4478, 112.7183]}
-            zoom={11}
-            minZoom={11}
-            maxZoom={16}
-            zoomSnap={0.5}
-            zoomDelta={0.5}
-            maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
-            maxBoundsViscosity={1.0}
-            style={{ width: "100%", height: "100%", zIndex: 0 }}
-            zoomControl={false}
-            dragging={true}
-            scrollWheelZoom={true}
-            doubleClickZoom={true}
-          >
-            <TileLayer
-              url={activeBasemap.url}
-              attribution={activeBasemap.attribution}
-              maxZoom={activeBasemap.maxZoom}
-            />
-            <CustomMapControls
-              activeBasemap={activeBasemap}
-              setActiveBasemap={setActiveBasemap}
-              onLayerOpenChange={setIsLayerOpen}
-              legendSlot={
-                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} bg-white/95 backdrop-blur-md shadow-md border border-gray-100 overflow-hidden`}>
-                  <div
-                    className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`}
-                    onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-                  >
-                    {!isLegendMinimized && <span>{mapMode === "kepadatan" ? "Kepadatan" : mapMode === "rasio" ? "Rasio Kelamin" : "Legenda Tema"}</span>}
-                    <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
-                      {isLegendMinimized ? (
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                      ) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      )}
-                    </button>
-                  </div>
-                  {!isLegendMinimized && (
-                    <div className="p-3 pt-2 text-[10px] space-y-1">
-                      {mapMode === "kepadatan" && [
-                        { color: "#1e3a8a", label: "> 10.000" },
-                        { color: "#1d4ed8", label: "7.000 – 10.000" },
-                        { color: "#3b82f6", label: "4.000 – 7.000" },
-                        { color: "#60a5fa", label: "2.000 – 4.000" },
-                        { color: "#93c5fd", label: "> 0" },
-                        { color: "#e5e7eb", label: "Tidak ada data" },
-                      ].map(({ color, label }) => (
-                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
-                      ))}
-                      {mapMode === "rasio" && [
-                        { color: "#1e3a8a", label: ">105 Dominan L" },
-                        { color: "#3b82f6", label: "102–105 Lebih L" },
-                        { color: "#9ca3af", label: "98–102 Seimbang" },
-                        { color: "#ec4899", label: "95–98 Lebih P" },
-                        { color: "#be185d", label: "<95 Dominan P" },
-                      ].map(({ color, label }) => (
-                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
-                      ))}
-                      {mapMode === "tematik" && [
-                        { color: "#fbbf24", label: "Desa Tematik" },
-                        { color: "#e5e7eb", label: "Desa Lainnya" },
-                      ].map(({ color, label }) => (
-                        <div key={label} className="flex items-center gap-2"><span className="w-3 h-3 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600">{label}</span></div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              }
-            />
-            <MapController geojsonData={geojsonData} selectedDesa={selectedDesa} geoJsonRef={geoJsonRef} />
-            <GeoJSON ref={geoJsonRef} data={geojsonData} style={getStyle} onEachFeature={onEachFeature} />
-            <MapClickHandler />
-          </MapContainer>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-100">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-gray-400 font-medium">Memuat peta...</p>
+      {/* MAIN MAP AREA */}
+      <div className="flex-grow relative h-full">
+        <div className="absolute inset-0">
+          {geojsonData ? (
+            <MapContainer
+              center={[-7.4478, 112.7183]}
+              zoom={11}
+              minZoom={11}
+              maxZoom={16}
+              zoomSnap={0.5}
+              zoomDelta={0.5}
+              maxBounds={[[-8.0, 112.0], [-7.0, 113.5]]}
+              maxBoundsViscosity={1.0}
+              style={{ width: "100%", height: "100%", zIndex: 0 }}
+              zoomControl={false}
+              dragging={true}
+              scrollWheelZoom={true}
+              doubleClickZoom={true}
+            >
+              <TileLayer
+                url={activeBasemap.url}
+                attribution={activeBasemap.attribution}
+                maxZoom={activeBasemap.maxZoom}
+              />
+              <CustomMapControls
+                activeBasemap={activeBasemap}
+                setActiveBasemap={setActiveBasemap}
+                onLayerOpenChange={setIsLayerOpen}
+              />
+              <MapController geojsonData={geojsonData} selectedDesa={selectedDesa} geoJsonRef={geoJsonRef} />
+              <GeoJSON ref={geoJsonRef} data={geojsonData} style={getStyle} onEachFeature={onEachFeature} />
+              <MapClickHandler />
+            </MapContainer>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-400 font-medium">Memuat peta...</p>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── TOP BAR OVERLAY (Google Maps style) ── */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
-      
-        {/* INFO PANEL TOGGLE BUTTON */}
-        <button
-          onClick={() => setShowInfoPanel(!showInfoPanel)}
-          className={`shrink-0 pointer-events-auto w-11 h-11 rounded-2xl shadow-md flex items-center justify-center transition-all ${
-            showInfoPanel ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
-          }`}
-          title="Informasi Peta"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
-
-        {/* Logo card */}
-        <div 
-          onClick={() => navigate("/")}
-          className="hidden md:flex bg-white rounded-2xl shadow-md px-3 py-2.5 items-center gap-2 shrink-0 pointer-events-auto cursor-pointer hover:bg-gray-50 transition-colors"
-          title="Kembali ke Peta Statistik"
-        >
-          <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-7 object-contain" />
-          <div className="w-px h-5 bg-gray-200 shrink-0" />
-          <img src="/pict/des-can.png" alt="Desa Cantik" className="h-7 object-contain" />
+          )}
         </div>
 
-        {/* Search bar */}
-        <div
-          ref={searchRef}
-          className="relative flex-1 max-w-xs pointer-events-auto z-[50]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Cari desa..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              className="w-full pl-10 pr-9 py-3 bg-white rounded-2xl shadow-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-sm font-medium"
-              style={{ color: "#1f2937" }}
-            />
-            <svg className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            {searchTerm && (
-              <button
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => { setSearchTerm(""); setSearchResults([]); setSelectedDesa(null); }}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+        {/* Floating controls that STAY ON THE MAP */}
+        <div className="absolute top-3 left-3 z-[1000] flex flex-wrap items-start gap-2 pointer-events-none">
+          {/* Search bar */}
+          <div
+            ref={searchRef}
+            className="relative flex-1 max-w-xs pointer-events-auto z-[50]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Cari desa..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                className="w-full pl-10 pr-9 py-3 bg-white rounded-2xl shadow-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-sm font-medium"
+                style={{ color: "#1f2937" }}
+              />
+              <svg className="absolute left-3.5 top-3.5 h-4 w-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchTerm && (
+                <button
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => { setSearchTerm(""); setSearchResults([]); setSelectedDesa(null); }}
+                  className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {/* Autocomplete dropdown */}
+            {isSearchFocused && searchTerm.trim() !== "" && (
+              <div
+                className="absolute w-full mt-1 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden"
+                style={{ zIndex: 3000, maxHeight: "150px", overflowY: "auto" }}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+                {searchResults.length > 0 ? (
+                  searchResults.map((result, idx) => {
+                    let desaName = result.DESA || result.nmdesa;
+                    if (desaName && !desaName.toLowerCase().startsWith("desa ") && !desaName.toLowerCase().startsWith("kelurahan ")) {
+                      desaName = "Desa " + desaName;
+                    }
+                    return (
+                      <button
+                        key={idx}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => handleSelectSearch(result.DESA || result.nmdesa)}
+                        className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 flex items-center gap-3"
+                      >
+                        <div className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                          <svg className="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-sm text-gray-800">{desaName}</div>
+                          <div className="text-xs text-gray-400">Kecamatan {result.KECAMATAN || result.nmkec}</div>
+                        </div>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="px-4 py-4 text-sm text-gray-400 text-center">
+                    Desa tidak ditemukan
+                  </div>
+                )}
+              </div>
             )}
           </div>
-          {/* Autocomplete dropdown */}
-          {isSearchFocused && searchTerm.trim() !== "" && (
-            <div
-              className="absolute w-full mt-1 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden"
-              style={{ zIndex: 3000, maxHeight: "150px", overflowY: "auto" }}
+
+          {/* Map mode selector */}
+          <div
+            className={`relative bg-white rounded-2xl shadow-md shrink-0 pointer-events-auto flex items-center overflow-hidden ${
+              mapMode === "tematik" ? "ring-2 ring-amber-400" :
+              mapMode === "kepadatan" ? "ring-2 ring-blue-500" :
+              "ring-2 ring-purple-500"
+            }`}
+          >
+            <select
+              value={mapMode}
+              onChange={(e) => { e.stopPropagation(); setMapMode(e.target.value); }}
+              className="pl-4 pr-9 py-3 text-sm font-semibold text-gray-700 bg-transparent outline-none appearance-none cursor-pointer"
+              style={{ minWidth: "145px" }}
             >
-              {searchResults.length > 0 ? (
-                searchResults.map((result, idx) => {
-                  let desaName = result.DESA || result.nmdesa;
-                  if (desaName && !desaName.toLowerCase().startsWith("desa ") && !desaName.toLowerCase().startsWith("kelurahan ")) {
-                    desaName = "Desa " + desaName;
-                  }
-                  return (
-                    <button
-                      key={idx}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelectSearch(result.DESA || result.nmdesa)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-b-0 flex items-center gap-3"
+              <option value="tematik">Peta Tematik</option>
+              <option value="kepadatan">Kepadatan</option>
+              <option value="rasio">Rasio L/P</option>
+            </select>
+            <div className="absolute right-3 pointer-events-none">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Theme filter */}
+          <div className="relative shrink-0 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={`bg-white rounded-2xl shadow-md px-4 py-3 flex items-center gap-2 text-sm font-semibold transition-all ${
+                isFilterOpen ? "ring-2 ring-blue-500 text-blue-600" : "text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="7" y1="12" x2="17" y2="12" />
+                <line x1="10" y1="17" x2="14" y2="17" />
+              </svg>
+              <span className="hidden sm:inline">Tema</span>
+              {activeThemes.length > 0 && (
+                <span className="bg-blue-500 text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold leading-none">
+                  {activeThemes.length}
+                </span>
+              )}
+            </button>
+            {isFilterOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl overflow-hidden z-[2000] flex flex-col">
+                <div className="px-4 py-3 border-b border-gray-50 flex justify-between items-center shrink-0">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pilih Tema</span>
+                  {activeThemes.length > 0 && (
+                    <button onClick={() => setActiveThemes([])} className="text-xs font-bold text-red-400 hover:text-red-600">Reset</button>
+                  )}
+                </div>
+                <div className="px-3 py-2 border-b border-gray-50 shrink-0">
+                  <input
+                    type="text"
+                    placeholder="Cari tema..."
+                    value={searchThemeQuery}
+                    onChange={(e) => setSearchThemeQuery(e.target.value)}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-100 rounded-xl bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400 text-gray-700"
+                  />
+                </div>
+                <div className="overflow-y-auto max-h-48">
+                  {filterThemes
+                    .filter((t) => t.toLowerCase().includes(searchThemeQuery.toLowerCase()))
+                    .map((theme) => {
+                      const isSelected = activeThemes.includes(theme);
+                      return (
+                        <button
+                          key={theme}
+                          onClick={() => toggleTheme(theme)}
+                          className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-50 last:border-b-0 flex justify-between items-center ${
+                            isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+                          }`}
+                        >
+                          <span className={`font-medium ${isSelected ? "text-blue-600" : "text-gray-700"}`}>{theme}</span>
+                          {isSelected && (
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  {filterThemes.filter((t) => t.toLowerCase().includes(searchThemeQuery.toLowerCase())).length === 0 && (
+                    <div className="px-4 py-4 text-center text-sm text-gray-400">Tema tidak ditemukan</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Selected Desa Card */}
+        <div
+          className={`absolute bottom-6 left-3 z-[1000] w-72 transition-all duration-300 ease-out ${
+            selectedDesa ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="px-5 pt-5 pb-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-base text-gray-900 leading-tight">
+                    {selectedDesa
+                      ? selectedDesa.charAt(0).toUpperCase() + selectedDesa.slice(1).toLowerCase()
+                      : ""}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {selectedKecamatan ? `Kecamatan ${selectedKecamatan}` : "Kabupaten Sidoarjo"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setSelectedDesa(null); setSelectedDesaId(null); }}
+                  className="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 transition-colors"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              {selectedDesa && desaTematikInfo[selectedDesa] && (
+                <div className="flex flex-wrap gap-1 mt-2.5">
+                  {desaTematikInfo[selectedDesa].map((theme) => (
+                    <span
+                      key={theme}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
                     >
-                      <div className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center shrink-0">
-                        <svg className="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-sm text-gray-800">{desaName}</div>
-                        <div className="text-xs text-gray-400">Kecamatan {result.KECAMATAN || result.nmkec}</div>
-                      </div>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="px-4 py-4 text-sm text-gray-400 text-center">
-                  Desa tidak ditemukan
+                      {theme}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
-          )}
-        </div>
 
-        {/* Map mode selector */}
-        <div
-          className={`relative bg-white rounded-2xl shadow-md shrink-0 pointer-events-auto flex items-center overflow-hidden ${
-            mapMode === "tematik" ? "ring-2 ring-amber-400" :
-            mapMode === "kepadatan" ? "ring-2 ring-blue-500" :
-            "ring-2 ring-purple-500"
-          }`}
-        >
-          <select
-            value={mapMode}
-            onChange={(e) => { e.stopPropagation(); setMapMode(e.target.value); }}
-            className="pl-4 pr-9 py-3 text-sm font-semibold text-gray-700 bg-transparent outline-none appearance-none cursor-pointer"
-            style={{ minWidth: "145px" }}
-          >
-            <option value="tematik">Peta Tematik</option>
-            <option value="kepadatan">Kepadatan</option>
-            <option value="rasio">Rasio L/P</option>
-          </select>
-          <div className="absolute right-3 pointer-events-none">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Theme filter */}
-        <div className="relative shrink-0 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`bg-white rounded-2xl shadow-md px-4 py-3 flex items-center gap-2 text-sm font-semibold transition-all ${
-              isFilterOpen ? "ring-2 ring-blue-500 text-blue-600" : "text-gray-700 hover:bg-gray-50"
-            }`}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="7" y1="12" x2="17" y2="12" />
-              <line x1="10" y1="17" x2="14" y2="17" />
-            </svg>
-            <span className="hidden sm:inline">Tema</span>
-            {activeThemes.length > 0 && (
-              <span className="bg-blue-500 text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold leading-none">
-                {activeThemes.length}
-              </span>
+            {selectedDesaId && pendudukData && pendudukData[selectedDesaId] && (
+              <div className="px-5 py-3 border-t border-gray-50 grid grid-cols-3 gap-3 text-center">
+                <div>
+                  <div className="text-[10px] text-gray-400 font-medium mb-0.5">Penduduk</div>
+                  <div className="font-bold text-sm text-gray-800">
+                    {pendudukData[selectedDesaId].total_penduduk.toLocaleString("id-ID")}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-gray-400 font-medium mb-0.5">L / P</div>
+                  <div className="font-bold text-sm text-gray-800">
+                    {pendudukData[selectedDesaId].L.toLocaleString("id-ID")}/{pendudukData[selectedDesaId].P.toLocaleString("id-ID")}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-gray-400 font-medium mb-0.5">KK</div>
+                  <div className="font-bold text-sm text-gray-800">
+                    {pendudukData[selectedDesaId].total_kk.toLocaleString("id-ID")}
+                  </div>
+                </div>
+              </div>
             )}
-          </button>
-          {isFilterOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl overflow-hidden z-[2000] flex flex-col">
-              <div className="px-4 py-3 border-b border-gray-50 flex justify-between items-center shrink-0">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pilih Tema</span>
-                {activeThemes.length > 0 && (
-                  <button onClick={() => setActiveThemes([])} className="text-xs font-bold text-red-400 hover:text-red-600">Reset</button>
-                )}
-              </div>
-              <div className="px-3 py-2 border-b border-gray-50 shrink-0">
-                <input
-                  type="text"
-                  placeholder="Cari tema..."
-                  value={searchThemeQuery}
-                  onChange={(e) => setSearchThemeQuery(e.target.value)}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-100 rounded-xl bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-400 text-gray-700"
-                />
-              </div>
-              <div className="overflow-y-auto max-h-48">
-                {filterThemes
-                  .filter((t) => t.toLowerCase().includes(searchThemeQuery.toLowerCase()))
-                  .map((theme) => {
-                    const isSelected = activeThemes.includes(theme);
-                    return (
-                      <button
-                        key={theme}
-                        onClick={() => toggleTheme(theme)}
-                        className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-50 last:border-b-0 flex justify-between items-center ${
-                          isSelected ? "bg-blue-50" : "hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className={`font-medium ${isSelected ? "text-blue-600" : "text-gray-700"}`}>{theme}</span>
-                        {isSelected && (
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        )}
-                      </button>
-                    );
-                  })}
-                {filterThemes.filter((t) => t.toLowerCase().includes(searchThemeQuery.toLowerCase())).length === 0 && (
-                  <div className="px-4 py-4 text-center text-sm text-gray-400">Tema tidak ditemukan</div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
 
-        {/* Help */}
-        <button
-          onClick={() => navigate("/bantuan")}
-          className="bg-white rounded-full shadow-md w-11 h-11 flex items-center justify-center text-gray-600 hover:bg-gray-50 shrink-0 pointer-events-auto transition-colors"
-          title="Panduan Penggunaan"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-        </button>
-
-        {/* Login */}
-        <button
-          onClick={() => navigate("/login")}
-          className="hidden sm:flex bg-white rounded-2xl shadow-md px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 items-center shrink-0 pointer-events-auto transition-colors"
-        >
-          Masuk
-        </button>
-      </div>
-
-      {/* ── INFO PANEL (left side – demografi only) ── */}
-      {showInfoPanel && (
-        <div
-          className="absolute top-[4.5rem] left-3 z-[999] w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl panel-scroll overflow-y-auto"
-          style={{ maxHeight: "calc(100vh - 6rem)" }}
-        >
-          {/* Demographics */}
-          {sidoarjoAgregat && (
-            <div className="p-4">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2.5">Demografi Sidoarjo</p>
-              <div className="bg-blue-50 rounded-xl px-3 py-2.5 mb-2">
-                <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
-                <div className="font-extrabold text-lg text-blue-800 leading-tight">
-                  {sidoarjoAgregat.total.toLocaleString("id-ID")}
-                  <span className="text-sm font-semibold ml-1 text-blue-600">Jiwa</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                <div className="bg-sky-50 rounded-xl px-3 py-2">
-                  <div className="text-[10px] text-sky-500 font-bold">Laki-laki</div>
-                  <div className="font-bold text-sm text-sky-800">{sidoarjoAgregat.L.toLocaleString("id-ID")}</div>
-                </div>
-                <div className="bg-pink-50 rounded-xl px-3 py-2">
-                  <div className="text-[10px] text-pink-500 font-bold">Perempuan</div>
-                  <div className="font-bold text-sm text-pink-800">{sidoarjoAgregat.P.toLocaleString("id-ID")}</div>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-xl px-3 py-2">
-                <div className="text-[10px] text-gray-400 font-bold uppercase">Total KK</div>
-                <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString("id-ID")}</div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── SELECTED DESA CARD (Google Maps style — bottom left) ── */}
-      <div
-        className={`absolute bottom-6 left-3 z-[1000] w-72 transition-all duration-300 ease-out ${
-          selectedDesa ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
-      >
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="px-5 pt-5 pb-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-base text-gray-900 leading-tight">
-                  {selectedDesa
-                    ? selectedDesa.charAt(0).toUpperCase() + selectedDesa.slice(1).toLowerCase()
-                    : ""}
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {selectedKecamatan ? `Kecamatan ${selectedKecamatan}` : "Kabupaten Sidoarjo"}
-                </p>
-              </div>
+            <div className="px-4 py-3 border-t border-gray-50">
               <button
-                onClick={() => { setSelectedDesa(null); setSelectedDesaId(null); }}
-                className="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 shrink-0 transition-colors"
+                onClick={() => { if (selectedDesa) handleNavigateDetail(selectedDesa, selectedKecamatan); }}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2"
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z" />
+                  <path d="M8 2v16M16 6v16" />
                 </svg>
+                Lihat Detail Desa
               </button>
             </div>
-            {/* Tematik badges */}
-            {selectedDesa && desaTematikInfo[selectedDesa] && (
-              <div className="flex flex-wrap gap-1 mt-2.5">
-                {desaTematikInfo[selectedDesa].map((theme) => (
-                  <span
-                    key={theme}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
-                  >
-                    {theme}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Population stats */}
-          {selectedDesaId && pendudukData && pendudukData[selectedDesaId] && (
-            <div className="px-5 py-3 border-t border-gray-50 grid grid-cols-3 gap-3 text-center">
-              <div>
-                <div className="text-[10px] text-gray-400 font-medium mb-0.5">Penduduk</div>
-                <div className="font-bold text-sm text-gray-800">
-                  {pendudukData[selectedDesaId].total_penduduk.toLocaleString("id-ID")}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] text-gray-400 font-medium mb-0.5">L / P</div>
-                <div className="font-bold text-sm text-gray-800">
-                  {pendudukData[selectedDesaId].L.toLocaleString("id-ID")}/{pendudukData[selectedDesaId].P.toLocaleString("id-ID")}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] text-gray-400 font-medium mb-0.5">KK</div>
-                <div className="font-bold text-sm text-gray-800">
-                  {pendudukData[selectedDesaId].total_kk.toLocaleString("id-ID")}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CTA button */}
-          <div className="px-4 py-3 border-t border-gray-50">
-            <button
-              onClick={() => { if (selectedDesa) handleNavigateDetail(selectedDesa, selectedKecamatan); }}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z" />
-                <path d="M8 2v16M16 6v16" />
-              </svg>
-              Lihat Detail Desa
-            </button>
           </div>
         </div>
+
+        {/* AI Insight Box */}
+        {selectedDesa && (
+          <AIInsightBox
+            desaName={selectedDesa}
+            featureName={`Desa ${selectedDesa}`}
+            contextType="demografi"
+            requireClick={true}
+            customClass="bottom-6 right-4"
+            data={sidoarjoAgregat}
+          />
+        )}
+
+        {!isSidebarOpen && (
+          <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md hover:bg-gray-50">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+        )}
       </div>
 
-      {/* ── AI INSIGHT BOX ── */}
-      {selectedDesa && (
-        <AIInsightBox
-          desaName={selectedDesa}
-          featureName={`Desa ${selectedDesa}`}
-          contextType="demografi"
-          requireClick={true}
-          customClass="bottom-6 right-4"
-          data={sidoarjoAgregat}
-        />
-      )}
+      {/* RIGHT SIDEBAR */}
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        desaName="SIDOARJO"
+        themeName="PETA TEMATIK"
+        themeIcon="/pict/des-can.png"
+      >
+        {/* Buttons / Actions */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => navigate("/login")}
+            className="flex-1 bg-blue-50 text-blue-600 rounded-xl px-4 py-3 text-sm font-semibold hover:bg-blue-100 transition-colors text-center"
+          >
+            Masuk Admin
+          </button>
+          <button
+            onClick={() => navigate("/bantuan")}
+            className="w-12 h-12 bg-gray-50 text-gray-600 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+            title="Panduan Penggunaan"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          </button>
+        </div>
 
+        {/* Legend Panel */}
+        <div className="bg-gray-50 rounded-xl p-4 mb-4">
+          <div className="font-bold text-gray-700 text-sm mb-3 pb-2 border-b border-gray-200">
+            {mapMode === "kepadatan" ? "Legenda Kepadatan" : mapMode === "rasio" ? "Legenda Rasio Kelamin" : "Legenda Tema"}
+          </div>
+          <div className="text-xs space-y-2">
+            {mapMode === "kepadatan" && [
+              { color: "#1e3a8a", label: "> 10.000" },
+              { color: "#1d4ed8", label: "7.000 – 10.000" },
+              { color: "#3b82f6", label: "4.000 – 7.000" },
+              { color: "#60a5fa", label: "2.000 – 4.000" },
+              { color: "#93c5fd", label: "> 0" },
+              { color: "#e5e7eb", label: "Tidak ada data" },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-3"><span className="w-4 h-4 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600 font-medium">{label}</span></div>
+            ))}
+            {mapMode === "rasio" && [
+              { color: "#1e3a8a", label: ">105 Dominan L" },
+              { color: "#3b82f6", label: "102–105 Lebih L" },
+              { color: "#9ca3af", label: "98–102 Seimbang" },
+              { color: "#ec4899", label: "95–98 Lebih P" },
+              { color: "#be185d", label: "<95 Dominan P" },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-3"><span className="w-4 h-4 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600 font-medium">{label}</span></div>
+            ))}
+            {mapMode === "tematik" && [
+              { color: "#fbbf24", label: "Desa Tematik" },
+              { color: "#e5e7eb", label: "Desa Lainnya" },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-3"><span className="w-4 h-4 rounded shrink-0" style={{ background: color }}/><span className="text-gray-600 font-medium">{label}</span></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Demografi Sidoarjo Summary */}
+        {sidoarjoAgregat && (
+          <div className="bg-white border border-gray-100 rounded-xl p-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Demografi Sidoarjo</p>
+            <div className="bg-blue-50 rounded-xl px-4 py-3 mb-3">
+              <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
+              <div className="font-extrabold text-xl text-blue-800 leading-tight">
+                {sidoarjoAgregat.total.toLocaleString("id-ID")}
+                <span className="text-sm font-semibold ml-1 text-blue-600">Jiwa</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="bg-sky-50 rounded-xl px-3 py-2">
+                <div className="text-[10px] text-sky-500 font-bold">Laki-laki</div>
+                <div className="font-bold text-sm text-sky-800">{sidoarjoAgregat.L.toLocaleString("id-ID")}</div>
+              </div>
+              <div className="bg-pink-50 rounded-xl px-3 py-2">
+                <div className="text-[10px] text-pink-500 font-bold">Perempuan</div>
+                <div className="font-bold text-sm text-pink-800">{sidoarjoAgregat.P.toLocaleString("id-ID")}</div>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl px-3 py-2">
+              <div className="text-[10px] text-gray-400 font-bold uppercase">Total KK</div>
+              <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString("id-ID")}</div>
+            </div>
+          </div>
+        )}
+      </RightSidebar>
     </div>
   );
 };
-
 
 export default BerandaSidoarjo;
