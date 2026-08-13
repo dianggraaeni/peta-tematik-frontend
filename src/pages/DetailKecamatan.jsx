@@ -13,7 +13,7 @@ const DetailKecamatan = () => {
   const kecamatanName = kecamatanConfig[slug?.toLowerCase()] || slug || "Kecamatan";
 
   return (
-    <div className="w-screen h-screen relative flex flex-col overflow-hidden bg-gray-200">
+    <div className="flex w-screen h-screen overflow-hidden">
       <DetailKecamatanMap
         kecamatanSlug={slug?.toLowerCase()}
         kecamatanName={kecamatanName}

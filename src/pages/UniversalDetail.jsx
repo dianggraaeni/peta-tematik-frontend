@@ -35,6 +35,12 @@ const UniversalDetail = () => {
       }
     };
     fetchThemes();
+
+    // Fix for Leaflet tile scrambling when container resizes
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 500);
+    return () => clearTimeout(timer);
   }, [desaName]);
 
   if (loading) {
@@ -49,7 +55,9 @@ const UniversalDetail = () => {
     return (
       <div className="w-screen h-screen relative flex flex-col bg-gray-200 overflow-hidden font-sans">
         {/* Peta dasar (hanya GeoJSON, tanpa legenda/panel) */}
-        <MapPekerjaan desaName={desaName} hideCards={true} />
+        <div className="flex-1 relative w-full h-full">
+          <MapPekerjaan desaName={desaName} hideCards={false} />
+        </div>
         
         {/* Pesan Mengambang Kecil */}
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-lg border border-gray-100 flex flex-col items-center">
@@ -93,7 +101,7 @@ const UniversalDetail = () => {
       )}
       
       {/* Map Container */}
-      <div className="w-full h-full">
+      <div className="flex-1 w-full h-full relative">
         {renderActiveMap()}
       </div>
     </div>

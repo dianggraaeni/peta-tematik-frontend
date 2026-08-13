@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaHome, FaDoorOpen, FaTable } from "react-icons/fa";
+import { FaHome, FaDoorOpen, FaTable, FaBars, FaTimes } from "react-icons/fa";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "";
@@ -22,13 +22,28 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-64 bg-blue-900 text-white min-h-screen flex flex-col shadow-xl">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <span className="text-blue-400">Desa</span>Cantik
-        </h2>
-        <p className="text-xs text-blue-200 mt-2">BPS Kabupaten Sidoarjo</p>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      
+      <div className={`w-64 bg-blue-900 text-white min-h-screen flex flex-col shadow-xl fixed md:sticky top-0 z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="p-6 relative">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <span className="text-blue-400">Desa</span>Cantik
+          </h2>
+          <p className="text-xs text-blue-200 mt-2">BPS Kabupaten Sidoarjo</p>
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="absolute top-6 right-4 text-white md:hidden hover:text-gray-300"
+          >
+            <FaTimes size={20} />
+          </button>
+        </div>
 
       <div className="flex-1 px-4 space-y-2 mt-4">
         {isSuperAdmin ? (
@@ -82,15 +97,30 @@ const Sidebar = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 
 const AdminLayout = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
-      <main className="flex-1 overflow-x-hidden overflow-y-auto">
-        <div className="p-6 md:p-10">{children}</div>
+    <div className="flex min-h-screen bg-slate-50 relative">
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <main className="flex-1 overflow-x-hidden overflow-y-auto w-full">
+        {/* Mobile Header */}
+        <div className="md:hidden bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <span className="text-blue-600">Desa</span>Cantik
+          </h2>
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="text-gray-600 hover:text-blue-600 focus:outline-none p-1"
+          >
+            <FaBars size={24} />
+          </button>
+        </div>
+        <div className="p-4 md:p-10 overflow-x-auto">{children}</div>
       </main>
     </div>
   );

@@ -35,7 +35,6 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   const [isDataOpen, setIsDataOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
   const [dataAgregat, setDataAgregat] = useState([]);
@@ -585,37 +584,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
             attribution={activeBasemap.attribution}
             maxZoom={activeBasemap.maxZoom}
           />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true}
-            legendSlot={
-              <div className="w-auto p-2 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto transition-all duration-300">
-                <div className="flex items-center justify-center">
-                  <button
-                    className={`py-1 px-2 rounded-md justify-center items-center text-center text-sm mr-4 ${
-                      showRT ? "bg-[#68B92E] text-white" : "bg-gray-200 text-gray-800"
-                    }`}
-                    onClick={toggleRT}
-                  >
-                    {showRT ? (
-                      <div className="flex items-center">
-                        <span className="mr-2 text-xl material-icons">
-                          visibility
-                        </span>{" "}
-                        RT/RW
-                      </div>
-                    ) : (
-                      <div className="flex items-center">
-                        <span className="mr-2 text-xl material-icons">
-                          visibility_off
-                        </span>{" "}
-                        RT/RW
-                      </div>
-                    )}
-                  </button>
-                  <LegendMenu />
-                </div>
-              </div>
-            }
-          />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
           {data ? (
             data.length > 0 &&
             data.map((geoJsonData, index) => (
@@ -790,8 +759,6 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
 
       {!hideCards && (
         <RightSidebar
-          isOpen={isSidebarOpen}
-          setIsOpen={setIsSidebarOpen}
           desaName={desaName}
           themeName="PETA SAYURAN"
           themeIcon="/pict/des-can.png"

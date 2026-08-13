@@ -115,6 +115,19 @@ const BerandaSidoarjo = () => {
       .catch((err) => console.error("Error loading data:", err));
   }, []);
 
+  const handleNavigateDetail = (desaName) => {
+    const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
+    if (normalizedName === "SIMOANGINANGIN") {
+      navigate("/detail-simoanginangin");
+    } else if (normalizedName === "SIMOKETAWANG") {
+      navigate("/detail-simoketawang");
+    } else if (normalizedName === "WAUNG") {
+      navigate("/detail-waung");
+    } else {
+      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+    }
+  };
+
   // Handle clicking outside the search box to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -150,21 +163,29 @@ const BerandaSidoarjo = () => {
     );
   };
 
+  const getStyleRef = useRef(null);
+
   const getStyle = (feature) => {
     const desa = (feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "").toUpperCase();
+    const isSelected = selectedDesa === desa;
+    
+    // Default styles for border
+    const borderWeight = isSelected ? 3 : 1;
+    const borderColor = isSelected ? "#2563eb" : "white"; // Blue border when selected
+    const dashArray = isSelected ? "" : "3";
     
     // Map Mode: Kepadatan
     if (mapMode === "kepadatan") {
       const data = pendudukData && pendudukData[desa];
       const color = data ? getKepadatanColor(data.kepadatan) : "#e5e7eb";
-      return { fillColor: color, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
+      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
     }
     
     // Map Mode: Rasio
     if (mapMode === "rasio") {
       const data = pendudukData && pendudukData[desa];
       const color = data ? getRasioColor(data.rasio) : "#e5e7eb";
-      return { fillColor: color, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
+      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
     }
 
     // Map Mode: Tematik
@@ -182,8 +203,24 @@ const BerandaSidoarjo = () => {
     if (isDesaTematik) fillColor = "#fbbf24";
     if (!matchesTheme) fillColor = "#e5e7eb";
     
-    return { fillColor, weight: 1, opacity: 1, color: "white", fillOpacity: 0.8 };
+    return { fillColor, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
   };
+
+  useEffect(() => {
+    getStyleRef.current = getStyle;
+  }, [getStyle]);
+
+  useEffect(() => {
+    if (geoJsonRef.current) {
+      geoJsonRef.current.eachLayer((layer) => {
+        layer.setStyle(getStyle(layer.feature));
+        const layerDesa = (layer.feature.properties.DESA || layer.feature.properties.nmdesa || layer.feature.properties.KECAMATAN || "").toUpperCase();
+        if (selectedDesa && layerDesa === selectedDesa) {
+          layer.bringToFront();
+        }
+      });
+    }
+  }, [selectedDesa, mapMode, activeThemes, pendudukData]);
 
   const onEachFeature = (feature, layer) => {
     const desa = (feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "").toUpperCase();
@@ -486,7 +523,7 @@ const BerandaSidoarjo = () => {
 
         {/* Selected Desa Card */}
         <div
-          className={`absolute bottom-6 left-3 z-[1000] w-72 transition-all duration-300 ease-out ${
+          className={`absolute bottom-6 left-3 z-[1000] w-72 transition-all duration-300 ease-out pointer-events-auto ${
             selectedDesa ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
           }`}
         >
@@ -564,23 +601,7 @@ const BerandaSidoarjo = () => {
           </div>
         </div>
 
-        {/* AI Insight Box */}
-        {selectedDesa && (
-          <AIInsightBox
-            desaName={selectedDesa}
-            featureName={`Desa ${selectedDesa}`}
-            contextType="demografi"
-            requireClick={true}
-            customClass="bottom-6 right-4"
-            data={sidoarjoAgregat}
-          />
-        )}
 
-        {!isSidebarOpen && (
-          <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md hover:bg-gray-50">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-        )}
       </div>
 
       {/* RIGHT SIDEBAR */}
@@ -667,6 +688,20 @@ const BerandaSidoarjo = () => {
               <div className="text-[10px] text-gray-400 font-bold uppercase">Total KK</div>
               <div className="font-bold text-sm text-gray-700">{sidoarjoAgregat.kk.toLocaleString("id-ID")}</div>
             </div>
+          </div>
+        )}
+        {/* AI Insight */}
+        {selectedDesa && (
+          <div className="mt-4 shrink-0">
+            <AIInsightBox
+              desaName={selectedDesa}
+              featureName={`Desa ${selectedDesa}`}
+              contextType="demografi"
+              requireClick={true}
+              inline={true}
+              customClass="!static !w-full"
+              data={sidoarjoAgregat}
+            />
           </div>
         )}
       </RightSidebar>

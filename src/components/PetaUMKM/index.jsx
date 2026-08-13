@@ -87,7 +87,6 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   });
 
   const [isFilterMinimized, setIsFilterMinimized] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
@@ -299,32 +298,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
             scrollWheelZoom={true}
           >
             <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxNativeZoom={activeBasemap.maxZoom || 19} maxZoom={24} />
-            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true}
-              legendSlot={
-                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-52 rounded-2xl'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} bg-white/95 backdrop-blur-xl shadow-md border border-gray-100 overflow-hidden`}>
-                  <div className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
-                    {!isLegendMinimized && <span>Legenda UMKM</span>}
-                    <button title={isLegendMinimized ? 'Buka Legenda' : 'Tutup Legenda'} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
-                      {isLegendMinimized ? (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>) : (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>)}
-                    </button>
-                  </div>
-                  {!isLegendMinimized && (
-                    <div className="p-3 pt-2 text-[10px] space-y-1.5">
-                      {Object.entries(kbliColors).map(([kbli, color]) => (
-                        <div key={kbli} className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full border border-gray-200 shadow-sm shrink-0" style={{ backgroundColor: color }}></div>
-                          <span className="text-gray-600 leading-tight">{kbli}: {getKbliName(kbli)}</span>
-                        </div>
-                      ))}
-                      <div className="mt-2 pt-2 border-t border-gray-100 bg-blue-50 rounded-lg p-1.5">
-                        <div className="flex justify-between"><span className="text-gray-500">Area:</span><span className="font-semibold text-blue-700 truncate ml-1 max-w-[80px]">{selectedAreaTitle}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-500">Total:</span><span className="font-semibold text-blue-700">{processedData.totalPenduduk || 0} UMKM</span></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              }
-            />
+            <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
             <AutoZoom geojsonData={geojsonData} />
             {enrichedGeojsonData && (
               <MarkerClusterGroup chunkedLoading disableClusteringAtZoom={21} maxClusterRadius={40}>
@@ -404,8 +378,6 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
       {/* RIGHT SIDEBAR */}
       {!hideCards && (
         <RightSidebar
-          isOpen={isSidebarOpen}
-          setIsOpen={setIsSidebarOpen}
           desaName={desaName}
           themeName="PETA UMKM"
         >

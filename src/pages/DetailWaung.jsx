@@ -31,7 +31,6 @@ export default function DetailWaung() {
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [colorMode, setColorMode] = useState('keluarga'); // 'keluarga' or 'luas_lantai'
   const [selectedRT, setSelectedRT] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isFilterMinimized, setIsFilterMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
@@ -336,12 +335,6 @@ export default function DetailWaung() {
             )}
           </div>
 
-          {!isSidebarOpen && (
-            <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md pointer-events-auto">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-          )}
-
           {/* AI INSIGHT - inside map, bottom right */}
           <AIInsightBox 
             desaName="Waung" 
@@ -354,8 +347,6 @@ export default function DetailWaung() {
       </div>
 
       <RightSidebar 
-        isOpen={isSidebarOpen} 
-        setIsOpen={setIsSidebarOpen} 
         desaName="WAUNG" 
         themeName="SOSIAL KEPENDUDUKAN" 
         themeIcon="/pict/des-can.png"

@@ -6,20 +6,20 @@ import api6 from "../../utils/api6"; // Use centralized backend axios instance
 const aiInsightCache = {};
 const manualInsightCache = {};
 
-const AIInsightBox = ({ desaName, featureName, data, contextType, customClass, requireClick = false }) => {
+const AIInsightBox = ({ desaName, featureName, data, contextType, customClass, requireClick = false, inline = false }) => {
   const [manualInsight, setManualInsight] = useState("");
   const [aiInsight, setAiInsight] = useState("");
   
   const [loadingManual, setLoadingManual] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(inline || false);
   const [showAi, setShowAi] = useState(false);
 
   const skipManual = !desaName;
 
   // Reset state when desaName or featureName changes
   useEffect(() => {
-    setIsExpanded(false);
+    setIsExpanded(inline || false);
     setShowAi(skipManual);
     setManualInsight("");
     setAiInsight("");
@@ -99,10 +99,10 @@ const AIInsightBox = ({ desaName, featureName, data, contextType, customClass, r
   if (!desaName && !featureName) return null;
 
   return (
-    <div className={`absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-4 right-4"}`}>
+    <div className={inline ? `w-full ${customClass || ""}` : `absolute z-[2000] pointer-events-auto flex flex-col items-end ${customClass || "bottom-4 right-4"}`}>
       {/* The Chat Panel — expands upward */}
       {isExpanded && (
-        <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 p-3 mb-2 w-[280px] max-w-[85vw] animate-fade-in-up relative origin-bottom-right flex flex-col">
+        <div className={`bg-white/95 backdrop-blur-md rounded-xl ${inline ? 'shadow-sm border-gray-100' : 'shadow-2xl border-gray-200'} border p-3 mb-2 ${inline ? "w-full" : "w-[280px] max-w-[85vw] animate-fade-in-up relative origin-bottom-right"} flex flex-col`}>
           <div className="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100 shrink-0">
             <div className="flex items-center gap-1.5">
               <h4 className="font-bold text-gray-800 flex items-center gap-1.5 text-xs">
@@ -110,12 +110,14 @@ const AIInsightBox = ({ desaName, featureName, data, contextType, customClass, r
                 {contextType === "statistik_kecamatan" ? "Insight Kecamatan" : "Insight Desa"}
               </h4>
             </div>
-            <button 
-              onClick={() => setIsExpanded(false)}
-              className="text-gray-400 hover:text-red-500 transition-colors"
-            >
-              <AiOutlineClose size={13} />
-            </button>
+            {!inline && (
+              <button 
+                onClick={() => setIsExpanded(false)}
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <AiOutlineClose size={13} />
+              </button>
+            )}
           </div>
           
           <div className="mb-1 shrink-0">
@@ -188,7 +190,7 @@ const AIInsightBox = ({ desaName, featureName, data, contextType, customClass, r
       )}
 
       {/* The Floating Button — same size as "i" button (w-10 h-10) */}
-      {!isExpanded && (
+      {!inline && !isExpanded && (
         <button 
           onClick={() => setIsExpanded(true)}
           className="w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg border border-white/30 transform transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center relative"

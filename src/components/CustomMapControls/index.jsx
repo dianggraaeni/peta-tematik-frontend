@@ -83,7 +83,7 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap, children, onLayerO
 
   return (
     <div className="custom-controls-wrapper">
-      <div ref={controlRef} className="absolute top-4 right-4 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
+      <div ref={controlRef} className="absolute top-24 right-4 z-[1000] flex flex-col items-end gap-3 pointer-events-none">
 
         {/* TOP ROW: Legend slot (left) + Layer button (right) — guaranteed side-by-side */}
         <div className="flex items-start gap-3 pointer-events-none">
@@ -163,7 +163,7 @@ const CustomMapControls = ({ activeBasemap, setActiveBasemap, children, onLayerO
       </div>
 
       {/* Zoom Controls (always fixed position so legend doesn't push it down) */}
-      <div ref={zoomRef} className="absolute top-[72px] right-4 z-[1000] flex flex-col items-end pointer-events-none">
+      <div ref={zoomRef} className="absolute top-[152px] right-4 z-[1000] flex flex-col items-end pointer-events-none">
         {ZoomControls()}
       </div>
     </div>

@@ -14,6 +14,18 @@ import api6 from "../../utils/api6.js";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 
+// Map Resizer to fix Leaflet scrambled tiles on mount
+const MapResizer = () => {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+};
+
 // Auto Zoom
 const AutoZoom = ({ geojsonData }) => {
   const map = useMap();
@@ -51,12 +63,12 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const selectedAreaRef = useRef({ rt: null, rw: null, nmdesa: null });
   const geoJsonRef = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [chartType, setChartType] = useState("doughnut");
 
   const [isFilterMinimized, setIsFilterMinimized] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
 
   const [activeFilters, setActiveFilters] = useState({
     gender: "",
@@ -852,28 +864,8 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           scrollWheelZoom={true}
         >
           <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={activeBasemap.maxZoom} />
-          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true}
-            legendSlot={
-              <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} bg-white/95 backdrop-blur-xl shadow-md border border-gray-100 overflow-hidden`}>
-                <div className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
-                  {!isLegendMinimized && <span>Legenda Pekerjaan</span>}
-                  <button title={isLegendMinimized ? 'Buka Legenda' : 'Tutup Legenda'} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
-                    {isLegendMinimized ? (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>) : (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>)}
-                  </button>
-                </div>
-                {!isLegendMinimized && (
-                  <div className="p-3 pt-2 text-[10px] space-y-1">
-                    <div className="flex items-center gap-2 mb-1"><div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors['tidak bekerja'] }}></div><span className="text-gray-700">Tidak Bekerja</span></div>
-                    <div className="flex items-center gap-2 mb-1"><div className="w-4 h-4 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: employmentColors['bekerja'] }}></div><span className="text-gray-700">Bekerja</span></div>
-                    <div className="bg-blue-50 rounded p-1.5 border border-blue-200 mt-2">
-                      <div className="flex justify-between"><span className="text-gray-600">Area:</span><span className="font-medium text-blue-700 truncate ml-1 max-w-[60px]">{selectedAreaTitle}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-600">Data:</span><span className="font-medium text-blue-700">{processedData.totalPenduduk || 0}</span></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            }
-          />
+          <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} onLayerOpenChange={setIsLayerOpen} isDetail={true} />
+          <MapResizer />
           <AutoZoom geojsonData={geojsonData} />
           {enrichedGeojsonData && (
             <GeoJSON
@@ -890,10 +882,31 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           <BeatLoader color="#4A90E2" size={10} />
         </div>
       )}
+
+      {/* ── TOP BAR OVERLAY ── */}
+      <div className="absolute top-3 left-3 z-[1000] flex items-start gap-2 pointer-events-none">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/peta-tematik')}
+          className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+          title="Kembali ke Peta Tematik"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        {/* Title Card */}
+        <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+          <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName}</div>
+        </div>
+      </div>
+
           {/* ── FILTER — fixed icon below zoom (+/-), panel expands LEFT */}
 
           {!hideCards && (
-            <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
+            <div className="absolute top-36 right-3 md:top-44 md:right-4 z-[1000] pointer-events-auto">
               <button
                 className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
                 onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -905,7 +918,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
                 )}
               </button>
               {!isFilterMinimized && (
-                <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="absolute top-0 right-full mr-2 w-[calc(100vw-80px)] sm:w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
                   <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
                     <div className="flex items-center gap-2 text-blue-600 font-bold">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
@@ -921,13 +934,15 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
             </div>
           )}
 
+
+
           {/* ── AI INSIGHT — inside map, bottom right */}
           {!hideCards && <AIInsightBox 
             desaName={desaName}
             featureName={selectedAreaTitle}
             contextType="pekerjaan"
             requireClick={true}
-            customClass="bottom-4 right-4"
+            customClass="bottom-6 right-20 md:bottom-4 md:right-4 hidden md:flex"
             data={{
               pekerjaan: processedData.pekerjaan,
               umur: processedData.umur,
@@ -936,15 +951,17 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
             }}
           />}
           
-          {!isSidebarOpen && !hideCards && (
-             <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
-             </button>
-          )}
+
       </div>
 
       {!hideCards && (
-        <RightSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} desaName={desaName} themeName="PEKERJAAN" themeIcon="/pict/des-can.png">
+        <RightSidebar
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          desaName={desaName}
+          themeName="DETAIL DESA"
+          themeIcon="/pict/des-can.png"
+        >
           <div className="flex flex-col gap-4 p-4">
             <h2 className="font-medium text-sm truncate">{selectedAreaTitle}</h2>
             
@@ -993,6 +1010,18 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
               </div>
             </div>
           </div>
+          {/* AI Insight */}
+          {selectedArea.rt && (
+            <AIInsightBox
+              desaName={desaName}
+              featureName={selectedArea.rt !== 'all' ? `RT ${selectedArea.rt} RW ${selectedArea.rw}` : `RW ${selectedArea.rw}`}
+              contextType="sosial_kependudukan_rw"
+              requireClick={true}
+              inline={true}
+              customClass="!static !w-full !mt-2"
+              data={selectedArea.rt !== 'all' ? selectedData : aggregateRW(selectedArea.rw)}
+            />
+          )}
         </RightSidebar>
       )}
     </div>

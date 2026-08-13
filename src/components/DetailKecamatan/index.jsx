@@ -7,6 +7,7 @@ import { BeatLoader } from "react-spinners";
 import L from "leaflet";
 import { fetchVillageDataForKecamatan } from "../../utils/openDataApi";
 import { useNavigate } from "react-router-dom";
+import RightSidebar from "../RightSidebar";
 
 // ===========================================
 // AUTO ZOOM
@@ -58,6 +59,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
   const navigate = useNavigate();
   const [geojsonData, setGeojsonData] = useState(null);
   const [selectedDesa, setSelectedDesa] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
   const [hoveredDesa, setHoveredDesa] = useState(null);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [loading, setLoading] = useState(true);
@@ -258,7 +260,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
   }
 
   return (
-    <div className="w-full flex-1 relative flex flex-col h-full bg-gray-100 overflow-hidden">
+    <div className="flex w-full h-full overflow-hidden">
       <style>{`
         .leaflet-control-zoom {
           border: none !important;
@@ -298,6 +300,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       {/* =========================================
           MAP CONTAINER
       ========================================= */}
+      <div className="flex-grow relative h-full">
       <MapContainer
         center={[-7.4, 112.6]}
         zoom={12}
@@ -330,41 +333,6 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
           setActiveBasemap={setActiveBasemap}
           isLayerOpen={isLayerOpen}
           setIsLayerOpen={setIsLayerOpen}
-          legendSlot={
-            isDummyData && (
-              <div className={`pointer-events-auto transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} bg-white/95 backdrop-blur-md shadow-md border border-gray-100 overflow-hidden`}>
-                <div 
-                  className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-                  onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-                >
-                  {!isLegendMinimized && <span>Legenda Kepadatan</span>}
-                  <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
-                    {isLegendMinimized ? (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                    ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    )}
-                  </button>
-                </div>
-                {!isLegendMinimized && (
-                  <div className="p-3 pt-2 text-[10px] space-y-1">
-                    {[
-                      { color: "#1e3a8a", label: "> 80% tertinggi" },
-                      { color: "#1d4ed8", label: "60–80%" },
-                      { color: "#3b82f6", label: "40–60%" },
-                      { color: "#60a5fa", label: "20–40%" },
-                      { color: "#93c5fd", label: "< 20% terendah" },
-                    ].map(({ color, label }) => (
-                      <div key={label} className="flex items-center gap-2 mb-1">
-                        <div className="w-3 h-3 rounded-sm border border-gray-300 shadow-sm shrink-0" style={{ backgroundColor: color }}></div>
-                        <span className="text-gray-600 font-medium">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          }
         />
         
         {/* Hint */}
@@ -378,7 +346,7 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
       </MapContainer>
 
       {/* ── TOP BAR OVERLAY ── */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
+      <div className="absolute top-3 left-3 z-[1000] flex items-start gap-2 pointer-events-none">
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
@@ -390,155 +358,111 @@ const DetailKecamatanMap = ({ kecamatanSlug, kecamatanName }) => {
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
         </button>
-
         {/* Title Card */}
         <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
           <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Kecamatan</div>
           <div className="font-extrabold text-sm text-gray-800 leading-none">{kecamatanName}</div>
         </div>
       </div>
+      
+      </div> {/* End map area */}
 
       {/* =========================================
-          LEFT PANEL: Stats + Selected Desa Info (Floating)
+          RIGHT SIDEBAR
       ========================================= */}
-      {hasData && (
-        <div 
-          className={`absolute top-[4.5rem] left-3 z-[999] pointer-events-auto transition-all duration-300 ${isPanelMinimized ? "w-11 h-11" : "w-72 max-h-[calc(100vh-6rem)]"}`}
-        >
-        <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col h-full ${isPanelMinimized ? 'justify-center items-center cursor-pointer hover:bg-gray-50' : ''}`}
-             onClick={() => { if(isPanelMinimized) setIsPanelMinimized(false); }}>
-          
-          {/* Header Panel */}
-          {!isPanelMinimized && (
-            <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
-              <h2 className="font-bold text-sm text-gray-800">Data Kecamatan</h2>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setIsPanelMinimized(true); }} 
-                className="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
+      <RightSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} desaName={kecamatanName.toUpperCase()} themeName="DETAIL KECAMATAN">
+        {hasData ? (
+          <>
+            {/* Kecamatan Summary */}
+            <div className="bg-blue-50 rounded-xl px-3 py-2.5">
+              <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
+              <div className="font-extrabold text-lg text-blue-800 leading-tight">
+                <CountUp end={totalKecamatan.total} duration={1.5} separator="." />
+                <span className="text-sm font-semibold ml-1 text-blue-600">Jiwa</span>
+              </div>
+              <div className="text-[10px] text-blue-400 mt-0.5">{totalKecamatan.jumlahDesa} desa/kelurahan</div>
             </div>
-          )}
-
-          {isPanelMinimized && (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
-              <path d="M4 6h16M4 12h16M4 18h7"/>
-            </svg>
-          )}
-          
-          {!isPanelMinimized && (
-            <div className="overflow-y-auto custom-scrollbar bg-transparent flex flex-col flex-1 min-h-0">
-              {/* Kecamatan Summary */}
-              <div className="p-4 border-b border-gray-100">
-                <p className="text-gray-500 text-xs mb-3 font-medium">
-                  {totalKecamatan.jumlahDesa} desa/kelurahan
-                </p>
-                <div className="bg-blue-50 rounded-xl px-3 py-2.5 mb-2">
-                  <div className="text-[10px] text-blue-500 font-bold uppercase">Total Populasi</div>
-                  <div className="font-extrabold text-lg text-blue-800 leading-tight">
-                    <CountUp end={totalKecamatan.total} duration={1.5} separator="." />
-                    <span className="text-sm font-semibold ml-1 text-blue-600">Jiwa</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-2">
-                  <div className="bg-sky-50 rounded-xl px-3 py-2">
-                    <div className="text-[10px] text-sky-500 font-bold">Laki-laki</div>
-                    <div className="font-bold text-sm text-sky-800">
-                      <CountUp end={totalKecamatan.laki} duration={1.5} separator="." />
-                    </div>
-                  </div>
-                  <div className="bg-pink-50 rounded-xl px-3 py-2">
-                    <div className="text-[10px] text-pink-500 font-bold">Perempuan</div>
-                    <div className="font-bold text-sm text-pink-800">
-                      <CountUp end={totalKecamatan.perempuan} duration={1.5} separator="." />
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 rounded-xl px-3 py-2">
-                  <div className="text-[10px] text-gray-400 font-bold uppercase">Kepala Keluarga</div>
-                  <div className="font-bold text-sm text-gray-700">
-                    <CountUp end={totalKecamatan.kk} duration={1.5} separator="." />
-                  </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-sky-50 rounded-xl px-3 py-2">
+                <div className="text-[10px] text-sky-500 font-bold">Laki-laki</div>
+                <div className="font-bold text-sm text-sky-800">
+                  <CountUp end={totalKecamatan.laki} duration={1.5} separator="." />
                 </div>
               </div>
-
-              {/* Selected Desa Detail */}
-              {selectedDesa && selectedStat ? (
-                <div className="p-4 flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-blue-900 text-sm">{selectedDesa}</h3>
-                    <button
-                      onClick={() => setSelectedDesa(null)}
-                      className="text-gray-400 hover:text-gray-600 transition-colors"
-                      title="Kembali ke Daftar Desa"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    </button>
-                  </div>
-                  <div className="space-y-1 mb-4">
-                    {[
-                      { label: "Jumlah Penduduk", val: selectedStat.total, unit: "jiwa", color: "#1d4ed8" },
-                      { label: "Laki-laki", val: selectedStat.laki, unit: "jiwa", color: "#4361ee" },
-                      { label: "Perempuan", val: selectedStat.perempuan, unit: "jiwa", color: "#f72585" },
-                      { label: "Kepala Keluarga", val: selectedStat.kk, unit: "KK", color: "#7c3aed" },
-                      { label: "Rasio Jenis Kelamin", val: selectedStat.rjk, unit: "", color: "#0891b2" },
-                    ].map(({ label, val, unit, color }) => (
-                      <div key={label} className="flex justify-between items-center py-2 border-b border-gray-50/50">
-                        <span className="text-xs text-gray-500">{label}</span>
-                        <span className="text-xs font-bold" style={{ color }}>
-                          <CountUp end={val} duration={1} separator="." />
-                          {unit && <span className="font-normal ml-1">{unit}</span>}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Action CTA for Detail Desa (if available) */}
-                  <div className="mt-2">
-                    <button 
-                      onClick={() => navigate(`/detail-desa/${kecamatanSlug}/${selectedDesa.replace(/^(Desa|Kelurahan)\s+/i, '').toLowerCase().replace(/\s+/g, '-')}`)}
-                      className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-xs transition-colors flex justify-center items-center gap-1.5"
-                    >
-                      Lihat Detail Desa
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                  </div>
+              <div className="bg-pink-50 rounded-xl px-3 py-2">
+                <div className="text-[10px] text-pink-500 font-bold">Perempuan</div>
+                <div className="font-bold text-sm text-pink-800">
+                  <CountUp end={totalKecamatan.perempuan} duration={1.5} separator="." />
                 </div>
-              ) : (
-                /* Daftar Desa List */
-                <div className="p-4 flex-1">
-                  <p className="text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">
-                    Daftar Desa / Kelurahan
-                  </p>
-                  <div className="space-y-1">
-                    {geojsonData &&
-                      geojsonData.features.map((f, i) => {
-                        const name = getDesaName(f.properties);
-                        const stat = desaStats[name];
-                        return (
-                          <button
-                            key={`${name}-${i}`}
-                            onClick={() => setSelectedDesa(name)}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-blue-50 transition-colors text-left group"
-                          >
-                            <span className="text-xs text-gray-700 group-hover:text-blue-800 font-medium">
-                              {name}
-                            </span>
-                            <span className="text-xs text-gray-400 group-hover:text-blue-600 font-medium bg-gray-50 group-hover:bg-white px-2 py-0.5 rounded-full">
-                              {stat ? stat.total.toLocaleString("id-ID") : "-"}
-                            </span>
-                          </button>
-                        );
-                      })}
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
-          )}
-        </div>
-        </div>
-      )}
+            <div className="bg-gray-50 rounded-xl px-3 py-2">
+              <div className="text-[10px] text-gray-400 font-bold uppercase">Kepala Keluarga</div>
+              <div className="font-bold text-sm text-gray-700">
+                <CountUp end={totalKecamatan.kk} duration={1.5} separator="." />
+              </div>
+            </div>
+
+            {/* Selected Desa Detail */}
+            {selectedDesa && selectedStat ? (
+              <div className="bg-white border border-gray-100 rounded-xl p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-blue-900 text-xs">{selectedDesa}</h3>
+                  <button onClick={() => setSelectedDesa(null)} className="text-gray-400 hover:text-gray-600">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <div className="space-y-1 mb-3">
+                  {[
+                    { label: "Jumlah Penduduk", val: selectedStat.total, unit: "jiwa", color: "#1d4ed8" },
+                    { label: "Laki-laki", val: selectedStat.laki, unit: "jiwa", color: "#4361ee" },
+                    { label: "Perempuan", val: selectedStat.perempuan, unit: "jiwa", color: "#f72585" },
+                    { label: "Kepala Keluarga", val: selectedStat.kk, unit: "KK", color: "#7c3aed" },
+                    { label: "Rasio J.K.", val: selectedStat.rjk, unit: "", color: "#0891b2" },
+                  ].map(({ label, val, unit, color }) => (
+                    <div key={label} className="flex justify-between items-center py-1.5 border-b border-gray-50">
+                      <span className="text-[10px] text-gray-500">{label}</span>
+                      <span className="text-[10px] font-bold" style={{ color }}>
+                        <CountUp end={val} duration={1} separator="." />
+                        {unit && <span className="font-normal ml-0.5">{unit}</span>}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  onClick={() => navigate(`/detail-desa/${kecamatanSlug}/${selectedDesa.replace(/^(Desa|Kelurahan)\s+/i, '').toLowerCase().replace(/\s+/g, '-')}`)}
+                  className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-xs transition-colors flex justify-center items-center gap-1"
+                >
+                  Lihat Detail Desa
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p className="text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">Daftar Desa</p>
+                <div className="space-y-0.5">
+                  {geojsonData && geojsonData.features.map((f, i) => {
+                    const name = getDesaName(f.properties);
+                    const stat = desaStats[name];
+                    return (
+                      <button
+                        key={`${name}-${i}`}
+                        onClick={() => setSelectedDesa(name)}
+                        className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-blue-50 transition-colors text-left group"
+                      >
+                        <span className="text-[11px] text-gray-700 group-hover:text-blue-800 font-medium">{name}</span>
+                        <span className="text-[10px] text-gray-400 group-hover:text-blue-600">{stat ? stat.total.toLocaleString("id-ID") : "-"}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center text-xs text-gray-400 py-4">Data tidak tersedia</div>
+        )}
+      </RightSidebar>
 
     </div>
   );
