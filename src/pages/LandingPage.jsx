@@ -480,13 +480,6 @@ const LandingPage = () => {
       {/* ── TOP BAR OVERLAY (Google Maps style) ── */}
       <div className="absolute top-3 left-3 right-3 z-[1000] flex items-start gap-2 pointer-events-none">
 
-        {/* Logo card */}
-        <div className="hidden md:flex bg-white rounded-2xl shadow-md px-3 py-2.5 items-center gap-2 shrink-0 pointer-events-auto">
-          <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-7 object-contain" />
-          <div className="w-px h-5 bg-gray-200 shrink-0" />
-          <img src="/pict/des-can.png" alt="Desa Cantik" className="h-7 object-contain" />
-        </div>
-
         {/* Search bar */}
         <div
           ref={searchRef}

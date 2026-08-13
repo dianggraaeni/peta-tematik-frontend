@@ -64,7 +64,11 @@ const RightSidebar = ({
 
           {/* Logo & Deskripsi Desa */}
           <div className="px-4 py-3 bg-white border-b border-gray-100/80 flex flex-col items-center gap-2 text-center">
-            <div className="flex justify-center items-end gap-2 h-10">
+            <div 
+              className="flex justify-center items-end gap-2 h-10 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/')}
+              title="Kembali ke Peta Statistik"
+            >
               <img src="/pict/petis-darjo.png" alt="Sidoarjo" className="h-9 w-auto object-contain drop-shadow-sm" />
               {/* Show themeIcon */}
               {themeIcon && (
@@ -87,31 +91,6 @@ const RightSidebar = ({
 
         </div>
 
-        {/* Footer Actions (Sticky at bottom) */}
-        <div className="px-3 py-3 bg-white border-t border-gray-100/80 flex gap-2 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.04)]">
-          <button
-            onClick={() => navigate('/bantuan')}
-            className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-colors border border-blue-200/80 text-xs"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            Bantuan
-          </button>
-          <button
-            onClick={() => navigate(desaName === 'SIDOARJO' ? '/login' : `/login-${desaName.toLowerCase()}`)}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm text-xs"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-              <polyline points="10 17 15 12 10 7"></polyline>
-              <line x1="15" y1="12" x2="3" y2="12"></line>
-            </svg>
-            Admin
-          </button>
-        </div>
 
       </div>
     </>

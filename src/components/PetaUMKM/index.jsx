@@ -336,7 +336,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
 
         {/* ── FILTER — fixed icon below zoom, panel expands LEFT ── */}
         {!hideCards && (
-          <div className="absolute top-44 right-4 z-[1000] pointer-events-auto">
+          <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}

@@ -632,12 +632,13 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
 
         {!hideCards && (
           <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
-            <div className="absolute top-3 right-3 z-[1000] pointer-events-auto">
-          <button
-            className="w-11 h-11 bg-white/95 backdrop-blur-xl border border-gray-100 text-[#68B92E] hover:bg-gray-50 rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-95"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            title={isFilterOpen ? 'Tutup Filter' : 'Buka Filter'}
-          >
+            {/* FILTER PANEL */}
+            <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
+              <button
+                className="w-11 h-11 bg-white/95 backdrop-blur-xl border border-gray-100 text-[#68B92E] hover:bg-gray-50 rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-95"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                title={isFilterOpen ? 'Tutup Filter' : 'Buka Filter'}
+              >
             <span className="material-icons text-[18px]">filter_list</span>
           </button>
         </div>
@@ -650,7 +651,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
           leave="transition ease-in duration-200"
           leaveFrom="opacity-100 transform scale-100"
           leaveTo="opacity-0 transform scale-95"
-          className="absolute top-36 right-16 z-[1000] w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto"
+          className="absolute top-72 right-16 md:top-80 md:right-20 z-[1000] w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto"
         >
           <div>
             <div className="grid grid-cols-2 gap-4">

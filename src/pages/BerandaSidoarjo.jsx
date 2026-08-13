@@ -519,6 +519,22 @@ const BerandaSidoarjo = () => {
               </div>
             )}
           </div>
+
+          {/* Peta Statistik Button */}
+          <button
+            onClick={() => navigate("/")}
+            className="flex bg-[#2563eb] rounded-2xl shadow-md px-4 py-3 text-sm font-bold text-white hover:bg-[#1d4ed8] items-center shrink-0 pointer-events-auto transition-colors gap-2"
+            title="Ke Peta Statistik"
+          >
+            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shrink-0">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="11 17 6 12 11 7"></polyline>
+                <polyline points="18 17 13 12 18 7"></polyline>
+              </svg>
+            </div>
+            <span>Peta Statistik</span>
+          </button>
+
         </div>
 
         {/* Selected Desa Card */}

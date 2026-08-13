@@ -292,7 +292,7 @@ export default function DetailWaung() {
           </MapContainer>
 
           {/* RIGHT FLOATING PANEL (Filter) MOVED TO TOP LEFT */}
-          <div className="absolute top-3 left-3 z-[1000] pointer-events-auto">
+          <div className="absolute top-24 left-3 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
