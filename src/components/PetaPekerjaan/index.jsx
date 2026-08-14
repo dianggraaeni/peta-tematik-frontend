@@ -906,7 +906,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           {/* ── FILTER — fixed icon below zoom (+/-), panel expands LEFT */}
 
           {!hideCards && (
-            <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
+            <div className="absolute top-[236px] right-3 md:right-4 z-[1000] pointer-events-auto">
               <button
                 className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
                 onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -936,21 +936,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
 
 
 
-          {/* ── AI INSIGHT — inside map, bottom right */}
-          {!hideCards && <AIInsightBox 
-            desaName={desaName}
-            featureName={selectedAreaTitle}
-            contextType="pekerjaan"
-            requireClick={true}
-            customClass="bottom-6 right-20 md:bottom-4 md:right-4 hidden md:flex"
-            data={{
-              pekerjaan: processedData.pekerjaan,
-              umur: processedData.umur,
-              jenisKelamin: processedData.jenisKelamin,
-              totalPenduduk: processedData.pekerjaan ? processedData.pekerjaan.reduce((a, b) => a + b, 0) : 0
-            }}
-          />}
-          
+
 
       </div>
 
@@ -1010,18 +996,16 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
               </div>
             </div>
           </div>
-          {/* AI Insight */}
-          {selectedArea.rt && (
-            <AIInsightBox
-              desaName={desaName}
-              featureName={selectedArea.rt !== 'all' ? `RT ${selectedArea.rt} RW ${selectedArea.rw}` : `RW ${selectedArea.rw}`}
-              contextType="sosial_kependudukan_rw"
-              requireClick={true}
-              inline={true}
-              customClass="!static !w-full !mt-2"
-              data={selectedArea.rt !== 'all' ? selectedData : aggregateRW(selectedArea.rw)}
-            />
-          )}
+          {/* AI Insight — tampil langsung tanpa perlu klik RT */}
+          <AIInsightBox
+            desaName={desaName}
+            featureName={selectedArea.rt && selectedArea.rt !== 'all' ? `RT ${selectedArea.rt} RW ${selectedArea.rw}` : desaName}
+            contextType="sosial_kependudukan_rw"
+            requireClick={true}
+            inline={true}
+            customClass="!static !w-full !mt-2"
+            data={selectedArea.rt ? (selectedArea.rt !== 'all' ? selectedData : aggregateRW(selectedArea.rw)) : {}}
+          />
         </RightSidebar>
       )}
     </div>

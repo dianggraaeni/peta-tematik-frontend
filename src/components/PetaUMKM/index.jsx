@@ -280,6 +280,11 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </button>
+          {/* Title Card */}
+          <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+            <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName}</div>
+          </div>
         </div>
 
         {geojsonData ? (
@@ -336,7 +341,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
 
         {/* ── FILTER — fixed icon below zoom, panel expands LEFT ── */}
         {!hideCards && (
-          <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
+          <div className="absolute top-[236px] right-3 md:right-4 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -364,15 +369,6 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           </div>
         )}
 
-        {/* ── AI INSIGHT — inside map, bottom right ── */}
-        {!hideCards && <AIInsightBox 
-          desaName={desaName} 
-          featureName={selectedAreaTitle} 
-          contextType="umkm" 
-          requireClick={true} 
-          customClass="bottom-4 right-4" 
-          data={{ totalUmkm: processedData.totalUmkm, dominanKbli: getKbliName(processedData.dominantKbli) }} 
-        />}
       </div>
 
       {/* RIGHT SIDEBAR */}
@@ -408,6 +404,18 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
                 </div>
               </div>
             </div>
+            {/* AI Insight */}
+            {selectedArea.rt && (
+              <AIInsightBox
+                desaName={desaName}
+                featureName={selectedAreaTitle}
+                contextType="umkm"
+                requireClick={true}
+                inline={true}
+                customClass="!static !w-full !mt-2"
+                data={{ totalUmkm: processedData.totalUmkm, dominanKbli: getKbliName(processedData.dominantKbli) }}
+              />
+            )}
           </div>
         </RightSidebar>
       )}

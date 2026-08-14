@@ -14,6 +14,7 @@ import {
 } from "react-leaflet";
 import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import AIInsightBox from "../AIInsightBox";
+import RightSidebar from '../RightSidebar';
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
 import { Transition } from "@headlessui/react";
@@ -36,6 +37,7 @@ export default function MapSection() {
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [isFilterMinimized, setIsFilterMinimized] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
@@ -506,7 +508,8 @@ export default function MapSection() {
 
 
   return (
-    <>
+    <div className="flex w-full h-full overflow-hidden relative">
+      <div className="flex-grow relative h-full">
       <style jsx global>{`
         * {
           scrollbar-width: none;
@@ -590,47 +593,12 @@ export default function MapSection() {
                   </button>
                 </div>
                 
-                <div className={`bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl border border-gray-100 overflow-hidden transition-all duration-300 ${isLegendMinimized ? 'w-10 h-10' : 'w-48'} flex flex-col`}>
-                  <div 
-                    className={`font-bold text-gray-800 ${isLegendMinimized ? 'p-0 h-full flex justify-center items-center cursor-pointer' : 'p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} 
-                    onClick={() => setIsLegendMinimized(!isLegendMinimized)}
-                  >
-                    {!isLegendMinimized && <span>Legenda Potensi</span>}
-                    <button title={isLegendMinimized ? "Buka Legenda" : "Tutup Legenda"} className="text-gray-500 hover:text-gray-800">
-                      {isLegendMinimized ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                      ) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      )}
-                    </button>
-                  </div>
-                  {!isLegendMinimized && (
-                    <div className="p-3 pt-2 text-left">
-                      <div className="mb-1 text-xs font-semibold text-right">
-                        Jumlah Usaha
-                      </div>
-                      <div className="relative h-6 mb-1 rounded-full">
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            background: "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)",
-                            borderRadius: "99px",
-                          }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs font-bold text-gray-700">
-                        <span>Min</span>
-                        <span>Max</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             }
           />
           
           {/* ── FILTER — fixed icon below zoom, panel expands LEFT */}
-          <div className="absolute top-36 right-3 z-[1000] pointer-events-auto">
+          <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -959,17 +927,39 @@ export default function MapSection() {
         </Transition>
 
 
-
-        {/* ── AI INSIGHT — inside map, bottom right */}
-        <AIInsightBox 
+      </div>
+      </div>
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        desaName="SIMOKETAWANG"
+        themeName="PERTANIAN"
+        themeIcon="/pict/des-can.png"
+      >
+        {/* Legend */}
+        <div className="bg-gray-50 rounded-xl p-4 mb-4">
+          <div className="font-bold text-gray-700 text-sm mb-3 pb-2 border-b border-gray-200">Legenda Potensi</div>
+          <div className="mb-1 text-xs font-semibold text-right">Jumlah Usaha</div>
+          <div className="relative h-6 mb-1 rounded-full">
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #34d399, #10b981, #059669, #064e3b)", borderRadius: "99px" }}></div>
+          </div>
+          <div className="flex justify-between text-xs font-bold text-gray-700">
+            <span>Min</span>
+            <span>Max</span>
+          </div>
+        </div>
+        
+        {/* AI Insight */}
+        <AIInsightBox
           desaName="Simoketawang"
           featureName={selectedRT === "desa" ? "Semua Wilayah" : `RT ${selectedRT}`}
           contextType="kelengkeng"
           requireClick={true}
-          customClass="bottom-4 right-4"
+          inline={true}
+          customClass="!static !w-full"
           data={dataAgregat}
         />
-      </div>
-    </>
+      </RightSidebar>
+    </div>
   );
 }

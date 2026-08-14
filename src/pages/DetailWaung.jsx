@@ -291,8 +291,8 @@ export default function DetailWaung() {
             )}
           </MapContainer>
 
-          {/* RIGHT FLOATING PANEL (Filter) MOVED TO TOP LEFT */}
-          <div className="absolute top-24 left-3 z-[1000] pointer-events-auto">
+          {/* FILTER — floating kanan sejajar zoom controls */}
+          <div className="absolute top-[236px] right-3 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
@@ -301,7 +301,7 @@ export default function DetailWaung() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
             </button>
             {!isFilterMinimized && (
-              <div className="absolute top-0 left-full ml-2 w-64 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+              <div className="absolute top-0 right-full mr-2 w-64 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
                 <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
                   <div className="flex items-center gap-2 text-blue-600 font-bold">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
@@ -335,15 +335,6 @@ export default function DetailWaung() {
             )}
           </div>
 
-          {/* AI INSIGHT - inside map, bottom right */}
-          <AIInsightBox 
-            desaName="Waung" 
-            featureName={selectedRT} 
-            contextType="waung" 
-            requireClick={true} 
-            customClass="bottom-4 right-4" 
-            data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null }} 
-          />
       </div>
 
       <RightSidebar 
@@ -453,6 +444,16 @@ export default function DetailWaung() {
               </div>
             </div>
           )}
+          {/* AI Insight — tampil langsung */}
+          <AIInsightBox
+            desaName="Waung"
+            featureName={selectedRT || "Desa Waung"}
+            contextType="waung"
+            requireClick={true}
+            inline={true}
+            customClass="!static !w-full"
+            data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null }}
+          />
         </div>
       </RightSidebar>
     </div>

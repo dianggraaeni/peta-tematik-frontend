@@ -651,15 +651,6 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* ── AI INSIGHT BOX ── */}
-      <AIInsightBox 
-        featureName={selectedKecamatan} 
-        data={selectedKecamatan && statsData ? statsData.find(s => (s.kecamatan || "").toUpperCase() === selectedKecamatan.toUpperCase()) : {}} 
-        contextType="statistik_kecamatan" 
-        requireClick={true}
-        customClass="bottom-6 right-4" 
-      />
-
 
       </div> {/* End map flex-grow area */}
 
@@ -667,6 +658,23 @@ const LandingPage = () => {
           RIGHT SIDEBAR (Scrollable)
       ========================================= */}
       <RightSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} desaName="SIDOARJO" themeName="PETA KECAMATAN">
+        {/* Buttons / Actions */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => navigate("/login")}
+            className="flex-1 bg-blue-50 text-blue-600 rounded-xl px-4 py-3 text-sm font-semibold hover:bg-blue-100 transition-colors text-center"
+          >
+            Masuk Admin
+          </button>
+          <button
+            onClick={() => navigate("/bantuan")}
+            className="w-12 h-12 bg-gray-50 text-gray-600 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+            title="Panduan Penggunaan"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          </button>
+        </div>
+
         {/* Legend */}
         <div className="bg-gray-50 rounded-xl p-3">
           <div className="font-bold text-gray-700 text-xs mb-2 pb-1.5 border-b border-gray-200">

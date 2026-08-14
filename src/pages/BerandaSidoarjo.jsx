@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
@@ -16,9 +16,9 @@ const getKepadatanColor = (pop) => {
   return "#e5e7eb";
 };
 
-const getRasioColor = (l, p) => {
-  if (p === 0) return "#e5e7eb";
-  const rjk = (l / p) * 100;
+const getRasioColor = (L, P) => {
+  if (!P || P === 0) return "#e5e7eb";
+  const rjk = (L / P) * 100;
   if (rjk > 105) return "#1e3a8a"; 
   if (rjk > 102) return "#3b82f6";
   if (rjk > 98) return "#9ca3af"; 
@@ -110,7 +110,12 @@ const BerandaSidoarjo = () => {
     ])
       .then(([geoJson, penduduk]) => {
         setGeojsonData(geoJson);
-        setPendudukData(penduduk);
+        // Remap penduduk by uppercase nmdesa for easy lookup
+        const byName = {};
+        Object.values(penduduk).forEach(d => {
+          if (d.nmdesa) byName[d.nmdesa.toUpperCase()] = d;
+        });
+        setPendudukData(byName);
       })
       .catch((err) => console.error("Error loading data:", err));
   }, []);
@@ -165,27 +170,30 @@ const BerandaSidoarjo = () => {
 
   const getStyleRef = useRef(null);
 
-  const getStyle = (feature) => {
+  const getStyle = useCallback((feature) => {
     const desa = (feature.properties.DESA || feature.properties.nmdesa || feature.properties.KECAMATAN || "").toUpperCase();
     const isSelected = selectedDesa === desa;
     
-    // Default styles for border
-    const borderWeight = isSelected ? 3 : 1;
-    const borderColor = isSelected ? "#2563eb" : "white"; // Blue border when selected
-    const dashArray = isSelected ? "" : "3";
+    // Border: thicker black-transparent when not selected, blue when selected
+    const borderWeight = isSelected ? 3 : 2;
+    const borderColor = isSelected ? "#2563eb" : "rgba(0,0,0,0.45)";
+    const dashArray = "";
     
     // Map Mode: Kepadatan
     if (mapMode === "kepadatan") {
       const data = pendudukData && pendudukData[desa];
-      const color = data ? getKepadatanColor(data.kepadatan) : "#e5e7eb";
-      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
+      const kepadatan = data ? (data.total_penduduk / 1) : null; // use total as proxy
+      // Actually calculate density from total_penduduk directly
+      const pop = data ? data.total_penduduk : null;
+      const color = pop ? getKepadatanColor(pop) : "#e5e7eb";
+      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.55 };
     }
     
     // Map Mode: Rasio
     if (mapMode === "rasio") {
       const data = pendudukData && pendudukData[desa];
-      const color = data ? getRasioColor(data.rasio) : "#e5e7eb";
-      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
+      const color = data ? getRasioColor(data.L, data.P) : "#e5e7eb";
+      return { fillColor: color, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.55 };
     }
 
     // Map Mode: Tematik
@@ -203,8 +211,10 @@ const BerandaSidoarjo = () => {
     if (isDesaTematik) fillColor = "#fbbf24";
     if (!matchesTheme) fillColor = "#e5e7eb";
     
-    return { fillColor, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: 0.8 };
-  };
+    // Tematik: more transparent for non-selected, keep yellow visible
+    const tematikOpacity = isSelected ? 0.7 : (isDesaTematik && matchesTheme ? 0.5 : 0.3);
+    return { fillColor, weight: borderWeight, opacity: 1, color: borderColor, dashArray, fillOpacity: tematikOpacity };
+  }, [selectedDesa, mapMode, pendudukData, desaTematikInfo, activeThemes]);
 
   useEffect(() => {
     getStyleRef.current = getStyle;
