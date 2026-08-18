@@ -4,6 +4,7 @@ import AdminGrogol from "./pages/adminGrogol";
 import AdminSimoanginangin from "./pages/adminSimoanginangin";
 import AdminSimoketawang from "./pages/adminSimoketawang";
 import AdminPusat from "./pages/AdminPusat";
+import AdminDataPeta from "./pages/AdminPusat/DataPeta";
 import VillageAdmin from "./pages/VillageAdmin";
 import PotensiAdmin from "./pages/potensiAdmin";
 
@@ -72,6 +73,16 @@ function App() {
           element={
             <ProtectedRoute village="pusat">
               <AdminPusat />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Pusat - Update Data Peta */}
+        <Route
+          path="/admin/pusat/data-peta"
+          element={
+            <ProtectedRoute village="pusat">
+              <AdminDataPeta />
             </ProtectedRoute>
           }
         />

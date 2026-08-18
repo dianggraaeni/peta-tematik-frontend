@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaHome, FaDoorOpen, FaTable, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaDoorOpen, FaTable, FaBars, FaTimes, FaDatabase } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
@@ -56,13 +56,24 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <Link
               to="/admin/pusat"
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                currentPath.startsWith("/admin/pusat")
+                currentPath === "/admin/pusat"
                   ? "bg-blue-500 shadow-md"
                   : "hover:bg-blue-800"
               }`}
             >
               <FaHome className="text-lg" />
               <span className="font-semibold">Dashboard Utama</span>
+            </Link>
+            <Link
+              to="/admin/pusat/data-peta"
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                currentPath.startsWith("/admin/pusat/data-peta")
+                  ? "bg-blue-500 shadow-md"
+                  : "hover:bg-blue-800"
+              }`}
+            >
+              <FaDatabase className="text-lg" />
+              <span className="font-semibold">Update Data Peta</span>
             </Link>
           </>
         ) : (
