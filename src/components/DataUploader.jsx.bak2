@@ -1,0 +1,260 @@
+import React, { useState, useRef } from 'react';
+import { Button, Card, CardBody, CardHeader, Spinner } from '@nextui-org/react';
+import { message } from 'antd';
+import { FaUpload, FaDownload, FaFileExcel, FaFileCode, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import api6 from '../utils/api6';
+import * as XLSX from 'xlsx';
+
+// Standar kolom wajib untuk Auto-Extract (huruf kecil semua)
+const requiredColumns = {
+  'keluarga': ['rt/rw', 'jumlah keluarga', 'rata-rata anggota keluarga', 'rata-rata luas lantai'],
+  'sanitasi_air': [
+    'rt/rw',
+    'lantai marmer', 'lantai keramik', 'lantai parket', 'lantai ubin', 'lantai kayu', 'lantai semen', 'lantai bambu', 'lantai tanah', 'lantai lainnya',
+    'dinding tembok', 'dinding kawat', 'dinding kayu', 'dinding anyaman bambu', 'dinding batang kayu', 'dinding bambu', 'dinding lainnya',
+    'atap beton', 'atap genteng', 'atap seng', 'atap asbes', 'atap bambu', 'atap kayu', 'atap jerami', 'atap lainnya'
+  ],
+  'kelompok_umur': [
+    'kelompok',
+    'luar_waung_L', 'luar_waung_P', 'luar_waung_total',
+    'domisili_waung_L', 'domisili_waung_P', 'domisili_waung_total'
+  ],
+  'pekerjaan': ['rt', 'rw', 'umur', 'jenis_kelamin', 'status_pekerjaan_utama', 'bidang_pekerjaan', 'nama_anggota'],
+  'umkm': ['rt', 'rw', 'nama_usaha', 'dusun', 'jml_ruta', 'jml_umkm'],
+  'pertanian_usahasayuran': [
+    'kode', 'kodesls', 'rt_rw_dusun', 'nama_kepala_keluarga', 'alamat', 
+    'latitude', 'longitude', 'jml_pohon', 'jml_pohon_new_crystal', 
+    'jml_pohon_pingpong', 'jml_pohon_metalada', 'jml_pohon_diamond_river', 
+    'jml_pohon_merah', 'volume_produksi', 'pemanfaatan_produk', 'catatan', 'url_img'
+  ],
+  'pertanian_aggregate': ['rt_rw_dusun', 'jumlah_ruta', 'volume_produksi']
+};
+
+const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const isGeojson = dataType === 'geojson';
+  const reqCols = requiredColumns[dataType] || ['rt', 'rw'];
+  const bgClass = color === 'emerald' ? 'bg-emerald-50 border-emerald-200' : 'bg-blue-50 border-blue-200';
+  const textClass = color === 'emerald' ? 'text-emerald-700' : 'text-blue-700';
+
+  const handleDownloadTemplate = () => {
+    if (isGeojson) {
+      message.info('Batas Wilayah menggunakan format .json (GeoJSON), bukan Excel.');
+      return;
+    }
+    const ws = XLSX.utils.json_to_sheet([], { header: reqCols });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    XLSX.writeFile(wb, `Template_${dataType}_${nama_desa || 'Desa'}.xlsx`);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      message.warning('Pilih file terlebih dahulu!');
+      return;
+    }
+    setLoading(true);
+    try {
+      let jsonData;
+      if (isGeojson) {
+        if (!file.name.endsWith('.json') && !file.name.endsWith('.geojson')) {
+           message.error('Format Batas Wilayah (GeoJSON) harus berupa file .json atau .geojson!');
+           setLoading(false);
+           return;
+        }
+        const text = await file.text();
+        try {
+          jsonData = JSON.parse(text);
+        } catch (err) {
+          message.error('File JSON tidak valid!');
+          setLoading(false);
+          return;
+        }
+      } else {
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.csv') && !file.name.endsWith('.xls')) {
+           message.error('Gunakan file Excel (.xlsx / .xls) atau CSV!');
+           setLoading(false);
+           return;
+        }
+        const dataBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(dataBuffer);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawJsonData = XLSX.utils.sheet_to_json(worksheet, { range: 0 });
+        if (rawJsonData.length === 0) {
+           message.error('File Excel kosong atau format tidak sesuai.');
+           setLoading(false);
+           return;
+        }
+        const normalizedData = rawJsonData.map(row => {
+           let newRow = {};
+           for (let key in row) {
+              let cleanKey = key.toString().toLowerCase().trim();
+              if (['pekerjaan', 'umkm', 'pertanian_usahasayuran', 'pertanian_aggregate'].includes(dataType)) {
+                 cleanKey = cleanKey.replace(/ /g, '_');
+              }
+              newRow[cleanKey] = row[key];
+           }
+           return newRow;
+        });
+        const firstRow = normalizedData[0] || {};
+        const missingCols = reqCols.filter(col => !(col.toLowerCase() in firstRow));
+        if (missingCols.length > 0) {
+           message.error({
+             content: `Format tidak sesuai template! Kolom hilang: ${missingCols.join(', ')}`,
+             duration: 8,
+           });
+           setLoading(false);
+           return;
+        }
+        if (dataType === 'keluarga') {
+           jsonData = normalizedData.map(row => ({
+              rt: row['rt/rw'], jumlah_keluarga: row['jumlah keluarga'],
+              rata_anggota: row['rata-rata anggota keluarga'] || 0,
+              rata_luas_lantai: row['rata-rata luas lantai'] || 0
+           })).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
+        } else if (dataType === 'sanitasi_air') {
+           jsonData = normalizedData.map(row => {
+              let cleanRow = { rt: row['rt/rw'], lantai: {}, dinding: {}, atap: {} };
+              for (let key in row) {
+                 if (key.startsWith('lantai ')) cleanRow.lantai[key.replace('lantai ', '').replace(/ /g, '_')] = row[key] || 0;
+                 else if (key.startsWith('dinding ')) cleanRow.dinding[key.replace('dinding ', '').replace(/ /g, '_')] = row[key] || 0;
+                 else if (key.startsWith('atap ')) cleanRow.atap[key.replace('atap ', '').replace(/ /g, '_')] = row[key] || 0;
+              }
+              return cleanRow;
+           }).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
+        } else {
+           jsonData = normalizedData.map(row => {
+              let cleanRow = {};
+              reqCols.forEach(col => { cleanRow[col] = row[col.toLowerCase()]; });
+              return cleanRow;
+           });
+        }
+      }
+      
+      await api6.post('/api/village-data', { desa_name: nama_desa, dataType: dataType, data: jsonData });
+      
+      if (dataType === 'pekerjaan') {
+        message.loading({ content: 'Memasukkan data ke Peta Pekerjaan...', key: 'pekerjaanUpload' });
+        
+        const cleanItems = jsonData.map((item, i) => ({
+             nmdesa: nama_desa,
+             rt: parseInt(item.rt) || 0, rw: parseInt(item.rw) || 0, umur: parseInt(item.umur) || 0,
+             jenis_kelamin: item.jenis_kelamin, status_pekerjaan_utama: item.status_pekerjaan_utama,
+             bidang_pekerjaan: item.bidang_pekerjaan, nama_anggota: item.nama_anggota || `Warga ${i+1}`
+        }));
+
+        try {
+           const res = await api6.post("/api/pekerjaan", cleanItems);
+           message.success({ content: `Peta Pekerjaan diupdate: ${res.data.count || cleanItems.length} data masuk!`, key: 'pekerjaanUpload', duration: 3 });
+        } catch (e) {
+           message.error({ content: `Gagal bulk insert Peta Pekerjaan`, key: 'pekerjaanUpload', duration: 3 });
+        }
+      }
+      
+      message.success(`Data ${title} berhasil disimpan!`);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      console.error(error);
+      message.error('Gagal mengunggah data.');
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow">
+      <div className={`p-4 border-b ${bgClass}`}>
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-white rounded-lg shadow-sm">
+             {isGeojson ? <FaFileCode className="text-amber-500 text-xl" /> : <FaFileExcel className="text-emerald-500 text-xl" />}
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-800 text-lg leading-tight">{title}</h3>
+            <p className="text-xs text-gray-500 mt-0.5">{isGeojson ? 'Format .json / .geojson' : 'Format .xlsx / .csv'}</p>
+          </div>
+        </div>
+      </div>
+      <div className="p-5 flex flex-col flex-1 gap-4">
+        {!isGeojson && (
+           <Button size="sm" variant="flat" color="primary" startContent={<FaDownload />} onClick={handleDownloadTemplate} className="w-full bg-blue-50 text-blue-700 font-medium border border-blue-100">
+             Download Template Excel
+           </Button>
+        )}
+        {!file ? (
+          <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 hover:border-blue-300 transition-colors cursor-pointer p-6 min-h-[140px]">
+            <FaUpload className="text-gray-400 mb-3" size={28} />
+            <p className="text-sm font-semibold text-gray-600 mb-1 text-center">Klik atau Drop File</p>
+            <p className="text-xs text-gray-400 text-center px-4">Pastikan file sesuai dengan format yang diminta</p>
+            <input ref={fileInputRef} type="file" className="hidden" accept={isGeojson ? '.json,.geojson' : '.xlsx,.csv,.xls'} onChange={handleFileChange} />
+          </label>
+        ) : (
+          <div className="flex-1 flex flex-col justify-center border border-blue-200 rounded-xl p-4 bg-blue-50 relative min-h-[140px]">
+            <button className="absolute top-2 right-2 text-red-400 p-1.5 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors" onClick={(e) => { e.preventDefault(); setFile(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}>
+              <FaTrash size={14} />
+            </button>
+            <div className="flex flex-col items-center text-center gap-2 px-2 mt-2">
+              <FaFileExcel className="text-blue-500 shrink-0" size={32} />
+              <div className="w-full">
+                <p className="text-sm font-semibold text-gray-800 break-words line-clamp-2 leading-tight">{file.name}</p>
+                <p className="text-xs text-gray-500 mt-1">{(file.size / 1024).toFixed(1)} KB</p>
+              </div>
+            </div>
+          </div>
+        )}
+        <Button color="primary" className="w-full font-bold shadow-sm" onClick={handleUpload} isLoading={loading} isDisabled={!file}>
+          {loading ? 'Mengunggah...' : 'Upload Data'}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const DataUploader = ({ nama_desa, themes = [] }) => {
+  const cards = [];
+  
+  if (themes.includes("Sosial Kependudukan")) {
+     cards.push({ title: "Data Ketenagakerjaan", dataType: "pekerjaan" });
+     cards.push({ title: "Data Keluarga", dataType: "keluarga" });
+  }
+  if (themes.includes("Ekonomi Perdagangan")) {
+     cards.push({ title: "Data UMKM", dataType: "umkm" });
+  }
+  if (themes.includes("Pertanian Pertambangan")) {
+     cards.push({ title: "Usaha Pertanian", dataType: "pertanian_usahasayuran" });
+  }
+  
+  // GeoJSON is always available
+  cards.push({ title: "Batas Wilayah", dataType: "geojson" });
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-blue-50/80 border border-blue-200 p-5 rounded-xl flex flex-col sm:flex-row items-start gap-4">
+        <div className="p-2 bg-blue-100 rounded-full shrink-0">
+           <FaInfoCircle className="text-blue-600 text-xl" />
+        </div>
+        <div>
+          <h4 className="font-bold text-blue-900 mb-1">Petunjuk Update Data</h4>
+          <p className="text-sm text-blue-800/80 leading-relaxed">
+            Pilih kotak unggah yang sesuai dengan jenis data yang ingin Anda perbarui. <b>Sangat disarankan</b> untuk selalu mengunduh template Excel terbaru pada setiap kotak untuk memastikan format kolom sudah benar (Sistem Mode Ketat).
+          </p>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {cards.map((card, idx) => (
+          <UploadCard key={idx} title={card.title} dataType={card.dataType} nama_desa={nama_desa} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DataUploader;

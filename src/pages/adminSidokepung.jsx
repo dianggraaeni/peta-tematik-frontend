@@ -429,7 +429,7 @@ const AdminSidokepung = () => {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".csv,.json"
+          accept=".xlsx,.xls,.csv,.json"
           onChange={(e) =>
             handleFileSelect(e, onFileSelectSuccess, onFileSelectError)
           }

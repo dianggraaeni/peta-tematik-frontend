@@ -67,14 +67,15 @@ const filterThemes = ["Sosial Kependudukan", "Ekonomi Perdagangan", "Pertanian P
 const BerandaSidoarjo = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [pendudukData, setPendudukData] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [rawPendudukData, setRawPendudukData] = useState(null);
   const [activeThemes, setActiveThemes] = useState([]);
   const [selectedDesa, setSelectedDesa] = useState(null);
   const [selectedDesaId, setSelectedDesaId] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchThemeQuery, setSearchThemeQuery] = useState("");
   const [mapMode, setMapMode] = useState("tematik"); // "tematik", "kepadatan", "rasio"
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -90,13 +91,13 @@ const BerandaSidoarjo = () => {
   const navigate = useNavigate();
 
   const sidoarjoAgregat = React.useMemo(() => {
-    if (!pendudukData) return null;
+    if (!rawPendudukData) return null;
     let L = 0, P = 0, total = 0, kk = 0;
-    Object.values(pendudukData).forEach(d => {
-      L += d.L; P += d.P; total += d.total_penduduk; kk += d.total_kk;
+    Object.values(rawPendudukData).forEach(d => {
+      L += d.L; P += d.P; total += (d.total_penduduk || 0); kk += (d.total_kk || 0);
     });
     return { L, P, total, kk };
-  }, [pendudukData]);
+  }, [rawPendudukData]);
 
   useEffect(() => {
     selectedDesaRef.current = selectedDesa;
@@ -105,11 +106,12 @@ const BerandaSidoarjo = () => {
   useEffect(() => {
     // Fetch the new boundaries GeoJSON and Population Data
     Promise.all([
-      fetch("/data/peta_sidoarjo.geojson").then((res) => res.json()),
-      fetch("/data/penduduk.json").then((res) => res.json())
+      fetch(`/data/peta_sidoarjo.geojson?t=${Date.now()}`).then((res) => res.json()),
+      fetch(`/data/penduduk.json?t=${Date.now()}`).then((res) => res.json())
     ])
       .then(([geoJson, penduduk]) => {
         setGeojsonData(geoJson);
+        setRawPendudukData(penduduk);
         // Remap penduduk by uppercase nmdesa for easy lookup
         const byName = {};
         Object.values(penduduk).forEach(d => {

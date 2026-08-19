@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import api6 from "../utils/api6";
+import * as XLSX from "xlsx";
 
 export const useFileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -84,8 +85,8 @@ export const useFileUpload = () => {
 
     const fileExtension = file.name.split(".").pop().toLowerCase();
 
-    if (!["csv", "json"].includes(fileExtension)) {
-      onError("Format file tidak didukung. Gunakan file CSV atau JSON.");
+    if (!["csv", "json", "xlsx", "xls"].includes(fileExtension)) {
+      onError("Format file tidak didukung. Gunakan file Excel, CSV atau JSON.");
       return;
     }
 
@@ -94,10 +95,14 @@ export const useFileUpload = () => {
       try {
         let parsedData = [];
 
-        if (fileExtension === "csv") {
-          parsedData = parseCSV(e.target.result);
+        if (fileExtension === "xlsx" || fileExtension === "xls" || fileExtension === "csv") {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          parsedData = XLSX.utils.sheet_to_json(worksheet);
         } else if (fileExtension === "json") {
-          parsedData = JSON.parse(e.target.result);
+          parsedData = JSON.parse(new TextDecoder().decode(e.target.result));
         }
 
         const formattedData = validateAndFormatData(parsedData);
@@ -109,10 +114,10 @@ export const useFileUpload = () => {
       }
     };
 
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   };
 
-  const handleBulkUpload = async (onSuccess, onError) => {
+  const handleBulkUpload = async (onSuccess, onError, nmdesa) => {
     const validData = previewData.filter((item) => item._isValid);
 
     if (validData.length === 0) {
@@ -140,6 +145,7 @@ export const useFileUpload = () => {
           status_pekerjaan_utama: item.status_pekerjaan_utama,
           nama_anggota: item.nama_anggota,
           bidang_pekerjaan: item.bidang_pekerjaan,
+          nmdesa: nmdesa || "SIDOKEPUNG",
         };
 
         try {

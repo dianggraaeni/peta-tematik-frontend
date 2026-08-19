@@ -135,10 +135,10 @@ const UploadCard = ({ title, description, accept, endpoint, downloadName, color,
           Kode_Desa: kode,
           Kecamatan: val.Kecamatan,
           Desa: val.nmdesa,
-          Laki_Laki: val.L,
-          Perempuan: val.P,
-          KK_Laki_Laki: val.KK_L,
-          KK_Perempuan: val.KK_P,
+          Laki_Laki: 0,
+          Perempuan: 0,
+          KK_Laki_Laki: 0,
+          KK_Perempuan: 0,
         }));
         const ws = XLSX.utils.json_to_sheet(rows);
         const wb = XLSX.utils.book_new();

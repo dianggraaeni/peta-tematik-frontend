@@ -80,19 +80,30 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           <>
             <div className="mb-4 mt-2">
               <p className="px-4 text-xs font-semibold text-blue-200 uppercase tracking-wider">
-                Kelola Data
+                Menu Desa
               </p>
             </div>
             <Link
               to={adminRoute}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                currentPath !== "/admin/potensi"
+                currentPath.toLowerCase() === adminRoute.toLowerCase()
                   ? "bg-blue-500 shadow-md"
                   : "hover:bg-blue-800"
               }`}
             >
-              <FaTable className="text-lg" />
-              <span className="font-semibold">Data Desa Saya</span>
+              <FaHome className="text-lg" />
+              <span className="font-semibold">Dashboard Utama</span>
+            </Link>
+            <Link
+              to={`${adminRoute}/update-peta`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                currentPath.toLowerCase().includes("/update-peta")
+                  ? "bg-blue-500 shadow-md"
+                  : "hover:bg-blue-800"
+              }`}
+            >
+              <FaDatabase className="text-lg" />
+              <span className="font-semibold">Update Data Peta</span>
             </Link>
           </>
         )}

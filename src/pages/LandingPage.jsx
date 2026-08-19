@@ -6,7 +6,6 @@ import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
 import RightSidebar from "../components/RightSidebar";
-import { fetchKabupatenData } from "../utils/openDataApi";
 
 // Auto Zoom to fit Sidoarjo or selected Kecamatan
 const MapController = ({ geojsonData, selectedKecamatan, geoJsonRef }) => {
@@ -36,7 +35,6 @@ const LandingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [statsData, setStatsData] = useState([]);
   const [pendudukData, setPendudukData] = useState(null);
-  const [apiKabupatenData, setApiKabupatenData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -84,26 +82,20 @@ const LandingPage = () => {
   };
 
   useEffect(() => {
-    fetch("/data/Administrasi_Kecamatan.geojson")
+    fetch(`/data/Administrasi_Kecamatan.geojson?t=${Date.now()}`)
       .then((res) => res.json())
       .then((data) => setGeojsonData(data))
       .catch((err) => console.error("Error loading boundaries:", err));
 
-    fetch("/data/statistikSidoarjo.json")
+    fetch(`/data/statistikSidoarjo.json?t=${Date.now()}`)
       .then((res) => res.json())
       .then((data) => setStatsData(data))
       .catch((err) => console.error("Error loading stats:", err));
 
-    fetch("/data/penduduk.json")
+    fetch(`/data/penduduk.json?t=${Date.now()}`)
       .then((res) => res.json())
       .then((data) => setPendudukData(data))
       .catch((err) => console.error("Error loading penduduk:", err));
-      
-    fetchKabupatenData().then(data => {
-      if (data && data.length > 0) {
-        setApiKabupatenData(data);
-      }
-    });
   }, []);
 
   useEffect(() => {
@@ -152,52 +144,49 @@ const LandingPage = () => {
   };
 
   const getDistrictStats = (kecamatanName) => {
-    if (!kecamatanName || !statsData.length) return null;
+    if (!statsData || statsData.length === 0) return null;
     const baseStat = statsData.find(
       (stat) => stat.kecamatan.toUpperCase() === kecamatanName.toUpperCase()
     );
     if (!baseStat) return null;
 
-    if (apiKabupatenData) {
-      const liveData = apiKabupatenData.find(d => d.kecamatan === baseStat.kecamatan.toUpperCase());
-      if (liveData) {
-        const liveJumlah = liveData.total;
-        const kepadatan = baseStat.luas_wilayah > 0 ? liveJumlah / baseStat.luas_wilayah : 0;
-        return {
-          ...baseStat,
-          jumlah_penduduk: liveJumlah,
-          kepadatan_penduduk: kepadatan
-        };
-      }
+    // Use local demographic data if available
+    if (pendudukData) {
+      let liveJumlah = 0;
+      Object.values(pendudukData).forEach((desa) => {
+        if ((desa.Kecamatan || "").toUpperCase() === baseStat.kecamatan.toUpperCase()) {
+          liveJumlah += (desa.total_penduduk || 0);
+        }
+      });
+      const kepadatan = baseStat.luas_wilayah > 0 ? liveJumlah / baseStat.luas_wilayah : 0;
+      return {
+        ...baseStat,
+        jumlah_penduduk: liveJumlah,
+        kepadatan_penduduk: kepadatan
+      };
     }
+    
     return baseStat;
   };
 
   const totalLuas = statsData.reduce((sum, stat) => sum + stat.luas_wilayah, 0);
-  const totalPenduduk = apiKabupatenData 
-    ? apiKabupatenData.reduce((sum, d) => sum + d.total, 0)
+  const totalPenduduk = pendudukData 
+    ? Object.values(pendudukData).reduce((sum, d) => sum + (d.total_penduduk || 0), 0)
     : statsData.reduce((sum, stat) => sum + stat.jumlah_penduduk, 0);
   const avgKepadatan = totalLuas > 0 ? (totalPenduduk / totalLuas) : 0;
   
   const sidoarjoAgregat = React.useMemo(() => {
     let L = 0, P = 0, total = 0, kk = 0;
-    if (apiKabupatenData) {
-      apiKabupatenData.forEach(d => {
-        L += d.L;
-        P += d.P;
-        total += d.total;
-        kk += Math.round(d.total / 3.8);
-      });
-    } else if (pendudukData) {
+    if (pendudukData) {
       Object.values(pendudukData).forEach((desa) => {
-        L += desa.L;
-        P += desa.P;
-        total += desa.total_penduduk;
-        kk += desa.total_kk || 0;
+        L += desa.L || 0;
+        P += desa.P || 0;
+        total += (desa.total_penduduk || 0);
+        kk += (desa.total_kk || 0);
       });
     }
     return { L, P, total, kk };
-  }, [apiKabupatenData, pendudukData]);
+  }, [pendudukData]);
 
   const getKepadatanColor = (density) => {
     return density > 7000 ? '#1e3a8a' :
@@ -222,23 +211,17 @@ const LandingPage = () => {
 
   const kecamatanDemografi = React.useMemo(() => {
     const agg = {};
-    if (apiKabupatenData) {
-      apiKabupatenData.forEach(d => {
-        agg[d.kecamatan] = { L: d.L, P: d.P, total: d.total };
-      });
-    } else if (pendudukData) {
+    if (pendudukData) {
       Object.values(pendudukData).forEach((desa) => {
         const kec = (desa.Kecamatan || "").toUpperCase();
-        if (!agg[kec]) {
-          agg[kec] = { L: 0, P: 0, total: 0 };
-        }
-        agg[kec].L += desa.L;
-        agg[kec].P += desa.P;
-        agg[kec].total += desa.total_penduduk;
+        if (!agg[kec]) agg[kec] = { L: 0, P: 0, total: 0 };
+        agg[kec].L += desa.L || 0;
+        agg[kec].P += desa.P || 0;
+        agg[kec].total += (desa.total_penduduk || 0);
       });
     }
     return agg;
-  }, [apiKabupatenData, pendudukData]);
+  }, [pendudukData]);
 
   const getStyle = (feature) => {
     const kecName = feature.properties.KECAMATAN.toUpperCase();

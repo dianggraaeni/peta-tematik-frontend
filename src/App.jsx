@@ -96,6 +96,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/desa/:nama_desa/update-peta"
+          element={
+            <ProtectedRoute>
+              <VillageAdmin />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Legacy routes for fallback, to be removed later */}
         <Route

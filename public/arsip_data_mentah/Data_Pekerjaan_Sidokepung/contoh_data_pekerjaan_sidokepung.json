@@ -1,0 +1,29 @@
+[
+  {
+    "rt": "01",
+    "rw": "02",
+    "umur": 25,
+    "jenis_kelamin": "Laki-laki",
+    "status_pekerjaan_utama": "Bekerja",
+    "nama_anggota": "Budi Santoso",
+    "bidang_pekerjaan": "Perdagangan"
+  },
+  {
+    "rt": "01",
+    "rw": "02",
+    "umur": 30,
+    "jenis_kelamin": "Perempuan",
+    "status_pekerjaan_utama": "Bekerja",
+    "nama_anggota": "Siti Aminah",
+    "bidang_pekerjaan": "Jasa"
+  },
+  {
+    "rt": "02",
+    "rw": "02",
+    "umur": 45,
+    "jenis_kelamin": "Laki-laki",
+    "status_pekerjaan_utama": "Bekerja",
+    "nama_anggota": "Agus Salim",
+    "bidang_pekerjaan": "Pertanian"
+  }
+]
