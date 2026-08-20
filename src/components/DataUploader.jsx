@@ -711,18 +711,35 @@ const UmkmPreviewSection = ({ nama_desa }) => {
 
   const summary = useMemo(() => {
     if (data.length === 0) return null;
-    let totalUsaha = 0;
-    let totalMikro = 0;
-    let totalKecil = 0;
-    let totalMenengah = 0;
-    data.forEach(d => { 
-      totalUsaha += (d.jml_umkm || 0); 
-      totalMikro += (d.jml_umkm_skala_usaha_mikro || 0);
-      totalKecil += (d.jml_umkm_skala_usaha_kecil || 0);
-      totalMenengah += (d.jml_umkm_skala_usaha_menengah || 0);
-    });
-    return { totalUsaha, totalMikro, totalKecil, totalMenengah };
-  }, [data]);
+      if (data.length === 0) return null;
+      let totalUsaha = 0;
+      let totalMikro = 0;
+      let totalKecil = 0;
+      let totalMenengah = 0;
+      let totalKbli = {A:0, C:0, G:0, I:0, S:0};
+      
+      data.forEach(d => { 
+        totalUsaha += (d.jml_umkm || 0); 
+        totalMikro += (d.jml_umkm_skala_usaha_mikro || 0);
+        totalKecil += (d.jml_umkm_skala_usaha_kecil || 0);
+        totalMenengah += (d.jml_umkm_skala_usaha_menengah || 0);
+        totalKbli.A += (d.jml_umkm_kbli_a || 0);
+        totalKbli.C += (d.jml_umkm_kbli_c || 0);
+        totalKbli.G += (d.jml_umkm_kbli_g || 0);
+        totalKbli.I += (d.jml_umkm_kbli_i || 0);
+        totalKbli.S += (d.jml_umkm_kbli_s || 0);
+      });
+
+      let dominantKbli = "-";
+      let maxVal = 0;
+      Object.keys(totalKbli).forEach(k => {
+        if (totalKbli[k] > maxVal) {
+          maxVal = totalKbli[k];
+          dominantKbli = "KBLI " + k;
+        }
+      });
+      return { totalUsaha, totalMikro, totalKecil, totalMenengah, dominantKbli };
+    }, [data]);
 
   if (loading) return <div className="text-sm text-gray-500 animate-pulse mt-4">Memuat visualisasi UMKM...</div>;
   if (!summary) return null;
@@ -732,7 +749,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
       <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
         <FaChartPie className="text-blue-500" /> Ringkasan Data UMKM
       </h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 flex flex-col items-center justify-center">
           <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Total UMKM</p>
           <div className="text-3xl font-extrabold text-blue-900">
@@ -754,14 +771,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
         <div className="bg-purple-50 rounded-xl p-4 border border-purple-100 flex flex-col items-center justify-center">
           <p className="text-purple-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Usaha Menengah</p>
           <div className="text-3xl font-extrabold text-purple-900">
-            <CountUp end={summary.totalMenengah} duration={2} separator="." />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+            <CountUp end={summary.totalMenengah} duration={2} separator="." /></div></div><div className="bg-pink-50 rounded-xl p-4 border border-pink-100 flex flex-col items-center justify-center"><p className="text-pink-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Sektor Dominan</p><div className="text-2xl font-extrabold text-pink-900 mt-1">{summary.dominantKbli}</div></div></div></div>);};
 const DataUploader = ({ nama_desa, themes = [] }) => {
   const cards = [];
   
