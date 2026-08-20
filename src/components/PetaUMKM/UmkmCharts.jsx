@@ -10,15 +10,7 @@ const UmkmCharts = ({ data }) => {
     if (Array.isArray(data)) {
       data.forEach((item) => {
         const rt = item.rt || "0";
-        let dusun = item.dusun && item.dusun !== "-" ? item.dusun : "Lainnya";
-        if (dusun.toUpperCase().includes("DUSUN")) {
-          const split = dusun.toUpperCase().split("DUSUN");
-          dusun = split[1].trim();
-        }
-        
-        // Capitalize words
-        dusun = dusun.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
-        
+        const dusun = item.dusun && item.dusun !== "-" ? item.dusun : "Lainnya";
         const count = item.jml_umkm || 1;
 
         rtMap[rt] = (rtMap[rt] || 0) + count;
@@ -44,7 +36,7 @@ const UmkmCharts = ({ data }) => {
 
   const rtOptions = {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    grid: { left: "3%", right: "8%", bottom: "3%", top: "5%", containLabel: true },
+    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
     xAxis: { 
       type: "value",
       axisLabel: { hideOverlap: true, fontSize: 10 },
@@ -66,28 +58,24 @@ const UmkmCharts = ({ data }) => {
   };
 
   const dusunOptions = {
-    tooltip: { trigger: "item", textStyle: { fontSize: 10 } },
-    legend: { 
-      type: "scroll", 
-      orient: "vertical", 
-      right: "0%", 
-      top: "center",
-      textStyle: { fontSize: 10, width: 90, overflow: "truncate" }
-    },
+    tooltip: { trigger: "item" },
+    legend: { bottom: "0%", left: "center" },
     color: ["#3b82f6", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6"],
     series: [
       {
         name: "Dusun",
         type: "pie",
-        radius: ["50%", "80%"],
-        center: ["35%", "50%"],
+        radius: ["40%", "70%"],
         avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 4,
+          borderRadius: 10,
           borderColor: "#fff",
           borderWidth: 2,
         },
-        label: { show: false },
+        label: { show: false, position: "center" },
+        emphasis: {
+          label: { show: true, fontSize: 12, fontWeight: "bold" },
+        },
         labelLine: { show: false },
         data: aggregated.topDusuns,
       },
