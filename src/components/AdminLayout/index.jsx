@@ -6,7 +6,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "";
-  const isSuperAdmin = username === "admin_pusat" || localStorage.getItem("token-pusat");
+  const isSuperAdmin = username === "admin_pusat";
 
   const handleLogout = () => {
     localStorage.clear();

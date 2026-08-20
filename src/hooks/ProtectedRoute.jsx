@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Also check if the username matches the specific village if they are not superadmin
   const username = localStorage.getItem("username") || "";
-  const isSuperAdmin = username === "admin_pusat" || tokenPusat;
+  const isSuperAdmin = username === "admin_pusat";
 
   if (!token && !tokenPusat) {
     return (
