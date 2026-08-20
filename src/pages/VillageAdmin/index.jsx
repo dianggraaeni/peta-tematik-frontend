@@ -66,15 +66,25 @@ const VillageAdmin = () => {
             {isUpdatePeta ? (
               <DataUploader nama_desa={nama_desa} themes={themes} />
             ) : (
-              <div className="flex flex-col gap-8">
-                <InsightManagementTab nama_desa={nama_desa} />
-                
-                {themes.includes("Sosial Kependudukan") && <SidokepungTableWrapper />}
-                {themes.includes("Ekonomi Perdagangan") && <SimoketawangUsahaTable />}
-                {themes.includes("Pertanian Pertambangan") && <GrogolUsahaTable />}
-                
-                <SummaryTab nama_desa={nama_desa} />
-              </div>
+                <div className="flex flex-col gap-8">
+                  <InsightManagementTab nama_desa={nama_desa} />
+                  
+                  {nama_desa?.toUpperCase() === "SIDOKEPUNG" && <SidokepungTableWrapper />}
+                  {nama_desa?.toUpperCase() === "SIMOKETAWANG" && <SimoketawangUsahaTable />}
+                  {nama_desa?.toUpperCase() === "GROGOL" && <GrogolUsahaTable />}
+                  {nama_desa?.toUpperCase() === "SIMOANGINANGIN" && (
+                     <div className="flex justify-center items-center h-40 text-gray-500 italic bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                       Tabel Manajemen Data UMKM khusus untuk Simoanginangin belum tersedia. Silakan gunakan Update Data Peta.
+                     </div>
+                  )}
+                  {nama_desa?.toUpperCase() === "WAUNG" && (
+                     <div className="flex justify-center items-center h-40 text-gray-500 italic bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                       Tabel Manajemen Data khusus untuk Waung belum tersedia. Silakan gunakan Update Data Peta.
+                     </div>
+                  )}
+                  
+                  <SummaryTab nama_desa={nama_desa} />
+                </div>
             )}
           </div>
         )}

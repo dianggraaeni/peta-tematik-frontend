@@ -573,21 +573,34 @@ const KeluargaPreviewSection = ({ nama_desa }) => {
     let totalLantai = 0;
     let validRataCount = 0;
     
+    const isMicrodata = data[0] && 'jml_anggota_keluarga' in data[0];
+
     data.forEach(item => {
-      const jk = Number(item.jumlah_keluarga) || 0;
-      const ra = Number(item.rata_anggota) || 0;
-      const rl = Number(item.rata_luas_lantai) || 0;
-      
-      totalKeluarga += jk;
-      if (ra > 0) { totalAnggota += ra; validRataCount++; }
-      if (rl > 0) { totalLantai += rl; }
+      if (isMicrodata) {
+        totalKeluarga += 1;
+        totalAnggota += Number(item.jml_anggota_keluarga) || 0;
+        totalLantai += Number(item.luas_lantai) || 0;
+      } else {
+        const jk = Number(item.jumlah_keluarga) || 0;
+        const ra = Number(item.rata_anggota) || 0;
+        const rl = Number(item.rata_luas_lantai) || 0;
+        
+        totalKeluarga += jk;
+        if (ra > 0) {
+          totalAnggota += (ra * jk);
+          validRataCount += jk;
+        }
+        if (rl > 0) totalLantai += (rl * jk);
+      }
     });
-    
+
     return {
       totalKeluarga,
-      avgAnggota: validRataCount > 0 ? (totalAnggota / validRataCount).toFixed(1) : 0,
-      avgLantai: validRataCount > 0 ? (totalLantai / validRataCount).toFixed(1) : 0,
-      rtCount: data.length
+      avgAnggota: isMicrodata 
+        ? (totalKeluarga > 0 ? (totalAnggota / totalKeluarga).toFixed(1) : 0)
+        : (validRataCount > 0 ? (totalAnggota / validRataCount).toFixed(1) : 0),
+      avgLantai: totalKeluarga > 0 ? (totalLantai / totalKeluarga).toFixed(1) : 0,
+      rtCount: isMicrodata ? 10 : data.length
     };
   }, [data]);
 
