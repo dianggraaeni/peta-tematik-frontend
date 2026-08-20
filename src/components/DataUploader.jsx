@@ -738,7 +738,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
           dominantKbli = "KBLI " + k;
         }
       });
-      return { totalUsaha, totalMikro, totalKecil, totalMenengah, dominantKbli };
+      return { totalUsaha, totalMikro, totalKecil, totalMenengah, dominantKbli, totalKbli };
     }, [data]);
 
   if (loading) return <div className="text-sm text-gray-500 animate-pulse mt-4">Memuat visualisasi UMKM...</div>;
@@ -749,7 +749,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
       <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
         <FaChartPie className="text-blue-500" /> Ringkasan Data UMKM
       </h3>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 flex flex-col items-center justify-center">
           <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Total UMKM</p>
           <div className="text-3xl font-extrabold text-blue-900">
@@ -771,7 +771,21 @@ const UmkmPreviewSection = ({ nama_desa }) => {
         <div className="bg-purple-50 rounded-xl p-4 border border-purple-100 flex flex-col items-center justify-center">
           <p className="text-purple-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Usaha Menengah</p>
           <div className="text-3xl font-extrabold text-purple-900">
-            <CountUp end={summary.totalMenengah} duration={2} separator="." /></div></div><div className="bg-pink-50 rounded-xl p-4 border border-pink-100 flex flex-col items-center justify-center"><p className="text-pink-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Sektor Dominan</p><div className="text-2xl font-extrabold text-pink-900 mt-1">{summary.dominantKbli}</div></div></div></div>);};
+            <CountUp end={summary.totalMenengah} duration={2} separator="." /></div></div></div>
+      <div className="bg-pink-50 rounded-xl p-4 border border-pink-100">
+        <p className="text-pink-600 text-sm font-bold uppercase tracking-wider mb-3 text-center">Rincian Sektor KBLI</p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+          {Object.entries(summary.totalKbli).filter(([k,v]) => v > 0).map(([k,v]) => (
+            <div key={k} className="bg-white rounded-lg p-2 shadow-sm border border-pink-100 flex flex-col items-center justify-center">
+              <p className="text-xs font-bold text-gray-500">KBLI {k}</p>
+              <p className="text-xl font-extrabold text-pink-700">{v}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 const DataUploader = ({ nama_desa, themes = [] }) => {
   const cards = [];
   
