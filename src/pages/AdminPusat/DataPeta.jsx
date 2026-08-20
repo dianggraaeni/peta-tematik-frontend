@@ -129,8 +129,9 @@ const UploadCard = ({ title, description, accept, endpoint, downloadName, color,
   const handleDownload = async () => {
     if (isExcelMode) {
       try {
-        const res = await api6.get("/api/upload-data/penduduk");
-        const data = res.data.data;
+        const res = await fetch("/data/penduduk.json?t=" + Date.now());
+        if (!res.ok) throw new Error("File not found");
+        const data = await res.json();
         const rows = Object.entries(data).map(([kode, val]) => ({
           Kode_Desa: kode,
           Kecamatan: val.Kecamatan,
@@ -380,14 +381,14 @@ const AdminDataPetaInner = () => {
   const fetchPenduduk = async () => {
     setLoading(true);
     try {
-      const res = await api6.get("/api/upload-data/penduduk");
-      setPendudukData(res.data.data || {});
-    } catch (err) {
-      if (err.response && err.response.status === 404) {
-        setPendudukData({});
-      } else {
-        message.error("Gagal memuat data demografi");
+      const res = await fetch("/data/penduduk.json?t=" + Date.now());
+      if (!res.ok) {
+        throw new Error("File not found");
       }
+      const data = await res.json();
+      setPendudukData(data || {});
+    } catch (err) {
+      setPendudukData({});
     } finally {
       setLoading(false);
     }
