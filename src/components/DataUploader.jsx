@@ -716,18 +716,14 @@ const UmkmPreviewSection = ({ nama_desa }) => {
       let totalMikro = 0;
       let totalKecil = 0;
       let totalMenengah = 0;
-      let totalKbli = {A:0, C:0, G:0, I:0, S:0};
+      let totalKbli = {A:0, B:0, C:0, D:0, E:0, F:0, G:0, H:0, I:0, J:0, K:0, L:0, M:0, N:0, O:0, P:0, Q:0, R:0, S:0, T:0, U:0};
       
       data.forEach(d => { 
         totalUsaha += (d.jml_umkm || 0); 
         totalMikro += (d.jml_umkm_skala_usaha_mikro || 0);
         totalKecil += (d.jml_umkm_skala_usaha_kecil || 0);
         totalMenengah += (d.jml_umkm_skala_usaha_menengah || 0);
-        totalKbli.A += (d.jml_umkm_kbli_a || 0);
-        totalKbli.C += (d.jml_umkm_kbli_c || 0);
-        totalKbli.G += (d.jml_umkm_kbli_g || 0);
-        totalKbli.I += (d.jml_umkm_kbli_i || 0);
-        totalKbli.S += (d.jml_umkm_kbli_s || 0);
+        Object.keys(totalKbli).forEach(k => { totalKbli[k] += (d[jml_umkm_kbli_] || 0); });
       });
 
       let dominantKbli = "-";
@@ -774,8 +770,8 @@ const UmkmPreviewSection = ({ nama_desa }) => {
             <CountUp end={summary.totalMenengah} duration={2} separator="." /></div></div></div>
       <div className="bg-pink-50 rounded-xl p-4 border border-pink-100">
         <p className="text-pink-600 text-sm font-bold uppercase tracking-wider mb-3 text-center">Rincian Sektor KBLI</p>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-          {Object.entries(summary.totalKbli).filter(([k,v]) => v > 0).map(([k,v]) => (
+        <div className="grid grid-cols-3 md:grid-cols-7 gap-3 text-center">
+            {Object.entries(summary.totalKbli).map(([k,v]) => (
             <div key={k} className="bg-white rounded-lg p-2 shadow-sm border border-pink-100 flex flex-col items-center justify-center">
               <p className="text-xs font-bold text-gray-500">KBLI {k}</p>
               <p className="text-xl font-extrabold text-pink-700">{v}</p>
