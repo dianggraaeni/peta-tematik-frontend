@@ -43,7 +43,7 @@ const UmkmCharts = ({ data }) => {
   }, [data]);
 
   const rtOptions = {
-    tooltip: { trigger: "item", textStyle: { fontSize: 10 }, padding: [4, 8] },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     grid: { left: "3%", right: "8%", bottom: "3%", top: "5%", containLabel: true },
     xAxis: { 
       type: "value",
@@ -66,21 +66,21 @@ const UmkmCharts = ({ data }) => {
   };
 
   const dusunOptions = {
-    tooltip: { trigger: "item", textStyle: { fontSize: 10 }, padding: [4, 8] },
+    tooltip: { trigger: "item", textStyle: { fontSize: 10 } },
     legend: { 
       type: "scroll", 
       orient: "vertical", 
       right: "0%", 
       top: "center",
-      textStyle: { fontSize: 9, width: 70, overflow: "truncate" }
+      textStyle: { fontSize: 10, width: 90, overflow: "truncate" }
     },
     color: ["#3b82f6", "#f59e0b", "#10b981", "#ec4899", "#8b5cf6"],
     series: [
       {
         name: "Dusun",
         type: "pie",
-        radius: ["40%", "65%"],
-        center: ["25%", "50%"],
+        radius: ["50%", "80%"],
+        center: ["35%", "50%"],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 4,
