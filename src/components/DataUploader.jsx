@@ -712,16 +712,17 @@ const UmkmPreviewSection = ({ nama_desa }) => {
   const summary = useMemo(() => {
     if (data.length === 0) return null;
     let totalUsaha = 0;
-    let totalMikro = 0;
-    let totalKecil = 0;
-    let totalMenengah = 0;
+    let uniqueRt = new Set();
+    
     data.forEach(d => { 
-      totalUsaha += (d.jml_umkm || 0); 
-      totalMikro += (d.jml_umkm_skala_usaha_mikro || 0);
-      totalKecil += (d.jml_umkm_skala_usaha_kecil || 0);
-      totalMenengah += (d.jml_umkm_skala_usaha_menengah || 0);
+      totalUsaha += (d.jml_umkm || 1); 
+      if (d.rt) uniqueRt.add(String(d.rt));
     });
-    return { totalUsaha, totalMikro, totalKecil, totalMenengah };
+    
+    const rtCount = uniqueRt.size;
+    const avgPerRt = rtCount > 0 ? (totalUsaha / rtCount).toFixed(1) : 0;
+    
+    return { totalUsaha, rtCount, avgPerRt };
   }, [data]);
 
   if (loading) return <div className="text-sm text-gray-500 animate-pulse mt-4">Memuat visualisasi UMKM...</div>;
@@ -732,7 +733,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
       <h3 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
         <FaChartPie className="text-blue-500" /> Ringkasan Data UMKM
       </h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 flex flex-col items-center justify-center">
           <p className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Total UMKM</p>
           <div className="text-3xl font-extrabold text-blue-900">
@@ -740,21 +741,16 @@ const UmkmPreviewSection = ({ nama_desa }) => {
           </div>
         </div>
         <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex flex-col items-center justify-center">
-          <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Usaha Mikro</p>
+          <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Persebaran RT</p>
           <div className="text-3xl font-extrabold text-emerald-900">
-            <CountUp end={summary.totalMikro} duration={2} separator="." />
+            <CountUp end={summary.rtCount} duration={2} separator="." />
+            <span className="text-sm font-semibold ml-1">RT</span>
           </div>
         </div>
         <div className="bg-orange-50 rounded-xl p-4 border border-orange-100 flex flex-col items-center justify-center">
-          <p className="text-orange-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Usaha Kecil</p>
+          <p className="text-orange-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Rata-rata UMKM / RT</p>
           <div className="text-3xl font-extrabold text-orange-900">
-            <CountUp end={summary.totalKecil} duration={2} separator="." />
-          </div>
-        </div>
-        <div className="bg-purple-50 rounded-xl p-4 border border-purple-100 flex flex-col items-center justify-center">
-          <p className="text-purple-600 text-xs font-bold uppercase tracking-wider mb-1 text-center">Usaha Menengah</p>
-          <div className="text-3xl font-extrabold text-purple-900">
-            <CountUp end={summary.totalMenengah} duration={2} separator="." />
+            <CountUp end={summary.avgPerRt} duration={2} separator="," decimals={1} />
           </div>
         </div>
       </div>
