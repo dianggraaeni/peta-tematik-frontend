@@ -45,23 +45,24 @@ const UmkmCharts = ({ data }) => {
   }, [data]);
 
   const skalaOptions = {
-    tooltip: { trigger: "item" },
-    legend: { bottom: "0%", left: "center" },
+    tooltip: { trigger: "item", padding: [4, 8], textStyle: { fontSize: 10 } },
+    legend: { bottom: "0%", left: "center", textStyle: { fontSize: 10 } },
     color: ["#3b82f6", "#f59e0b", "#10b981"],
     series: [
       {
         name: "Skala Usaha",
         type: "pie",
         radius: ["40%", "70%"],
+        center: ["50%", "45%"],
         avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 10,
+          borderRadius: 4,
           borderColor: "#fff",
           borderWidth: 2,
         },
         label: { show: false, position: "center" },
         emphasis: {
-          label: { show: true, fontSize: 16, fontWeight: "bold" },
+          label: { show: true, fontSize: 14, fontWeight: "bold" },
         },
         labelLine: { show: false },
         data: aggregated.skala,
@@ -70,8 +71,8 @@ const UmkmCharts = ({ data }) => {
   };
 
   const lokasiOptions = {
-    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    tooltip: { trigger: "item", padding: [4, 8], textStyle: { fontSize: 10 } },
+    grid: { left: "3%", right: "8%", bottom: "3%", top: "5%", containLabel: true },
     xAxis: { 
       type: "value",
       axisLabel: { hideOverlap: true, fontSize: 10 },
