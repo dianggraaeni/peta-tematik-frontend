@@ -96,8 +96,8 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
       try {
         const villageFormatted = desaName.charAt(0).toUpperCase() + desaName.slice(1).toLowerCase();
         
-        // 1. Fetch GeoJSON from new endpoint
-        const geoRes = await api6.get(`/api/upload-data/geojson-desa?nmdesa=${villageFormatted}`);
+        // 1. Fetch GeoJSON from database endpoint
+        const geoRes = await api6.get(`/api/peta?nmdesa=${villageFormatted}`);
         const rawGeojson = geoRes.data;
         
         // 2. Fetch all raw data from database
