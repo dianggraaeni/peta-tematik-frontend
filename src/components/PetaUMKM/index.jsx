@@ -8,6 +8,7 @@ import CountUp from "react-countup";
 import CustomMapControls from "../CustomMapControls";
 import UmkmCharts from "./UmkmCharts";
 import AIInsightBox from "../AIInsightBox";
+import FilterPanelUmkm from "./FilterPanelUmkm";
 import RightSidebar from "../RightSidebar";
 import api6 from "../../utils/api6";
 import { useNavigate } from "react-router-dom";
@@ -75,6 +76,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const [geojsonData, setGeojsonData] = useState(null);
   const [allRawData, setAllRawData] = useState([]);
   const [allOriginalData, setAllOriginalData] = useState([]);
+  const [activeKbliFilter, setActiveKbliFilter] = useState(null);
   const [selectedArea, setSelectedArea] = useState({ rt: "", rw: "" });
   const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName}`);
   
@@ -88,9 +90,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isLayerOpen, setIsLayerOpen] = useState(false);
   const geoJsonRef = useRef(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Fetch geojson and raw UMKM data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -114,9 +114,12 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
     fetchData();
   }, [desaName]);
 
-  // Aggregate stats
+  // Aggregate stats based on activeKbliFilter
   const processedData = (() => {
     let list = allRawData;
+    if (activeKbliFilter) {
+      list = allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter);
+    }
     const totalUmkm = list.reduce((sum, item) => sum + (item.jml_umkm || 0), 0);
     
     // Find dominant KBLI Category overall
@@ -342,6 +345,36 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
           </div>
         )}
 
+        {/* ── FILTER — fixed icon below zoom, panel expands LEFT ── */}
+        {!hideCards && (
+          <div className="absolute top-[236px] right-3 md:right-4 z-[1000] pointer-events-auto">
+            <button
+              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+              onClick={() => setIsFilterMinimized(!isFilterMinimized)}
+              title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              {activeKbliFilter && (
+                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"/>
+              )}
+            </button>
+            {!isFilterMinimized && (
+              <div className="absolute top-0 right-full mr-2 w-72 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 overflow-hidden">
+                <div className="p-3 pb-2 border-b border-gray-100 text-xs flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-blue-600 font-bold">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    <span>Filter Data</span>
+                  </div>
+                  <button onClick={() => setIsFilterMinimized(true)} className="text-gray-400 hover:text-gray-700">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <FilterPanelUmkm onFilterChange={(filters) => setActiveKbliFilter(filters.kbliDominan)} filteredCount={processedData.totalPenduduk || 0} totalCount={allRawData.reduce((sum, item) => sum + (item.jml_umkm || 0), 0)} kbliColors={kbliColors} getKbliName={getKbliName} />
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
 
       {/* RIGHT SIDEBAR */}
@@ -373,7 +406,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
                   )}
                 </div>
                 <div className="w-full">
-                  <UmkmCharts data={allRawData} />
+                  <UmkmCharts data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} />
                 </div>
               </div>
             </div>

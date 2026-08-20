@@ -27,19 +27,37 @@ const FilterPanelUmkm = ({ onFilterChange, filteredCount, totalCount, kbliColors
   );
 
   return (
-    <div className="bg-white rounded-b-2xl overflow-hidden w-full">
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden w-80">
+      {/* Header */}
+      <div className="bg-blue-600 text-white p-3 flex justify-between items-center pr-10">
+        <h3 className="font-semibold text-sm flex items-center">
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
+            />
+          </svg>
+          Filter Data
+        </h3>
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            className="text-xs bg-white text-blue-600 hover:bg-gray-100 px-2 py-1 rounded font-medium transition-colors"
+          >
+            Reset
+          </button>
+        )}
+      </div>
+
       {/* Content */}
       <div className="p-4 space-y-4">
-        {hasActiveFilters && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={clearAllFilters}
-              className="text-xs bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg font-bold transition-colors"
-            >
-              Reset Filter
-            </button>
-          </div>
-        )}
         {/* Filter Results Summary */}
         <div className="bg-blue-50 rounded-lg p-3">
           <div className="flex justify-between items-center">
