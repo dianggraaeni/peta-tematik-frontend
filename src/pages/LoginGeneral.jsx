@@ -67,6 +67,7 @@ const LoginGeneral = () => {
         const returnedUser = response.data.user.username;
         const returnedToken = response.data.token;
         
+        localStorage.clear();
         localStorage.setItem("username", returnedUser);
         
         let destination = "/";
