@@ -32,8 +32,31 @@ const SummaryTab = ({ nama_desa }) => {
           const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${desaUpper}`);
           setData(response.data.data);
         } else if (desaUpper === "SIMOKETAWANG" || desaUpper === "KETAWANG") {
-          const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${desaUpper}`);
-          setData(response.data.data);
+          const response = await api6.get(`/api/pertanian/usahasayuran?nmdesa=${desaUpper}`);
+          const rows = response.data.data || [];
+          
+          let computedData = {
+            jml_unit_usaha_klengkeng: rows.length,
+            jml_unit_usaha_klengkeng_pupuk_organik: rows.filter(r => r.jenis_pupuk?.toLowerCase().includes("organik") && !r.jenis_pupuk?.toLowerCase().includes("anorganik")).length,
+            jml_unit_usaha_klengkeng_pupuk_anorganik: rows.filter(r => r.jenis_pupuk?.toLowerCase().includes("anorganik")).length,
+            jml_unit_usaha_klengkeng_tidak_ada_pupuk: rows.filter(r => r.jenis_pupuk?.toLowerCase().includes("tidak ada") || !r.jenis_pupuk).length,
+            jml_unit_usaha_klengkeng_kopi_biji_klengkeng: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("kopi")).length,
+            jml_unit_usaha_klengkeng_kerajinan_tangan: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("kerajinan")).length,
+            jml_unit_usaha_klengkeng_batik_ecoprint: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("batik") || r.pemanfaatan_produk?.toLowerCase().includes("ecoprint")).length,
+            jml_unit_usaha_klengkeng_minuman: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("minuman")).length,
+            jml_unit_usaha_klengkeng_makanan: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("makanan")).length,
+            jml_unit_usaha_klengkeng_tidak_dimanfaatkan: rows.filter(r => r.pemanfaatan_produk?.toLowerCase().includes("tidak")).length,
+            jml_pohon: rows.reduce((acc, r) => acc + (Number(r.jml_pohon) || 0), 0),
+            jml_pohon_new_crystal: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_new_crystal) || 0), 0),
+            jml_pohon_pingpong: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_pingpong) || 0), 0),
+            jml_pohon_metalada: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_metalada) || 0), 0),
+            jml_pohon_diamond_river: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_diamond_river) || 0), 0),
+            jml_pohon_merah: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_merah) || 0), 0),
+            jml_pohon_blm_berproduksi: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_blm_berproduksi) || 0), 0),
+            jml_pohon_sdh_berproduksi: rows.reduce((acc, r) => acc + (Number(r.jml_pohon_sdh_berproduksi) || 0), 0),
+            volume_produksi: rows.reduce((acc, r) => acc + (Number(r.volume_produksi) || 0), 0)
+          };
+          setData(computedData);
         } else if (desaUpper === "SIMOANGINANGIN") {
           const response = await api.get("/api/rt/all/aggregate");
           setData(response.data.data);

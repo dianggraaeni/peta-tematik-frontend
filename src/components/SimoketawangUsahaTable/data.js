@@ -1,5 +1,6 @@
 const columns = [
-  { name: "Identitas SLS", uid: "rt_rw_dusun" },
+  { name: "Alamat", uid: "alamat" },
+  { name: "Pemanfaatan Produk", uid: "pemanfaatan_produk" },
   { name: "Aksi", uid: "aksi" },
 ];
 
