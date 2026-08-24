@@ -123,16 +123,7 @@ const BerandaSidoarjo = () => {
   }, []);
 
   const handleNavigateDetail = (desaName) => {
-    const normalizedName = desaName.replace(/\s+/g, '').toUpperCase();
-    if (normalizedName === "SIMOANGINANGIN") {
-      navigate("/detail-simoanginangin");
-    } else if (normalizedName === "SIMOKETAWANG") {
-      navigate("/detail-simoketawang");
-    } else if (normalizedName === "WAUNG") {
-      navigate("/detail-waung");
-    } else {
-      navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
-    }
+    navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
   };
 
   // Handle clicking outside the search box to close dropdown

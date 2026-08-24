@@ -17,6 +17,8 @@ const VillageAdmin = () => {
   const [loading, setLoading] = useState(true);
 
   const isUpdatePeta = location.pathname.toLowerCase().includes('/update-peta');
+  const searchParams = new URLSearchParams(location.search);
+  const activeTheme = searchParams.get('theme');
 
   useEffect(() => {
     const fetchThemes = async () => {
@@ -44,7 +46,7 @@ const VillageAdmin = () => {
   }, [nama_desa]);
 
   return (
-    <AdminLayout pageTitle={`Admin Desa ${nama_desa?.toUpperCase()}`}>
+    <AdminLayout pageTitle={`Admin Desa ${nama_desa?.toUpperCase()}`} villageThemes={themes}>
       <div className="flex flex-col gap-5 pt-5 sm:px-6 mb-16 h-full pb-10">
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4 w-full">
           <div className="w-full flex justify-between items-center bg-blue-50/50 p-4 rounded-xl border border-blue-100">
@@ -64,7 +66,7 @@ const VillageAdmin = () => {
         ) : (
           <div className="flex w-full flex-col font-inter mt-2 animate-fadeIn">
             {isUpdatePeta ? (
-              <DataUploader nama_desa={nama_desa} themes={themes} />
+              <DataUploader nama_desa={nama_desa} themes={activeTheme ? [activeTheme] : themes} />
             ) : (
                 <div className="flex flex-col gap-8">
                   <InsightManagementTab nama_desa={nama_desa} />

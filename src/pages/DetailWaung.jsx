@@ -188,7 +188,7 @@ export default function DetailWaung() {
   const PIE_COLORS = ['#3b82f6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#8b5cf6'];
 
   return (
-    <div className="flex w-screen h-screen overflow-hidden bg-gray-200 font-sans relative">
+    <div className="flex w-full h-full overflow-hidden bg-gray-200 font-sans relative">
       <style>{`
         .leaflet-control-zoom {
           border: none !important;

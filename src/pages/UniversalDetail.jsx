@@ -6,6 +6,8 @@ import { Tabs, Tab, Spinner } from "@nextui-org/react";
 import MapPekerjaan from "../components/PetaPekerjaan";
 import MapUMKM from "../components/PetaUMKM";
 import MapPertanian from "../components/PetaSayuran"; // Assuming PetaSayuran is for Pertanian
+import PetaKelengkeng from "../components/PetaKelengkeng";
+import DetailWaung from "./DetailWaung";
 
 const UniversalDetail = () => {
   const location = useLocation();
@@ -71,10 +73,16 @@ const UniversalDetail = () => {
   const renderActiveMap = () => {
     switch (activeTab) {
       case "Sosial Kependudukan":
+        if (desaName.toUpperCase() === "WAUNG") {
+          return <DetailWaung />;
+        }
         return <MapPekerjaan desaName={desaName} />;
       case "Ekonomi Perdagangan":
         return <MapUMKM desaName={desaName} />;
       case "Pertanian Pertambangan":
+        if (desaName.toUpperCase() === "SIMOKETAWANG") {
+          return <PetaKelengkeng desaName={desaName} />;
+        }
         return <MapPertanian desaName={desaName} />;
       default:
         return <MapPekerjaan desaName={desaName} />;

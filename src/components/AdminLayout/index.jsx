@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaHome, FaDoorOpen, FaTable, FaBars, FaTimes, FaDatabase } from "react-icons/fa";
 
-const Sidebar = ({ isOpen, setIsOpen }) => {
+const Sidebar = ({ isOpen, setIsOpen, villageThemes = [] }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const username = localStorage.getItem("username") || "";
   const isSuperAdmin = username === "admin_pusat";
+
+  const searchParams = new URLSearchParams(location.search);
+  const currentTheme = searchParams.get('theme');
 
   const handleLogout = () => {
     localStorage.clear();
@@ -94,17 +97,38 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <FaHome className="text-lg" />
               <span className="font-semibold">Dashboard Utama</span>
             </Link>
-            <Link
-              to={`${adminRoute}/update-peta`}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                currentPath.toLowerCase().includes("/update-peta")
-                  ? "bg-blue-500 shadow-md"
-                  : "hover:bg-blue-800"
-              }`}
-            >
-              <FaDatabase className="text-lg" />
-              <span className="font-semibold">Update Data Peta</span>
-            </Link>
+
+            {villageThemes && villageThemes.length > 0 ? (
+              villageThemes.map(theme => {
+                const isActive = currentPath.toLowerCase().includes("/update-peta") && currentTheme === theme;
+                return (
+                  <Link
+                    key={theme}
+                    to={`${adminRoute}/update-peta?theme=${encodeURIComponent(theme)}`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-blue-500 shadow-md"
+                        : "hover:bg-blue-800"
+                    }`}
+                  >
+                    <FaDatabase className="text-lg" />
+                    <span className="font-semibold text-sm leading-tight">Data {theme}</span>
+                  </Link>
+                );
+              })
+            ) : (
+              <Link
+                to={`${adminRoute}/update-peta`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  currentPath.toLowerCase().includes("/update-peta")
+                    ? "bg-blue-500 shadow-md"
+                    : "hover:bg-blue-800"
+                }`}
+              >
+                <FaDatabase className="text-lg" />
+                <span className="font-semibold">Update Data Peta</span>
+              </Link>
+            )}
           </>
         )}
       </div>
@@ -123,12 +147,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   );
 };
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = ({ children, villageThemes = [] }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-slate-50 relative">
-      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} villageThemes={villageThemes} />
       <main className="flex-1 overflow-x-hidden overflow-y-auto w-full">
         {/* Mobile Header */}
         <div className="md:hidden bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-30">
