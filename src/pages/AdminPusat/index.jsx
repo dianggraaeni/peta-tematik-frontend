@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import AdminLayout from "../../components/AdminLayout";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, CheckboxGroup, Checkbox, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure, Select, SelectItem } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, CheckboxGroup, Checkbox, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure, Select, SelectItem, Pagination } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import api6 from "../../utils/api6";
 import api5 from "../../utils/api5"; // Assuming api5 is used for auth based on Login/index.jsx
@@ -37,6 +37,20 @@ const AdminPusat = () => {
     const desaThemes = themeSettings[desa] || [];
     return desaThemes.includes(selectedThemeFilter);
   });
+
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const pages = Math.ceil(filteredVillages.length / rowsPerPage);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredVillages.slice(start, end);
+  }, [page, filteredVillages]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedKecamatan, selectedThemeFilter]);
 
   useEffect(() => {
     fetchData();
@@ -179,14 +193,32 @@ const AdminPusat = () => {
             </div>
           </div>
 
-          <Table aria-label="Tabel Pengaturan Desa" className="w-full">
+          <Table 
+            aria-label="Tabel Pengaturan Desa" 
+            className="w-full"
+            bottomContent={
+              pages > 1 ? (
+                <div className="flex w-full justify-center mt-2">
+                  <Pagination
+                    isCompact
+                    showControls
+                    showShadow
+                    color="primary"
+                    page={page}
+                    total={pages}
+                    onChange={(page) => setPage(page)}
+                  />
+                </div>
+              ) : null
+            }
+          >
             <TableHeader>
               <TableColumn>NAMA DESA</TableColumn>
               <TableColumn>PENGATURAN TEMA</TableColumn>
               <TableColumn align="center">AKSI</TableColumn>
             </TableHeader>
             <TableBody emptyContent={loading ? "Memuat..." : "Tidak ada data"}>
-              {filteredVillages.map((desa) => (
+              {items.map((desa) => (
                 <TableRow key={desa}>
                   <TableCell className="font-semibold text-blue-900">{desa}</TableCell>
                   <TableCell>
