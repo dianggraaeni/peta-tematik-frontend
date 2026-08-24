@@ -58,10 +58,10 @@ const AdminPusat = () => {
       const kecamatans = Object.keys(villagesData).sort();
       setKecamatanList(kecamatans);
       
-      if (kecamatans.length > 0) {
-        setSelectedKecamatan(kecamatans[0]);
-        setVillages(villagesData[kecamatans[0]]);
-      }
+      // Default to "Semua Kecamatan"
+      setSelectedKecamatan("Semua Kecamatan");
+      const allVillages = Object.values(villagesData).flat().sort();
+      setVillages(allVillages);
     } catch (error) {
       console.error("Error fetching data:", error);
       message.error("Gagal mengambil data pengaturan tema atau desa");
@@ -73,7 +73,13 @@ const AdminPusat = () => {
   const handleKecamatanChange = (e) => {
     const kec = e.target.value;
     setSelectedKecamatan(kec);
-    setVillages(villagesByKecamatan[kec] || []);
+    
+    if (kec === "Semua Kecamatan") {
+      const allVillages = Object.values(villagesByKecamatan).flat().sort();
+      setVillages(allVillages);
+    } else {
+      setVillages(villagesByKecamatan[kec] || []);
+    }
   };
 
   const handleThemeChange = (desa, selectedThemes) => {
@@ -165,6 +171,7 @@ const AdminPusat = () => {
                 selectedKeys={[selectedKecamatan]}
                 onChange={handleKecamatanChange}
               >
+                <SelectItem key="Semua Kecamatan" value="Semua Kecamatan">Semua Kecamatan</SelectItem>
                 {kecamatanList.map(kec => (
                   <SelectItem key={kec} value={kec}>{kec}</SelectItem>
                 ))}
