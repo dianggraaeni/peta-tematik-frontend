@@ -576,22 +576,22 @@ const KeluargaPreviewSection = ({ nama_desa }) => {
     const isMicrodata = data[0] && 'jml_anggota_keluarga' in data[0];
 
     data.forEach(item => {
-      if (isMicrodata) {
-        totalKeluarga += 1;
-        totalAnggota += Number(item.jml_anggota_keluarga) || 0;
-        totalLantai += Number(item.luas_lantai) || 0;
-      } else {
-        const jk = Number(item.jumlah_keluarga) || 0;
-        const ra = Number(item.rata_anggota) || 0;
-        const rl = Number(item.rata_luas_lantai) || 0;
-        
-        totalKeluarga += jk;
-        if (ra > 0) {
-          totalAnggota += (ra * jk);
-          validRataCount += jk;
+        if (isMicrodata) {
+          totalKeluarga += 1;
+          totalAnggota += Number(item.jml_anggota_keluarga) || 0;
+          totalLantai += Number(item.luas_lantai) || 0;
+        } else {
+          const jk = Number(item.jumlah_keluarga || item['jumlah keluarga']) || 0;
+          const ra = Number(item.rata_anggota || item['rata-rata anggota keluarga']) || 0;
+          const rl = Number(item.rata_luas_lantai || item['rata-rata luas lantai']) || 0;
+          
+          totalKeluarga += jk;
+          if (ra > 0) {
+            totalAnggota += (ra * jk);
+            validRataCount += jk;
+          }
+          if (rl > 0) totalLantai += (rl * jk);
         }
-        if (rl > 0) totalLantai += (rl * jk);
-      }
     });
 
     return {
@@ -723,7 +723,7 @@ const UmkmPreviewSection = ({ nama_desa }) => {
         totalMikro += (d.jml_umkm_skala_usaha_mikro || 0);
         totalKecil += (d.jml_umkm_skala_usaha_kecil || 0);
         totalMenengah += (d.jml_umkm_skala_usaha_menengah || 0);
-        Object.keys(totalKbli).forEach(k => { totalKbli[k] += (d[jml_umkm_kbli_] || 0); });
+        Object.keys(totalKbli).forEach(k => { totalKbli[k] += (d[`jml_umkm_kbli_${k.toLowerCase()}`] || 0); });
       });
 
       let dominantKbli = "-";
