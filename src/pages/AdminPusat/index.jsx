@@ -149,9 +149,6 @@ const AdminPusat = () => {
                   <SelectItem key={kec} value={kec}>{kec}</SelectItem>
                 ))}
               </Select>
-              <Button color="primary" onPress={onOpen} className="font-semibold shadow-md">
-                + Tambah Admin Desa
-              </Button>
             </div>
           </div>
 
