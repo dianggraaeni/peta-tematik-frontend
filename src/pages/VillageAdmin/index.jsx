@@ -73,12 +73,6 @@ const VillageAdmin = () => {
                   {/* {nama_desa?.toUpperCase() === "SIMOKETAWANG" && <SimoketawangUsahaTable />} */}
                   {/* {nama_desa?.toUpperCase() === "GROGOL" && <GrogolUsahaTable />} */}
                   
-                  {(nama_desa?.toUpperCase() === "SIMOANGINANGIN" || nama_desa?.toUpperCase() === "SIMOKETAWANG" || nama_desa?.toUpperCase() === "GROGOL" || nama_desa?.toUpperCase() === "WAUNG") && (
-                     <div className="flex justify-center items-center h-40 text-gray-500 italic bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                       Tabel Manajemen Data khusus untuk {nama_desa} belum tersedia. Silakan gunakan Update Data Peta.
-                     </div>
-                  )}
-                  
                   <SummaryTab nama_desa={nama_desa} />
                 </div>
             )}
