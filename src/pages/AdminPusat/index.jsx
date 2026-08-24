@@ -16,6 +16,7 @@ const AdminPusat = () => {
   const [villagesByKecamatan, setVillagesByKecamatan] = useState({});
   const [kecamatanList, setKecamatanList] = useState([]);
   const [selectedKecamatan, setSelectedKecamatan] = useState("");
+  const [selectedThemeFilter, setSelectedThemeFilter] = useState("Semua Tema");
   const [villages, setVillages] = useState([]);
 
   const [themeSettings, setThemeSettings] = useState({});
@@ -29,6 +30,13 @@ const AdminPusat = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   const navigate = useNavigate();
+
+  // Filter villages dynamically based on both filters
+  const filteredVillages = villages.filter(desa => {
+    if (selectedThemeFilter === "Semua Tema") return true;
+    const desaThemes = themeSettings[desa] || [];
+    return desaThemes.includes(selectedThemeFilter);
+  });
 
   useEffect(() => {
     fetchData();
@@ -139,6 +147,18 @@ const AdminPusat = () => {
             </div>
             <div className="flex items-center gap-4">
               <Select
+                label="Pilih Tema"
+                className="w-48"
+                size="sm"
+                selectedKeys={[selectedThemeFilter]}
+                onChange={(e) => setSelectedThemeFilter(e.target.value)}
+              >
+                <SelectItem key="Semua Tema" value="Semua Tema">Semua Tema</SelectItem>
+                <SelectItem key="Sosial Kependudukan" value="Sosial Kependudukan">Sosial Kependudukan</SelectItem>
+                <SelectItem key="Ekonomi Perdagangan" value="Ekonomi Perdagangan">Ekonomi Perdagangan</SelectItem>
+                <SelectItem key="Pertanian Pertambangan" value="Pertanian Pertambangan">Pertanian Pertambangan</SelectItem>
+              </Select>
+              <Select
                 label="Pilih Kecamatan"
                 className="w-48"
                 size="sm"
@@ -159,7 +179,7 @@ const AdminPusat = () => {
               <TableColumn align="center">AKSI</TableColumn>
             </TableHeader>
             <TableBody emptyContent={loading ? "Memuat..." : "Tidak ada data"}>
-              {villages.map((desa) => (
+              {filteredVillages.map((desa) => (
                 <TableRow key={desa}>
                   <TableCell className="font-semibold text-blue-900">{desa}</TableCell>
                   <TableCell>
