@@ -343,7 +343,7 @@ const SimoketawangUsahaTable = ({ fetchDataAggregate }) => {
               showShadow
               color="secondary"
               page={page}
-              total={pages}
+              total={pages > 0 ? pages : 1}
               onChange={(page) => setPage(page)}
             />
           </div>
