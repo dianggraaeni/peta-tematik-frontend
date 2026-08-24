@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MapContainer, GeoJSON, useMap, ZoomControl, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
+import api6 from "../utils/api6";
 import CustomMapControls, { useBasemap } from "../components/CustomMapControls";
 import "leaflet/dist/leaflet.css";
 import AIInsightBox from "../components/AIInsightBox";
@@ -54,17 +55,10 @@ const MapController = ({ geojsonData, selectedDesa, geoJsonRef }) => {
   return null;
 };
 
-const desaTematikInfo = {
-  "SIMOKETAWANG": ["Ekonomi Perdagangan"],
-  "SIMO ANGIN ANGIN": ["Ekonomi Perdagangan"],
-  "SIMOANGINANGIN": ["Ekonomi Perdagangan"],
-  "SIDOKEPUNG": ["Sosial Kependudukan"],
-  "WAUNG": ["Sosial Kependudukan"]
-};
-
 const filterThemes = ["Sosial Kependudukan", "Ekonomi Perdagangan", "Pertanian Pertambangan"];
 
 const BerandaSidoarjo = () => {
+  const [desaTematikInfo, setDesaTematikInfo] = useState({});
   const [geojsonData, setGeojsonData] = useState(null);
   const [pendudukData, setPendudukData] = useState(null);
   const [rawPendudukData, setRawPendudukData] = useState(null);
@@ -104,14 +98,16 @@ const BerandaSidoarjo = () => {
   }, [selectedDesa]);
 
   useEffect(() => {
-    // Fetch the new boundaries GeoJSON and Population Data
+    // Fetch the new boundaries GeoJSON, Population Data, and Themes
     Promise.all([
       fetch(`/data/peta_sidoarjo.geojson?t=${Date.now()}`).then((res) => res.json()),
-      fetch(`/data/penduduk.json?t=${Date.now()}`).then((res) => res.json())
+      fetch(`/data/penduduk.json?t=${Date.now()}`).then((res) => res.json()),
+      api6.get("/api/village-themes").then(res => res.data).catch(() => ({}))
     ])
-      .then(([geoJson, penduduk]) => {
+      .then(([geoJson, penduduk, themesMap]) => {
         setGeojsonData(geoJson);
         setRawPendudukData(penduduk);
+        setDesaTematikInfo(themesMap || {});
         // Remap penduduk by uppercase nmdesa for easy lookup
         const byName = {};
         Object.values(penduduk).forEach(d => {
@@ -124,6 +120,10 @@ const BerandaSidoarjo = () => {
 
   const handleNavigateDetail = (desaName) => {
     navigate(`/detail?desa=${encodeURIComponent(desaName)}`);
+  };
+
+  const handleSelectSearch = (desaName) => {
+    handleNavigateDetail(desaName);
   };
 
   // Handle clicking outside the search box to close dropdown

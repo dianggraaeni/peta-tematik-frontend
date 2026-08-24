@@ -17,12 +17,20 @@ const Sidebar = ({ isOpen, setIsOpen, villageThemes = [] }) => {
   };
 
   const currentPath = location.pathname;
+  const isViewingVillage = currentPath.toLowerCase().startsWith("/admin/desa/");
 
   let adminRoute = "/admin/pusat";
-  if (!isSuperAdmin && username.startsWith("admin_")) {
-    const desaName = username.replace("admin_", "").toUpperCase();
-    adminRoute = `/admin/desa/${desaName}`;
+  let targetVillage = "";
+  if (isViewingVillage) {
+    const parts = currentPath.split("/");
+    targetVillage = parts[3]; // /admin/desa/ANGGASWANGI
+    adminRoute = `/admin/desa/${targetVillage}`;
+  } else if (!isSuperAdmin && username.startsWith("admin_")) {
+    targetVillage = username.replace("admin_", "").toUpperCase();
+    adminRoute = `/admin/desa/${targetVillage}`;
   }
+
+  const showPusatMenu = isSuperAdmin && !isViewingVillage;
 
   return (
     <>
@@ -49,7 +57,7 @@ const Sidebar = ({ isOpen, setIsOpen, villageThemes = [] }) => {
         </div>
 
       <div className="flex-1 px-4 space-y-2 mt-4">
-        {isSuperAdmin ? (
+        {showPusatMenu ? (
           <>
             <div className="mb-4">
               <p className="px-4 text-xs font-semibold text-blue-200 uppercase tracking-wider">
@@ -133,7 +141,16 @@ const Sidebar = ({ isOpen, setIsOpen, villageThemes = [] }) => {
         )}
       </div>
 
-      <div className="p-4 bg-blue-950">
+      <div className="p-4 bg-blue-950 space-y-3">
+        {isSuperAdmin && isViewingVillage && (
+          <Link
+            to="/admin/pusat"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-700 hover:bg-blue-600 rounded-lg font-semibold transition-colors shadow-md text-sm"
+          >
+            <FaDoorOpen className="text-lg" />
+            Kembali Pusat
+          </Link>
+        )}
         <button
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 rounded-lg font-semibold transition-colors shadow-md"
