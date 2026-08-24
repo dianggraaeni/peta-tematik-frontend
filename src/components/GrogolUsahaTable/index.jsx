@@ -68,7 +68,7 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
       ]);
       setDataRt(rtResponse.data.data);
       console.log("Check dataRt", rtResponse.data.data);
-      setDataRuta(rutaResponse.data.data);
+      setDataRuta((rutaResponse.data.data || []).map((d, i) => ({ ...d, _id: d._id || d.kode || `row-${i}` })));
       console.log("Check dataRuta", rutaResponse.data.data);
     } catch (error) {
       // Cek jika error memiliki respons body
@@ -212,16 +212,18 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Hapus">
-              <Popconfirm
-                title="Hapus Data Usaha Sayuran"
-                description="Anda yakin menghapus data usaha sayuran ini?"
-                onConfirm={() => handleDelete(ruta)}
-                onOpenChange={() => console.log("open change")}
-              >
-                <span className="text-lg cursor-pointer text-danger active:opacity-50">
-                  <DeleteIcon />
-                </span>
-              </Popconfirm>
+              <span className="inline-block">
+                <Popconfirm
+                  title="Hapus Data Usaha Sayuran"
+                  description="Anda yakin menghapus data usaha sayuran ini?"
+                  onConfirm={() => handleDelete(ruta)}
+                  onOpenChange={() => console.log("open change")}
+                >
+                  <span className="text-lg cursor-pointer text-danger active:opacity-50">
+                    <DeleteIcon />
+                  </span>
+                </Popconfirm>
+              </span>
             </Tooltip>
           </div>
         );
@@ -532,10 +534,12 @@ const GrogolUsahaTable = ({ fetchDataAggregate }) => {
               onConfirm={() => handleDeleteManyUsaha()}
               onOpenChange={() => console.log("open change")}
             >
-              <AiTwotoneDelete
-                className="absolute bottom-0 left-0 m-[10px] text-red-600 cursor-pointer"
-                size={25}
-              />
+              <span className="absolute bottom-0 left-0 m-[10px] inline-block cursor-pointer">
+                <AiTwotoneDelete
+                  className="text-red-600"
+                  size={25}
+                />
+              </span>
             </Popconfirm>
             <Pagination
               isCompact
