@@ -1,6 +1,4 @@
 const columns = [
-  { name: "Kode", uid: "kode" },
-  { name: "Nama Kepala Keluarga", uid: "nama_kepala_keluarga" },
   { name: "Identitas SLS", uid: "rt_rw_dusun" },
   { name: "Aksi", uid: "aksi" },
 ];
