@@ -24,7 +24,7 @@ const VillageAdmin = () => {
     const fetchThemes = async () => {
       try {
         const response = await api6.get("/api/village-themes");
-        const themeMap = response.data;
+        const themeMap = response.data || {};
         
         // Find by uppercase name
         const currentVillageKey = Object.keys(themeMap).find(
