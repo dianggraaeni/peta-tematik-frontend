@@ -35,6 +35,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   const [isDataOpen, setIsDataOpen] = useState(false);
   const [activeBasemap, setActiveBasemap] = useBasemap();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLayerOpen, setIsLayerOpen] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
   const [dataAgregat, setDataAgregat] = useState([]);
@@ -54,11 +55,12 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
     setLoading(true);
     try {
       const response = await api6.get(`/api/peta?nmdesa=${encodeURIComponent(desaName)}`);
-      // Peta endpoint directly returns array of features, but PetaSayuran expects an array of FeatureCollections
-      const featureCollections = response.data.map(feature => ({
+      // Peta endpoint returns a FeatureCollection object, but PetaSayuran expects an array of FeatureCollections (one per RT)
+      const features = response.data.features || response.data || [];
+      const featureCollections = Array.isArray(features) ? features.map(feature => ({
         type: "FeatureCollection",
         features: [feature]
-      }));
+      })) : [];
       setData(featureCollections); 
       console.log("Data fetched:", featureCollections);
     } catch (error) {
@@ -293,25 +295,40 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
       .join(" "); // Combine the processed strings with a space
   }
 
-  function calculateCentroid(multiPolygon) {
+  function calculateCentroid(geometry) {
+    if (!geometry || !geometry.coordinates) return [-7.4478, 112.7183];
+
     let totalX = 0,
       totalY = 0,
       totalPoints = 0;
 
-    multiPolygon.coordinates.forEach((polygon) => {
-      polygon.forEach((ring) => {
-        ring.forEach((coordinate) => {
+    const processRing = (ring) => {
+      ring.forEach((coordinate) => {
+        if (Array.isArray(coordinate) && coordinate.length >= 2) {
           totalX += coordinate[0];
           totalY += coordinate[1];
           totalPoints++;
-        });
+        }
       });
-    });
+    };
+
+    if (geometry.type === "Polygon") {
+      geometry.coordinates.forEach(processRing);
+    } else if (geometry.type === "MultiPolygon") {
+      geometry.coordinates.forEach((polygon) => {
+        polygon.forEach(processRing);
+      });
+    } else {
+      // Fallback
+      return [-7.4478, 112.7183];
+    }
+
+    if (totalPoints === 0) return [-7.4478, 112.7183];
 
     const centroidX = totalX / totalPoints;
     const centroidY = totalY / totalPoints;
 
-    return [centroidY, centroidX]; // Return as an array of floats
+    return [centroidY, centroidX];
   }
 
   const tempatUsaha = {
@@ -391,11 +408,14 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   ]);
 
   const CustomMarker = memo(
-    ({ item }) => (
-      <Marker
-        position={[parseFloat(item.latitude), parseFloat(item.longitude)]}
-        icon={markerIcon}
-      >
+    ({ item }) => {
+      const lat = parseFloat(item.latitude) || -7.4478;
+      const lng = parseFloat(item.longitude) || 112.7183;
+      return (
+        <Marker
+          position={[lat, lng]}
+          icon={markerIcon}
+        >
         <Popup>
           <div className="z-100000000 w-full">
             <div className="mb-4">
@@ -496,16 +516,13 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                 </table>
               </div>
             </div>
-
-            <p className="text-xs italic mt-2">
-              *periode Januari-September 2024
-            </p>
           </div>
         </Popup>
       </Marker>
-    ),
-    []
-  );
+    );
+  },
+  []
+);
 
   CustomMarker.displayName = "CustomMarker";
 
@@ -633,28 +650,26 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
         {!hideCards && (
           <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
             {/* FILTER PANEL */}
-            <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
+            <div className="absolute top-[256px] right-4 z-[1000] pointer-events-auto">
               <button
-                className="w-11 h-11 bg-white/95 backdrop-blur-xl border border-gray-100 text-[#68B92E] hover:bg-gray-50 rounded-2xl shadow-lg flex items-center justify-center transition-all active:scale-95"
+                className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 title={isFilterOpen ? 'Tutup Filter' : 'Buka Filter'}
               >
-            <span className="material-icons text-[18px]">filter_list</span>
-          </button>
-        </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              </button>
 
-            <Transition
-          show={isFilterOpen}
-          enter="transition ease-out duration-300"
-          enterFrom="opacity-0 transform scale-95"
-          enterTo="opacity-100 transform scale-100"
-          leave="transition ease-in duration-200"
-          leaveFrom="opacity-100 transform scale-100"
-          leaveTo="opacity-0 transform scale-95"
-          className="absolute top-72 right-16 md:top-80 md:right-20 z-[1000] w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 pointer-events-auto"
-        >
-          <div>
-            <div className="grid grid-cols-2 gap-4">
+              <Transition
+                show={isFilterOpen}
+                enter="transition ease-out duration-300"
+                enterFrom="opacity-0 transform scale-95"
+                enterTo="opacity-100 transform scale-100"
+                leave="transition ease-in duration-200"
+                leaveFrom="opacity-100 transform scale-100"
+                leaveTo="opacity-0 transform scale-95"
+              >
+                <div className="absolute top-0 right-full mr-2 w-64 p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800">
+                  <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium">Tahun</label>
                 <select
@@ -745,6 +760,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
             </select>
           </div>
         </Transition>
+      </div>
             
             <AIInsightBox 
           desaName={desaName}
@@ -770,8 +786,8 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                 {selectedRT !== "desa" ? (
                   <>
                     <div className="mb-4">
-                      <p className="bg-[#b4fa82] text-[#065f46] rounded-full p-1 text-sm font-medium">
-                        <span className="mr-1 text-sm material-icons  text-[#065f46]">
+                      <p className="bg-gray-100 border border-gray-200 rounded-full p-1.5 text-xs text-gray-700 font-semibold flex items-center">
+                        <span className="mr-1 text-[#6b8e23] material-icons text-sm">
                           location_on
                         </span>
                         RT {filteredData.features[0].properties.rt} RW{" "}
@@ -780,140 +796,126 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                       </p>
                     </div>
 
-                    <div className="bg-[#d3f4a2] p-4 rounded-md mb-4 text-left">
-                      <div className="text-4xl font-bold text-[#6b8e23]">
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-[#6b8e23]">
                         <CountUp
                           start={0}
-                          end={
-                            filteredData.features[0].properties
-                              .total_usaha_sayuran
-                          }
+                          end={filteredData.features[0].properties.total_usaha_sayuran || 0}
                           duration={3}
                         />
                       </div>
-                      <p className="text-xm text-[#6b8e23]">
-                        Pengusaha <br></br>Sayuran Semusim
+                      <p className="text-xm font-bold text-gray-700 mt-1">
+                        Pengusaha Sayuran Semusim
                       </p>
                     </div>
 
-                    <div className="bg-[#d3f4a2] p-4 rounded-md mb-4 text-left space-y-4">
-                      {/* Unit Usaha Kangkung */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#FED976] text-[#8F722E] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_kangkung
-                            }
-                            duration={3}
-                          />
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <p className="mb-3 text-sm font-bold text-gray-500 uppercase tracking-wider">
+                        Unit Usaha
+                      </p>
+                      <div className="space-y-3">
+                        {/* Unit Usaha Kangkung */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Kangkung</span>
+                          <div className="bg-[#FED976] text-[#8F722E] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={filteredData.features[0].properties.total_tanaman_kangkung || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#8F722E]">
-                          Unit Usaha Kangkung
-                        </p>
-                      </div>
 
-                      {/* Unit Usaha Bayam */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#e0ff8c] text-[#728B3C] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_bayam
-                            }
-                            duration={3}
-                          />
+                        {/* Unit Usaha Bayam */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Bayam</span>
+                          <div className="bg-[#e0ff8c] text-[#728B3C] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={filteredData.features[0].properties.total_tanaman_bayam || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#728B3C]">
-                          Unit Usaha Bayam
-                        </p>
-                      </div>
 
-                      {/* Unit Usaha Sawi */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#a2e48f] text-[#587644] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_sawi
-                            }
-                            duration={3}
-                          />
+                        {/* Unit Usaha Sawi */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Sawi</span>
+                          <div className="bg-[#a2e48f] text-[#587644] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={filteredData.features[0].properties.total_tanaman_sawi || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#587644]">
-                          Unit Usaha Sawi
-                        </p>
                       </div>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="mb-4">
-                      <p className="bg-[#b4fa82] text-[#065f46] rounded-full p-1 text-sm font-medium">
-                        <span className="mr-1 text-[#065f46] text-sm material-icons">
+                      <p className="bg-gray-100 border border-gray-200 rounded-full p-1.5 text-xs text-gray-700 font-semibold flex items-center">
+                        <span className="mr-1 text-[#6b8e23] material-icons text-sm">
                           location_on
                         </span>
                         Desa {desaName}
                       </p>
                     </div>
 
-                    <div className="bg-[#d3f4a2] p-4 rounded-md mb-4 text-left">
-                      <div className="text-4xl font-bold text-[#6b8e23]">
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-[#6b8e23]">
                         <CountUp
                           start={0}
-                          end={dataAgregat.total_usaha_sayuran}
+                          end={dataAgregat.total_usaha_sayuran || 0}
                           duration={3}
                         />
                       </div>
-                      <p className="text-xm text-[#6b8e23]">
-                        Pengusaha <br></br>Sayuran Semusim
+                      <p className="text-xm font-bold text-gray-700 mt-1">
+                        Pengusaha Sayuran Semusim
                       </p>
                     </div>
 
-                    <div className="bg-[#d3f4a2] p-4 rounded-md mb-4 text-left space-y-4">
-                      {/* Unit Usaha Kangkung */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#FED976] text-[#8F722E] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={dataAgregat.total_tanaman_kangkung}
-                            duration={3}
-                          />
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <p className="mb-3 text-sm font-bold text-gray-500 uppercase tracking-wider">
+                        Unit Usaha
+                      </p>
+                      <div className="space-y-3">
+                        {/* Unit Usaha Kangkung */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Kangkung</span>
+                          <div className="bg-[#FED976] text-[#8F722E] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_kangkung || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#8F722E]">
-                          Unit Usaha Kangkung
-                        </p>
-                      </div>
 
-                      {/* Unit Usaha Bayam */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#e0ff8c] text-[#728B3C] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={dataAgregat.total_tanaman_bayam}
-                            duration={3}
-                          />
+                        {/* Unit Usaha Bayam */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Bayam</span>
+                          <div className="bg-[#e0ff8c] text-[#728B3C] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_bayam || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#728B3C]">
-                          Unit Usaha Bayam
-                        </p>
-                      </div>
 
-                      {/* Unit Usaha Sawi */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#a2e48f] text-[#587644] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={dataAgregat.total_tanaman_sawi}
-                            duration={3}
-                          />
+                        {/* Unit Usaha Sawi */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-600">Sawi</span>
+                          <div className="bg-[#a2e48f] text-[#587644] font-bold px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_sawi || 0}
+                              duration={3}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-[#587644]">
-                          Unit Usaha Sawi
-                        </p>
                       </div>
                     </div>
                   </>

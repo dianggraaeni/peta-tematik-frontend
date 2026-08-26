@@ -292,7 +292,7 @@ export default function DetailWaung() {
           </MapContainer>
 
           {/* FILTER — floating kanan sejajar zoom controls */}
-          <div className="absolute top-[236px] right-3 z-[1000] pointer-events-auto">
+          <div className="absolute top-[256px] right-4 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}

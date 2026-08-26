@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import BeatLoader from "react-spinners/BeatLoader";
 import CountUp from "react-countup";
-import CustomMapControls from "../CustomMapControls";
+import CustomMapControls, { useBasemap } from "../CustomMapControls";
 import UmkmCharts from "./UmkmCharts";
 import AIInsightBox from "../AIInsightBox";
 import FilterPanelUmkm from "./FilterPanelUmkm";
@@ -80,11 +80,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   const [selectedArea, setSelectedArea] = useState({ rt: "", rw: "" });
   const [selectedAreaTitle, setSelectedAreaTitle] = useState(`Desa ${desaName}`);
   
-  const [activeBasemap, setActiveBasemap] = useState({
-    name: "Satelit",
-    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    attribution: "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
-  });
+  const [activeBasemap, setActiveBasemap] = useBasemap();
 
   const [isFilterMinimized, setIsFilterMinimized] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
@@ -347,7 +343,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
 
         {/* ── FILTER — fixed icon below zoom, panel expands LEFT ── */}
         {!hideCards && (
-          <div className="absolute top-[236px] right-3 md:right-4 z-[1000] pointer-events-auto">
+          <div className="absolute top-[256px] right-4 z-[1000] pointer-events-auto">
             <button
               className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}

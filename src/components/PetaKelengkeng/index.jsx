@@ -17,7 +17,6 @@ import AIInsightBox from "../AIInsightBox";
 import RightSidebar from '../RightSidebar';
 import "leaflet/dist/leaflet.css";
 import L, { divIcon } from "leaflet";
-import { Transition } from "@headlessui/react";
 import api6 from "../../utils/api6.js";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
@@ -38,7 +37,6 @@ export default function MapSection() {
   const [isFilterMinimized, setIsFilterMinimized] = useState(true);
   const [isLegendMinimized, setIsLegendMinimized] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
   const [isFetched, setIsFetched] = useState(false);
   const [data, setData] = useState([]);
   const [dataAgregat, setDataAgregat] = useState({});
@@ -50,9 +48,7 @@ export default function MapSection() {
   );
   const [showRT, setShowRT] = useState(true);
   const [showIndividu, setIndividu] = useState(true);
-  const [visualization, setVisualization] = useState("umkm");
   const toggleRT = () => setShowRT(!showRT);
-  const changeVisualization = (type) => setVisualization(type);
 
   const fetchData = async () => {
     setLoading(true);
@@ -598,9 +594,9 @@ export default function MapSection() {
           />
           
           {/* ── FILTER — fixed icon below zoom, panel expands LEFT */}
-          <div className="absolute top-64 right-3 md:top-72 md:right-4 z-[1000] pointer-events-auto">
+          <div className="absolute top-[256px] right-4 z-[1000] pointer-events-auto">
             <button
-              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
+              className="relative w-11 h-11 bg-white/95 backdrop-blur-xl shadow-md rounded-2xl border border-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all active:scale-95"
               onClick={() => setIsFilterMinimized(!isFilterMinimized)}
               title={isFilterMinimized ? "Buka Filter" : "Tutup Filter"}
             >
@@ -752,28 +748,19 @@ export default function MapSection() {
             </MarkerClusterGroup>
           )}
         </MapContainer>
-
-      <div className="absolute inset-0 pointer-events-none font-sfProDisplay">
-        <div className="absolute top-[4.5rem] left-3 z-10 flex gap-2">
-          <button
-            className="px-6 py-2 bg-white/95 backdrop-blur-xl border border-gray-100 text-gray-700 hover:text-emerald-600 rounded-xl shadow-lg hover:shadow-xl flex items-center pointer-events-auto transition-all font-bold text-sm"
-            onClick={() => setIsVisualizationOpen(!isVisualizationOpen)}
-          >
-            <span className="mr-2 material-icons text-emerald-500">analytics</span>
-            Statistik
+        {!isSidebarOpen && (
+          <button onClick={() => setIsSidebarOpen(true)} className="absolute top-1/2 right-0 z-[1000] bg-white p-2 rounded-l-lg shadow-md">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-        </div>
-
-        <Transition
-          show={isVisualizationOpen}
-          enter="transition-transform duration-300"
-          enterFrom="-translate-x-full"
-          enterTo="translate-x-0"
-          leave="transition-transform duration-300"
-          leaveFrom="translate-x-0"
-          leaveTo="-translate-x-full"
-          className="absolute top-[4.5rem] left-3 z-[1000] w-64 max-h-[80vh] p-4 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-2xl text-gray-800 overflow-y-auto pointer-events-auto custom-scrollbar"
-        >
+        )}
+      </div>
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        desaName="SIMOKETAWANG"
+        themeName="PERTANIAN"
+        themeIcon="/pict/des-can.png"
+      >
           <div className="text-center">
             {filteredData?.features?.[0] ? (
               <>
@@ -924,18 +911,6 @@ export default function MapSection() {
               </>
             ) : null}
           </div>
-        </Transition>
-
-
-      </div>
-      </div>
-      <RightSidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        desaName="SIMOKETAWANG"
-        themeName="PERTANIAN"
-        themeIcon="/pict/des-can.png"
-      >
         {/* Legend */}
         <div className="bg-gray-50 rounded-xl p-4 mb-4">
           <div className="font-bold text-gray-700 text-sm mb-3 pb-2 border-b border-gray-200">Legenda Potensi</div>
