@@ -784,10 +784,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                       <div className="text-4xl font-bold text-[#6b8e23]">
                         <CountUp
                           start={0}
-                          end={
-                            filteredData.features[0].properties
-                              .total_usaha_sayuran
-                          }
+                          end={filteredData.features[0].properties.total_usaha_sayuran || 0}
                           duration={3}
                         />
                       </div>
@@ -802,10 +799,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                         <div className="bg-[#FED976] text-[#8F722E] font-bold w-10 text-center px-3 py-1 rounded-lg">
                           <CountUp
                             start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_kangkung
-                            }
+                            end={filteredData.features[0].properties.total_tanaman_kangkung || 0}
                             duration={3}
                           />
                         </div>
@@ -819,10 +813,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                         <div className="bg-[#e0ff8c] text-[#728B3C] font-bold w-10 text-center px-3 py-1 rounded-lg">
                           <CountUp
                             start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_bayam
-                            }
+                            end={filteredData.features[0].properties.total_tanaman_bayam || 0}
                             duration={3}
                           />
                         </div>
@@ -836,10 +827,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                         <div className="bg-[#a2e48f] text-[#587644] font-bold w-10 text-center px-3 py-1 rounded-lg">
                           <CountUp
                             start={0}
-                            end={
-                              filteredData.features[0].properties
-                                .total_tanaman_sawi
-                            }
+                            end={filteredData.features[0].properties.total_tanaman_sawi || 0}
                             duration={3}
                           />
                         </div>
@@ -864,7 +852,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                       <div className="text-4xl font-bold text-[#6b8e23]">
                         <CountUp
                           start={0}
-                          end={dataAgregat.total_usaha_sayuran}
+                          end={dataAgregat.total_usaha_sayuran || 0}
                           duration={3}
                         />
                       </div>
@@ -879,43 +867,69 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                         <div className="bg-[#FED976] text-[#8F722E] font-bold w-10 text-center px-3 py-1 rounded-lg">
                           <CountUp
                             start={0}
-                            end={dataAgregat.total_tanaman_kangkung}
-                            duration={3}
-                          />
-                        </div>
-                        <p className="text-sm text-[#8F722E]">
-                          Unit Usaha Kangkung
+                      <div className="mb-4">
+                        <p className="bg-[#b4fa82] text-[#065f46] rounded-full p-1 text-sm font-medium">
+                          <span className="mr-1 text-sm material-icons  text-[#065f46]">
+                            location_on
+                          </span>
+                          {desaName || "Desa"}
                         </p>
                       </div>
 
-                      {/* Unit Usaha Bayam */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#e0ff8c] text-[#728B3C] font-bold w-10 text-center px-3 py-1 rounded-lg">
+                      <div className="bg-[#d3f4a2] p-4 rounded-md mb-4 text-left">
+                        <div className="text-4xl font-bold text-[#6b8e23]">
                           <CountUp
                             start={0}
-                            end={dataAgregat.total_tanaman_bayam}
+                            end={dataAgregat.total_usaha_sayuran || 0}
                             duration={3}
                           />
                         </div>
-                        <p className="text-sm text-[#728B3C]">
-                          Unit Usaha Bayam
+                        <p className="text-xm text-[#6b8e23]">
+                          Pengusaha <br></br>Sayuran Semusim
                         </p>
                       </div>
 
-                      {/* Unit Usaha Sawi */}
-                      <div className="flex items-center space-x-2">
-                        <div className="bg-[#a2e48f] text-[#587644] font-bold w-10 text-center px-3 py-1 rounded-lg">
-                          <CountUp
-                            start={0}
-                            end={dataAgregat.total_tanaman_sawi}
-                            duration={3}
-                          />
+                      <div className="flex flex-col space-y-4">
+                        {/* Unit Usaha Kangkung */}
+                        <div className="flex items-center space-x-2">
+                          <div className="bg-[#FED976] text-[#8F722E] font-bold w-10 text-center px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_kangkung || 0}
+                              duration={3}
+                            />
+                          </div>
+                          <p className="text-sm text-[#8F722E]">
+                            Unit Usaha Kangkung
+                          </p>
                         </div>
-                        <p className="text-sm text-[#587644]">
-                          Unit Usaha Sawi
-                        </p>
+                        {/* Unit Usaha Bayam */}
+                        <div className="flex items-center space-x-2">
+                          <div className="bg-[#e0ff8c] text-[#728B3C] font-bold w-10 text-center px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_bayam || 0}
+                              duration={3}
+                            />
+                          </div>
+                          <p className="text-sm text-[#728B3C]">
+                            Unit Usaha Bayam
+                          </p>
+                        </div>
+                        {/* Unit Usaha Sawi */}
+                        <div className="flex items-center space-x-2">
+                          <div className="bg-[#a2e48f] text-[#587644] font-bold w-10 text-center px-3 py-1 rounded-lg">
+                            <CountUp
+                              start={0}
+                              end={dataAgregat.total_tanaman_sawi || 0}
+                              duration={3}
+                            />
+                          </div>
+                          <p className="text-sm text-[#587644]">
+                            Unit Usaha Sawi
+                          </p>
+                        </div>  
                       </div>
-                    </div>
                   </>
                 )}
               </>
