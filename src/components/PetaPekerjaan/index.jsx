@@ -458,7 +458,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
     const fetchGeoData = async () => {
       try {
         const url = desaName && desaName !== "SIDOARJO" 
-          ? `/api/peta?nmdesa=${encodeURIComponent(desaName)}` 
+          ? `/api/peta?nmdesa=${encodeURIComponent(desaName.replace(/\s+/g, ''))}` 
           : "/api/peta";
         const res = await api6.get(url);
         setGeojsonData(res.data);
@@ -474,7 +474,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
     const fetchOriginalData = async () => {
       try {
         const url = desaName && desaName !== "SIDOARJO" 
-          ? `/api/pekerjaan?nmdesa=${encodeURIComponent(desaName)}` 
+          ? `/api/pekerjaan?nmdesa=${encodeURIComponent(desaName.replace(/\s+/g, ''))}` 
           : "/api/pekerjaan";
         const res = await api6.get(url);
         setAllOriginalData(res.data);
@@ -494,7 +494,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
         apiUrl += `?rt=${rt}&rw=${rw}`;
         if (nmdesa) apiUrl += `&nmdesa=${encodeURIComponent(nmdesa)}`;
       } else if (desaName && desaName !== "SIDOARJO") {
-        apiUrl += `?nmdesa=${encodeURIComponent(desaName)}`;
+        apiUrl += `?nmdesa=${encodeURIComponent(desaName.replace(/\s+/g, ''))}`;
       }
       try {
         const res = await api6.get(apiUrl);
@@ -534,7 +534,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
         };
       }
       return {
-        fillColor: "#e5e7eb",
+        fillColor: "#ffffff",
         weight: isSelected ? 2 : 1,
         color: isSelected ? "#ffffff" : (isSpotlightActive ? "rgba(30, 41, 59, 0.4)" : "#1e293b"),
         fillOpacity: isSelected ? 0.7 : (isSpotlightActive ? 0.3 : 0.4),
@@ -993,6 +993,26 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
             <div>
               <div className="h-44 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-1.5 shadow-inner border border-blue-100">
                 {loading ? <div className="flex justify-center items-center h-full"><BeatLoader color="#4A90E2" size={6} /></div> : <DemographicsChart chartData={processedData[currentDataKey]} chartType={chartType} />}
+              </div>
+            </div>
+
+            {/* Legend Peta Pekerjaan */}
+            <div className="mt-2 bg-white border border-gray-100 p-2 rounded-xl shadow-sm">
+              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5 text-center">
+                Legenda Warna Peta
+              </h3>
+              <p className="text-[9px] text-gray-400 text-center mb-2 leading-tight">
+                Warna area menunjukkan Status Bekerja Dominan
+              </p>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center text-[9px]">
+                  <span className="w-3 h-3 rounded-full mr-2 shrink-0 border border-gray-200 shadow-sm" style={{ backgroundColor: "#2563eb" }}></span>
+                  <span className="text-gray-700 font-medium truncate">Bekerja</span>
+                </div>
+                <div className="flex items-center text-[9px]">
+                  <span className="w-3 h-3 rounded-full mr-2 shrink-0 border border-gray-200 shadow-sm" style={{ backgroundColor: "#60a5fa" }}></span>
+                  <span className="text-gray-700 font-medium truncate">Tidak Bekerja</span>
+                </div>
               </div>
             </div>
           </div>

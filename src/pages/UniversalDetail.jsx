@@ -24,7 +24,12 @@ const UniversalDetail = () => {
         const response = await api6.get("/api/village-themes");
         const themeMap = response.data || {};
         
-        const currentVillageThemes = themeMap[desaName.toUpperCase()] || [];
+        const normalizedDesa = desaName.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        const matchedKey = Object.keys(themeMap).find(
+          key => key.replace(/[^A-Za-z0-9]/g, '').toUpperCase() === normalizedDesa
+        );
+        
+        const currentVillageThemes = matchedKey ? themeMap[matchedKey] : [];
         setThemes(currentVillageThemes);
         
         if (currentVillageThemes.length > 0) {

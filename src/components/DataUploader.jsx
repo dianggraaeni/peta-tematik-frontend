@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Button, Card, CardBody, CardHeader, Spinner, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/react';
 import { message } from 'antd';
-import { FaUpload, FaDownload, FaFileExcel, FaFileCode, FaInfoCircle, FaTrash, FaEye, FaDatabase, FaChartPie, FaTable } from 'react-icons/fa';
+import { FaUpload, FaDownload, FaFileExcel, FaFileCode, FaInfoCircle, FaTrash, FaEye, FaDatabase, FaChartPie, FaTable, FaPen, FaPlus } from 'react-icons/fa';
 import api6 from '../utils/api6';
 import * as XLSX from 'xlsx';
 import { Doughnut } from 'react-chartjs-2';
@@ -26,6 +26,17 @@ const requiredColumns = {
   'pertanian_aggregate': ['rt_rw_dusun', 'jumlah_ruta', 'volume_produksi']
 };
 
+const exampleDataMap = {
+  'pekerjaan': { 'rt': '001', 'rw': '002', 'umur': '35', 'jenis_kelamin': 'Laki-laki', 'status_pekerjaan_utama': 'Bekerja', 'bidang_pekerjaan': 'Perdagangan', 'nama_anggota': 'Budi Santoso' },
+  'keluarga': { 'rt/rw': 'RT001/RW002', 'jumlah keluarga': '15', 'rata-rata anggota keluarga': '3.5', 'rata-rata luas lantai': '45' },
+  'sanitasi_air': { 'rt/rw': 'RT001/RW002', 'lantai marmer': '0', 'lantai keramik': '10', 'lantai parket': '0', 'lantai ubin': '5', 'lantai kayu': '0', 'lantai semen': '2', 'lantai bambu': '0', 'lantai tanah': '0', 'lantai lainnya': '0', 'dinding tembok': '15', 'dinding kawat': '0', 'dinding kayu': '2', 'dinding anyaman bambu': '0', 'dinding batang kayu': '0', 'dinding bambu': '0', 'dinding lainnya': '0', 'atap beton': '5', 'atap genteng': '12', 'atap seng': '0', 'atap asbes': '0', 'atap bambu': '0', 'atap kayu': '0', 'atap jerami': '0', 'atap lainnya': '0' },
+  'kelompok_umur': { 'kelompok': '0-4', 'luar_waung_L': '5', 'luar_waung_P': '4', 'luar_waung_total': '9', 'domisili_waung_L': '10', 'domisili_waung_P': '12', 'domisili_waung_total': '22' },
+  'umkm': { 'rt': '001', 'rw': '002', 'nama_usaha': 'Warung Bu Siti', 'dusun': 'Krajan', 'jml_ruta': '1', 'jml_umkm': '1' },
+  'pertanian_usahasayuran': { 'kode': '001', 'kodesls': '01', 'rt_rw_dusun': 'RT001/RW002 Krajan', 'nama_kepala_keluarga': 'Pak Slamet', 'alamat': 'Jl. Desa No. 1', 'latitude': '-7.46123', 'longitude': '112.65123', 'jml_pohon': '100', 'jml_pohon_new_crystal': '50', 'jml_pohon_pingpong': '20', 'jml_pohon_metalada': '10', 'jml_pohon_diamond_river': '20', 'jml_pohon_merah': '0', 'volume_produksi': '500', 'pemanfaatan_produk': 'dijual_sendiri', 'catatan': '-', 'url_img': '-' },
+  'pertanian_aggregate': { 'rt_rw_dusun': 'RT001/RW002 Krajan', 'jumlah_ruta': '10', 'volume_produksi': '1500' }
+};
+
+
 const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,11 +48,65 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
   const [previewDataGeojson, setPreviewDataGeojson] = useState("");
   const [previewView, setPreviewView] = useState('chart');
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const { isOpen: isTplOpen, onOpen: onTplOpen, onOpenChange: onTplChange } = useDisclosure();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableData, setEditableData] = useState([]);
 
   const isGeojson = dataType === 'geojson';
   const reqCols = requiredColumns[dataType] || ['rt', 'rw'];
   const bgClass = color === 'emerald' ? 'bg-emerald-50 border-emerald-200' : 'bg-blue-50 border-blue-200';
   const textClass = color === 'emerald' ? 'text-emerald-700' : 'text-blue-700';
+
+  const getFlattenedData = () => {
+     if (!previewData || previewData.length === 0) return [reqCols.reduce((acc, col) => ({ ...acc, [col]: '' }), {})];
+     return previewData.map(row => {
+        let flat = {};
+        if (dataType === 'keluarga') {
+            flat['rt/rw'] = row.rt || "";
+            flat['jumlah keluarga'] = row.jumlah_keluarga || "";
+            flat['rata-rata anggota keluarga'] = row.rata_anggota || "";
+            flat['rata-rata luas lantai'] = row.rata_luas_lantai || "";
+        } else if (dataType === 'sanitasi_air') {
+            flat['rt/rw'] = row.rt || "";
+            reqCols.forEach(col => {
+                if (col.startsWith('lantai ')) flat[col] = row.lantai?.[col.replace('lantai ', '').replace(/ /g, '_')] || 0;
+                else if (col.startsWith('dinding ')) flat[col] = row.dinding?.[col.replace('dinding ', '').replace(/ /g, '_')] || 0;
+                else if (col.startsWith('atap ')) flat[col] = row.atap?.[col.replace('atap ', '').replace(/ /g, '_')] || 0;
+            });
+        } else {
+            reqCols.forEach(col => {
+                let cleanKey = col.toLowerCase().trim();
+                if (['pekerjaan', 'umkm', 'pertanian_usahasayuran', 'pertanian_aggregate'].includes(dataType)) {
+                    cleanKey = cleanKey.replace(/ /g, '_');
+                }
+                flat[col] = row[cleanKey] ?? row[col] ?? "";
+            });
+        }
+        return flat;
+     });
+  };
+
+  const handleEditClick = (reset = false) => {
+    if (reset || previewData.length === 0) {
+        setEditableData([reqCols.reduce((acc, col) => ({ ...acc, [col]: '' }), {})]);
+    } else {
+        setEditableData(getFlattenedData());
+    }
+    setIsEditing(true);
+  };
+
+  const handleSaveManual = async () => {
+    try {
+        setLoading(true);
+        await processAndSave(editableData, false);
+        setIsEditing(false);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        setLoading(false);
+    }
+  };
 
   const handlePreviewOpen = async () => {
      onOpen();
@@ -116,7 +181,11 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
       document.body.removeChild(link);
       return;
     }
-    const ws = XLSX.utils.json_to_sheet([], { header: reqCols });
+    const exData = exampleDataMap[dataType] || {};
+    const upperExData = {};
+    reqCols.forEach(col => { upperExData[col.toUpperCase()] = exData[col] || ''; });
+
+    const ws = XLSX.utils.json_to_sheet([upperExData], { header: reqCols.map(c => c.toUpperCase()) });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Template");
     XLSX.writeFile(wb, `Template_${dataType}_${nama_desa || 'Desa'}.xlsx`);
@@ -148,91 +217,8 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
      }
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      message.warning('Pilih file terlebih dahulu!');
-      return;
-    }
-    setLoading(true);
+  const saveDataToServer = async (jsonData) => {
     try {
-      let jsonData;
-      if (isGeojson) {
-        if (!file.name.endsWith('.json') && !file.name.endsWith('.geojson')) {
-           message.error('Format Batas Wilayah (GeoJSON) harus berupa file .json atau .geojson!');
-           setLoading(false);
-           return;
-        }
-        const text = await file.text();
-        try { JSON.parse(text); } catch (err) { message.error('JSON tidak valid!'); setLoading(false); return; }
-        
-        const formData = new FormData();
-        formData.append("file", file);
-        await api6.post(`/api/upload-data/geojson-desa/${nama_desa}`, formData, {
-           headers: { "Content-Type": "multipart/form-data" }
-        });
-        message.success(`Batas Wilayah ${nama_desa} berhasil diperbarui!`);
-        setFile(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        checkActiveData();
-        setLoading(false);
-        return;
-      } else {
-        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.csv') && !file.name.endsWith('.xls')) {
-           message.error('Gunakan file Excel (.xlsx / .xls) atau CSV!');
-           setLoading(false);
-           return;
-        }
-        const dataBuffer = await file.arrayBuffer();
-        const workbook = XLSX.read(dataBuffer);
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rawJsonData = XLSX.utils.sheet_to_json(worksheet, { range: 0 });
-        if (rawJsonData.length === 0) {
-           message.error('File Excel kosong atau format tidak sesuai.');
-           setLoading(false);
-           return;
-        }
-        const normalizedData = rawJsonData.map(row => {
-           let newRow = {};
-           for (let key in row) {
-              let cleanKey = key.toString().toLowerCase().trim();
-              if (['pekerjaan', 'umkm', 'pertanian_usahasayuran', 'pertanian_aggregate'].includes(dataType)) {
-                 cleanKey = cleanKey.replace(/ /g, '_');
-              }
-              newRow[cleanKey] = row[key];
-           }
-           return newRow;
-        });
-        const firstRow = normalizedData[0] || {};
-        const missingCols = reqCols.filter(col => !(col.toLowerCase() in firstRow));
-        if (missingCols.length > 0) {
-           message.error({ content: `Format tidak sesuai template! Kolom hilang: ${missingCols.join(', ')}`, duration: 8 });
-           setLoading(false);
-           return;
-        }
-        if (dataType === 'keluarga') {
-           jsonData = normalizedData.map(row => ({
-              rt: row['rt/rw'], jumlah_keluarga: row['jumlah keluarga'],
-              rata_anggota: row['rata-rata anggota keluarga'] || 0, rata_luas_lantai: row['rata-rata luas lantai'] || 0
-           })).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
-        } else if (dataType === 'sanitasi_air') {
-           jsonData = normalizedData.map(row => {
-              let cleanRow = { rt: row['rt/rw'], lantai: {}, dinding: {}, atap: {} };
-              for (let key in row) {
-                 if (key.startsWith('lantai ')) cleanRow.lantai[key.replace('lantai ', '').replace(/ /g, '_')] = row[key] || 0;
-                 else if (key.startsWith('dinding ')) cleanRow.dinding[key.replace('dinding ', '').replace(/ /g, '_')] = row[key] || 0;
-                 else if (key.startsWith('atap ')) cleanRow.atap[key.replace('atap ', '').replace(/ /g, '_')] = row[key] || 0;
-              }
-              return cleanRow;
-           }).filter(row => row.rt && row.rt.toLowerCase() !== 'grand total');
-        } else {
-           jsonData = normalizedData.map(row => {
-              let cleanRow = {};
-              reqCols.forEach(col => { cleanRow[col] = row[col.toLowerCase()]; });
-              return cleanRow;
-           });
-        }
-      }
-      
       await api6.post('/api/village-data', { desa_name: nama_desa, dataType: dataType, data: jsonData });
       
       if (dataType === 'pekerjaan') {
@@ -277,7 +263,100 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
       checkActiveData();
     } catch (error) {
       console.error(error);
-      message.error('Gagal mengunggah data.');
+      message.error('Gagal menyimpan data ke server.');
+      throw error;
+    }
+  };
+
+  const processAndSave = async (rawJsonData, showWarning = true) => {
+      const normalizedData = rawJsonData.map(row => {
+         let newRow = {};
+         for (let key in row) {
+            let cleanKey = key.toString().toLowerCase().trim();
+            if (['pekerjaan', 'umkm', 'pertanian_usahasayuran', 'pertanian_aggregate'].includes(dataType)) {
+               cleanKey = cleanKey.replace(/ /g, '_');
+            }
+            newRow[cleanKey] = row[key];
+         }
+         return newRow;
+      });
+      const firstRow = normalizedData[0] || {};
+      const missingCols = reqCols.filter(col => !(col.toLowerCase() in firstRow));
+      if (showWarning && missingCols.length > 0) {
+         message.warning({ content: `⚠️ Beberapa kolom kosong (${missingCols.join(', ')}). Data seadanya tetap diproses.`, duration: 6 });
+      }
+      let jsonData;
+      if (dataType === 'keluarga') {
+         jsonData = normalizedData.map(row => ({
+            rt: row['rt/rw'] || "-", jumlah_keluarga: row['jumlah keluarga'],
+            rata_anggota: row['rata-rata anggota keluarga'] || 0, rata_luas_lantai: row['rata-rata luas lantai'] || 0
+         })).filter(row => row.rt?.toLowerCase() !== 'grand total');
+      } else if (dataType === 'sanitasi_air') {
+         jsonData = normalizedData.map(row => {
+            let cleanRow = { rt: row['rt/rw'] || "-", lantai: {}, dinding: {}, atap: {} };
+            for (let key in row) {
+               if (key.startsWith('lantai ')) cleanRow.lantai[key.replace('lantai ', '').replace(/ /g, '_')] = row[key] || 0;
+               else if (key.startsWith('dinding ')) cleanRow.dinding[key.replace('dinding ', '').replace(/ /g, '_')] = row[key] || 0;
+               else if (key.startsWith('atap ')) cleanRow.atap[key.replace('atap ', '').replace(/ /g, '_')] = row[key] || 0;
+            }
+            return cleanRow;
+         }).filter(row => row.rt?.toLowerCase() !== 'grand total');
+      } else {
+         jsonData = normalizedData.map(row => {
+            let cleanRow = {};
+            reqCols.forEach(col => { cleanRow[col] = row[col.toLowerCase()] ?? ""; });
+            return cleanRow;
+         });
+      }
+      await saveDataToServer(jsonData);
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      message.warning('Pilih file terlebih dahulu!');
+      return;
+    }
+    setLoading(true);
+    try {
+      if (isGeojson) {
+        if (!file.name.endsWith('.json') && !file.name.endsWith('.geojson')) {
+           message.error('Format Batas Wilayah (GeoJSON) harus berupa file .json atau .geojson!');
+           setLoading(false);
+           return;
+        }
+        const text = await file.text();
+        try { JSON.parse(text); } catch (err) { message.error('JSON tidak valid!'); setLoading(false); return; }
+        
+        const formData = new FormData();
+        formData.append("file", file);
+        await api6.post(`/api/upload-data/geojson-desa/${nama_desa}`, formData, {
+           headers: { "Content-Type": "multipart/form-data" }
+        });
+        message.success(`Batas Wilayah ${nama_desa} berhasil diperbarui!`);
+        setFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        checkActiveData();
+        setLoading(false);
+        return;
+      } else {
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.csv') && !file.name.endsWith('.xls')) {
+           message.error('Gunakan file Excel (.xlsx / .xls) atau CSV!');
+           setLoading(false);
+           return;
+        }
+        const dataBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(dataBuffer);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawJsonData = XLSX.utils.sheet_to_json(worksheet, { range: 0 });
+        if (rawJsonData.length === 0) {
+           message.error('File Excel kosong atau format tidak sesuai.');
+           setLoading(false);
+           return;
+        }
+        await processAndSave(rawJsonData);
+      }
+    } catch (error) {
+      console.error(error);
     } finally { setLoading(false); }
   };
 
@@ -318,20 +397,41 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
                </div>
             </div>
           ) : (
-            <div className="text-sm text-gray-400 italic bg-white p-2 rounded border border-gray-100">Belum ada data</div>
+            <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+               <span className="text-sm text-gray-400 italic">Belum ada data</span>
+               {!isGeojson && (
+                 <button onClick={() => { handlePreviewOpen(); handleEditClick(); }} className="flex items-center gap-2 p-1.5 px-3 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors font-medium" title="Input Data Baru Secara Manual">
+                   <FaPen size={12} /> Input Manual
+                 </button>
+               )}
+            </div>
           )}
         </div>
 
-        <Button 
-          size="sm" 
-          variant="flat" 
-          color="primary"
-          startContent={<FaDownload />} 
-          onClick={handleDownloadTemplate}
-          className="w-full bg-blue-50/50 hover:bg-blue-100 text-blue-600 font-medium mb-4"
-        >
-          {isGeojson ? "Download File GeoJSON Saat Ini" : "Download Template Excel"}
-        </Button>
+        <div className="flex gap-2 mb-4 w-full">
+          <Button 
+            size="sm" 
+            variant="flat" 
+            color="primary"
+            startContent={<FaDownload />} 
+            onClick={handleDownloadTemplate}
+            className="flex-1 bg-blue-50/50 hover:bg-blue-100 text-blue-600 font-medium"
+          >
+            {isGeojson ? "Unduh GeoJSON" : "Unduh Template"}
+          </Button>
+          {!isGeojson && (
+            <Button 
+              size="sm" 
+              variant="flat" 
+              color="secondary"
+              startContent={<FaEye />} 
+              onClick={onTplOpen}
+              className="flex-1 bg-purple-50/50 hover:bg-purple-100 text-purple-600 font-medium"
+            >
+              Lihat Template
+            </Button>
+          )}
+        </div>
         {!file ? (
           <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 hover:border-blue-300 transition-colors cursor-pointer p-6 min-h-[140px]">
             <FaUpload className="text-gray-400 mb-3" size={28} />
@@ -359,19 +459,39 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
       </div>
     </div>
 
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="3xl" scrollBehavior="inside">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={isGeojson ? "3xl" : "5xl"} scrollBehavior="inside">
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-gray-100 pb-3">
-               <div className="flex items-center justify-between">
-                 <span>Preview Data: {title}</span>
-                 {dataType === 'pekerjaan' && (
-                   <a href={`/admin/desa/${nama_desa}`} className="bg-blue-600 text-white px-4 py-1.5 text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-                     Kelola Seluruh Data
-                   </a>
-                 )}
+            <ModalHeader className="flex flex-col gap-2 border-b border-gray-100 pb-3">
+               <div className="flex items-center justify-between w-full">
+                 <span className="text-lg">Preview Data: {title}</span>
+                 <div className="flex items-center gap-2">
+                   {!isEditing ? (
+                       <>
+                         <Button size="sm" color="warning" variant="flat" startContent={<FaPen />} onClick={() => handleEditClick(false)} isDisabled={isGeojson}>
+                           Edit Data Saat Ini
+                         </Button>
+                         <Button size="sm" color="primary" variant="flat" startContent={<FaPlus />} onClick={() => handleEditClick(true)} isDisabled={isGeojson}>
+                           Input Baru (Reset)
+                         </Button>
+
+                       </>
+                   ) : (
+                       <>
+                         <Button size="sm" color="danger" variant="light" onClick={() => setIsEditing(false)}>Batal</Button>
+                         <Button size="sm" color="success" className="text-white" onClick={handleSaveManual} isLoading={loading}>Simpan Perubahan</Button>
+                       </>
+                   )}
+                 </div>
                </div>
+               {isEditing && (
+                 <div className="flex w-full mt-2">
+                    <Button size="sm" color="primary" startContent={<FaPlus />} onClick={() => setEditableData([{ ...reqCols.reduce((acc, col) => ({ ...acc, [col]: '' }), {}) }, ...editableData])}>
+                       Tambah Baris Baru
+                    </Button>
+                 </div>
+               )}
             </ModalHeader>
             <ModalBody className="p-0">
                  <div className="bg-gray-50 p-4 overflow-auto text-sm max-h-[70vh]">
@@ -379,6 +499,45 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
                      <pre className="bg-gray-900 text-green-400 p-4 rounded-xl text-xs overflow-auto font-mono max-h-[60vh]">
                        {previewDataGeojson || "Memuat atau data kosong..."}
                      </pre>
+                   ) : isEditing ? (
+                     <table className="w-full text-left bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
+                       <thead className="bg-blue-50 text-blue-900 border-b border-gray-200">
+                         <tr>
+                           <th className="p-3 font-semibold w-10 text-center">Aksi</th>
+                           <th className="p-3 font-semibold w-10">No</th>
+                           {reqCols.map(col => (
+                             <th key={col} className="p-3 font-semibold capitalize whitespace-nowrap">{col.replace(/_/g, ' ')}</th>
+                           ))}
+                         </tr>
+                       </thead>
+                       <tbody className="divide-y divide-gray-100">
+                         {editableData.length === 0 ? (
+                            <tr><td colSpan={reqCols.length + 2} className="text-center p-4 text-gray-500">Klik "Tambah Baris Baru" untuk memulai.</td></tr>
+                         ) : editableData.map((row, i) => (
+                           <tr key={i} className="hover:bg-blue-50/50 transition-colors">
+                             <td className="p-2 text-center text-gray-500">
+                                <button onClick={() => setEditableData(editableData.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-100 p-1.5 rounded" title="Hapus Baris"><FaTrash size={12} /></button>
+                             </td>
+                             <td className="p-2 text-gray-500 text-xs text-center">{i + 1}</td>
+                             {reqCols.map((col, idx) => (
+                               <td key={idx} className="p-1 min-w-[120px]">
+                                  <input
+                                     type="text"
+                                     value={row[col] || ''}
+                                     onChange={(e) => {
+                                        const newData = [...editableData];
+                                        newData[i] = { ...newData[i], [col]: e.target.value };
+                                        setEditableData(newData);
+                                     }}
+                                     className="w-full p-1.5 border border-gray-300 rounded text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                     placeholder={col}
+                                  />
+                               </td>
+                             ))}
+                           </tr>
+                         ))}
+                       </tbody>
+                     </table>
                    ) : previewData.length > 0 ? (
                      <table className="w-full text-left bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
                        <thead className="bg-blue-50 text-blue-900 border-b border-gray-200">
@@ -412,6 +571,68 @@ const UploadCard = ({ title, dataType, nama_desa, color = 'blue' }) => {
                        </a>
                      </div>
                    )}
+                 </div>
+            </ModalBody>
+            <ModalFooter className="border-t border-gray-100">
+              <Button color="primary" onPress={onClose} className="font-semibold">Tutup Preview</Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+
+    <Modal isOpen={isTplOpen} onOpenChange={onTplChange} size="5xl" scrollBehavior="inside">
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1 border-b border-gray-100 pb-3">
+               <span>Preview Template: {title}</span>
+            </ModalHeader>
+            <ModalBody className="py-4">
+                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 overflow-x-auto">
+                    <p className="text-sm text-gray-600 mb-4">
+                       Ini adalah gambaran (*preview*) dari format tabel Excel yang disarankan oleh sistem. 
+                       Terdapat <strong>{reqCols.length} kolom</strong> yang bisa Anda isi:
+                    </p>
+                    
+                    <div className="border border-gray-300 rounded overflow-x-auto shadow-sm">
+                       <table className="w-full text-left bg-white text-sm">
+                         <thead className="bg-green-600 text-white">
+                           <tr>
+                             <th className="p-2 border-r border-green-700 font-semibold text-center w-12 bg-green-700"></th>
+                             {reqCols.map((col, idx) => (
+                                <th key={idx} className="p-3 border-r border-green-500 font-bold whitespace-nowrap">
+                                   {col.toUpperCase()}
+                                </th>
+                             ))}
+                           </tr>
+                         </thead>
+                         <tbody className="divide-y divide-gray-200">
+                           {/* Empty rows to simulate excel */}
+                           {[1, 2, 3].map((rowNum) => (
+                             <tr key={rowNum}>
+                               <td className="p-2 border-r border-gray-200 bg-gray-100 text-center text-gray-500 font-mono text-xs">
+                                 {rowNum + 1}
+                               </td>
+                               {reqCols.map((col, idx) => {
+                                  const exData = exampleDataMap[dataType] || {};
+                                  const exVal = exData[col] || '(isi data)';
+                                  return (
+                                     <td key={idx} className={`p-3 border-r border-gray-200 text-xs ${rowNum === 1 ? 'text-gray-800 bg-yellow-50/50 font-medium' : 'text-gray-400 italic'}`}>
+                                        {rowNum === 1 ? String(exVal) : ''}
+                                     </td>
+                                  );
+                               })}
+                             </tr>
+                           ))}
+                         </tbody>
+                       </table>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 mt-4 italic bg-yellow-50 p-2 rounded border border-yellow-200">
+                       ⚠️ <strong>Catatan:</strong> Jika Anda tidak memiliki kelengkapan data untuk semua kolom di atas, 
+                       Anda tetap diperbolehkan meng-upload datanya. Sistem akan otomatis memproses data yang ada saja.
+                    </p>
                  </div>
             </ModalBody>
             <ModalFooter className="border-t border-gray-100">

@@ -18,10 +18,9 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // If a specific village is being accessed, check permissions
   if (nama_desa && !isSuperAdmin) {
     const expectedUsername = `admin_${nama_desa.toLowerCase()}`;
-    if (username !== expectedUsername) {
+    if (username.toLowerCase() !== expectedUsername.toLowerCase()) {
       // Unauthorized, they belong to another village
       return <Navigate to="/" replace />;
     }

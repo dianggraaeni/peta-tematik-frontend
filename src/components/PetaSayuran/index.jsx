@@ -53,9 +53,11 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
 
   const fetchData = async () => {
     setLoading(true);
-    try {
-      const response = await api6.get(`/api/peta?nmdesa=${encodeURIComponent(desaName)}`);
-      // Peta endpoint returns a FeatureCollection object, but PetaSayuran expects an array of FeatureCollections (one per RT)
+      try {
+        const cleanDesaName = desaName.replace(/\s+/g, '').toUpperCase();
+        const response = await api6.get(`/api/peta?nmdesa=${encodeURIComponent(cleanDesaName)}`);
+        // Peta endpoint returns a FeatureCollection object, but PetaSayuran expects an array of FeatureCollections 
+        // (one per RT)
       const features = response.data.features || response.data || [];
       const featureCollections = Array.isArray(features) ? features.map(feature => ({
         type: "FeatureCollection",
@@ -76,9 +78,10 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
 
   const fetchDataAgregat = async () => {
     setLoading(true);
-    try {
-      const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${encodeURIComponent(desaName)}`);
-      setDataAgregat(response.data.data || []); 
+      try {
+        const cleanDesaName = desaName.replace(/\s+/g, '').toUpperCase();
+        const response = await api6.get(`/api/pertanian/aggregate?nmdesa=${encodeURIComponent(cleanDesaName)}`);
+        setDataAgregat(response.data.data || []); 
       console.log("Data fetched:", response.data.data);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -93,9 +96,10 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
 
   const fetchDataRumahTangga = async () => {
     setLoading(true);
-    try {
-      const response = await api6.get(`/api/pertanian/usahasayuran?nmdesa=${encodeURIComponent(desaName)}`);
-      setDataRumahTangga(response.data.data || []); 
+      try {
+        const cleanDesaName = desaName.replace(/\s+/g, '').toUpperCase();
+        const response = await api6.get(`/api/pertanian/usahasayuran?nmdesa=${encodeURIComponent(cleanDesaName)}`);
+        setDataRumahTangga(response.data.data || []); 
       console.log("Data fetched:", response.data.data);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -129,7 +133,7 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
       opacity: 1,
       color: "#1e293b",
       dashArray: "",
-      fillOpacity: 0.5,
+      fillOpacity: density > 0 ? 0.7 : 0.4,
     };
   };
 
@@ -142,9 +146,9 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
       ? "#9DDE8B"
       : density > 4
       ? "#E6FF94"
-      : density > 1
+      : density >= 1
       ? "#FED976"
-      : "#000000";
+      : "#ffffff";
   };
 
   const markerIcon = divIcon({
@@ -583,6 +587,25 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
   return (
     <div className="flex w-screen h-screen overflow-hidden bg-gray-200 font-sans relative">
       <div className="flex-grow relative h-full">
+        {/* Back Button & Title Card */}
+        <div className="absolute top-3 left-3 z-[1000] flex items-start gap-2 pointer-events-none">
+          <button
+            onClick={() => navigate(-1)}
+            className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+            title="Kembali"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          {/* Title Card */}
+          <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+            <div className="font-extrabold text-sm text-gray-800 leading-none">{desaName.toUpperCase()}</div>
+          </div>
+        </div>
+
         <MapContainer
           center={[-7.4612266, 112.658755]} // lokasi desa simoanginangin
           zoom={16}
@@ -922,6 +945,20 @@ export default function MapSection({ desaName: propsDesaName, hideCards }) {
                 )}
               </>
             ) : null}
+
+            {/* Legend Peta Sayuran */}
+            <div className="mt-2 bg-white border border-gray-100 p-3 rounded-xl shadow-sm">
+              <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">
+                Legenda Kepadatan Usaha Sayuran
+              </h3>
+              <div className="p-2 bg-gray-50 rounded-lg text-[10px]">
+                <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#40A578] shadow-sm border border-gray-200"></span> &gt; 32 Usaha</div>
+                <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#68B92E] shadow-sm border border-gray-200"></span> 17 - 32 Usaha</div>
+                <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#9DDE8B] shadow-sm border border-gray-200"></span> 9 - 16 Usaha</div>
+                <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#E6FF94] shadow-sm border border-gray-200"></span> 5 - 8 Usaha</div>
+                <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#FED976] shadow-sm border border-gray-200"></span> 1 - 4 Usaha</div>
+              </div>
+            </div>
           </div>
         </RightSidebar>
       )}

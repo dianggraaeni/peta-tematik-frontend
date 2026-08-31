@@ -76,27 +76,53 @@ export default function MapSection() {
         }
       });
 
+      let villageData = [];
+      try {
+          const res = await api6.get("/api/village-data/simoketawang/pertanian_usahasayuran");
+          villageData = res.data || [];
+      } catch (e) {}
+
       const formattedData = polygons.map(f => {
 
         // Count businesses inside this polygon dynamically
         const rt = f.properties.rt;
         const rw = f.properties.rw;
         let count = 0;
+        let belum = 0;
+        let sudah = 0;
+        let totalVolume = 0;
         
-        // Find points that belong to this RT/RW using spatial join
-        features.forEach(pt => {
-          if (pt.geometry && pt.geometry.type === "Point" && pt.properties.marker_type === "Kelengkeng") {
-            try {
-              const ptRt = pt.properties.rt;
-              const polyRt = f.properties.rt; // extracted in the map above
-              if (ptRt && polyRt && parseInt(ptRt) === parseInt(polyRt)) {
-                const pohon = Number.parseInt(pt.properties.jumlah_pohon) || 0;
-                count += pohon > 0 ? pohon : 1; // if jumlah_pohon is 0 or missing, at least count it as 1 to avoid 0 if it exists
-              }
-            } catch (e) {}
-          }
+        // Find points that belong to this RT/RW using tabular data
+        villageData.forEach(row => {
+            const ptRtStr = String(row.rt_rw_dusun || row.rt || "");
+            const ptRtMatch = ptRtStr.match(/(\d+)/);
+            const ptRt = ptRtMatch ? ptRtMatch[1] : null;
+            const polyRt = f.properties.rt;
+            
+            if (ptRt && polyRt && parseInt(ptRt) === parseInt(polyRt)) {
+                const pohon = Number.parseInt(row.jml_pohon) || 0;
+                count += pohon;
+                
+                const volume = Number.parseFloat(row.volume_produksi) || 0;
+                totalVolume += volume;
+                
+                const pohonBelum = Number.parseInt(row.jml_pohon_blm_berproduksi) || 0;
+                const pohonSudah = Number.parseInt(row.jml_pohon_sdh_berproduksi) || 0;
+                
+                if (pohonBelum > 0 || pohonSudah > 0) {
+                    belum += pohonBelum;
+                    sudah += pohonSudah;
+                } else {
+                    const volume = Number.parseFloat(row.volume_produksi) || 0;
+                    if (volume > 0) sudah += pohon;
+                    else belum += pohon;
+                }
+            }
         });
         f.properties.jml_unit_usaha_klengkeng = count;
+        f.properties.jml_pohon_blm_berproduksi = belum;
+        f.properties.jml_pohon_sdh_berproduksi = sudah;
+        f.properties.volume_produksi = totalVolume;
 
         return {
           type: "FeatureCollection",
@@ -130,48 +156,81 @@ export default function MapSection() {
       const features = response.data.features || [];
       const polygons = features.filter(f => f.geometry && f.geometry.type !== "Point");
 
-      const points = features
-        .filter(f => f.geometry && f.geometry.type === "Point" && f.properties.marker_type === "Kelengkeng")
-        .filter(f => {
-          const lng = f.geometry.coordinates[0];
-          const lat = f.geometry.coordinates[1];
-          // Simoketawang rough bounds
-          return lng >= 112.58 && lng <= 112.62 && lat >= -7.46 && lat <= -7.43;
-        })
-        .map(f => {
-          let assignedRt = null;
-          try {
-            const matchingPoly = polygons.find(poly => turf.booleanPointInPolygon(f, poly));
-            if (matchingPoly) {
-              assignedRt = matchingPoly.properties.RT || matchingPoly.properties.rt;
-            }
-          } catch(e) {}
+      let villageData = [];
+      try {
+          const res = await api6.get("/api/village-data/simoketawang/pertanian_usahasayuran");
+          villageData = res.data || [];
+      } catch (e) {}
 
-          return {
-            ...f.properties,
-            rt: assignedRt,
-            latitude: f.geometry.coordinates[1],
-            longitude: f.geometry.coordinates[0],
-          };
-        });
+      const points = villageData.map(row => {
+        let latitude = parseFloat(row.latitude) || 0;
+        let longitude = parseFloat(row.longitude) || 0;
+
+        const f = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude]
+          }
+        };
+
+        let assignedRt = null;
+        try {
+          const matchingPoly = polygons.find(poly => turf.booleanPointInPolygon(f, poly));
+          if (matchingPoly) {
+            assignedRt = matchingPoly.properties.RT || matchingPoly.properties.rt;
+          }
+        } catch(e) {}
+        
+        if (!assignedRt) {
+            const ptRtStr = String(row.rt_rw_dusun || row.rt || "");
+            const ptRtMatch = ptRtStr.match(/(\d+)/);
+            if (ptRtMatch) assignedRt = parseInt(ptRtMatch[1]);
+        }
+
+        return {
+          marker_type: "Kelengkeng",
+          jumlah_pohon: row.jml_pohon || 0,
+          volume_produksi: row.volume_produksi || 0,
+          pemanfaatan_produk: row.pemanfaatan_produk || "-",
+          ...row,
+          rt: assignedRt,
+          latitude: latitude,
+          longitude: longitude,
+        };
+      });
       setDataRumahTangga(points);
       
       // Calculate Aggregates
       let jmlPohon = 0;
       let belum = 0;
       let sudah = 0;
+      let totalVolume = 0;
       points.forEach(item => {
         const pohon = Number.parseInt(item.jumlah_pohon) || 0;
-        const volume = Number.parseFloat(item.volume_produksi) || 0;
         jmlPohon += pohon;
-        if (volume > 0) sudah += pohon;
-        else belum += pohon;
+        
+        const volume = Number.parseFloat(item.volume_produksi) || 0;
+        totalVolume += volume;
+        
+        const pohonBelum = Number.parseInt(item.jml_pohon_blm_berproduksi) || 0;
+        const pohonSudah = Number.parseInt(item.jml_pohon_sdh_berproduksi) || 0;
+        
+        if (pohonBelum > 0 || pohonSudah > 0) {
+            belum += pohonBelum;
+            sudah += pohonSudah;
+        } else {
+            const volume = Number.parseFloat(item.volume_produksi) || 0;
+            if (volume > 0) sudah += pohon;
+            else belum += pohon;
+        }
       });
       
       setDataAgregat({
         jml_pohon: jmlPohon,
         jml_pohon_blm_berproduksi: belum,
-        jml_pohon_sdh_berproduksi: sudah
+        jml_pohon_sdh_berproduksi: sudah,
+        volume_produksi: totalVolume
       });
 
     } catch (error) {
@@ -202,7 +261,7 @@ export default function MapSection() {
       opacity: 1,
       color: "#1e293b",
       dashArray: "",
-      fillOpacity: density > 0 ? 0.7 : 0.2,
+      fillOpacity: density > 0 ? 0.7 : 0.4,
     };
   };
 
@@ -217,7 +276,7 @@ export default function MapSection() {
       ? "#34d399" // emerald 400
       : density >= 1
       ? "#6ee7b7" // emerald 300
-      : "rgba(16, 185, 129, 0.1)"; // transparent
+      : "#ffffff"; // transparent white
   };
 
   const markerIcon = divIcon({
@@ -788,7 +847,24 @@ export default function MapSection() {
                           duration={3}
                         />
                       </div>
-                      <p className="text-xm">Pohon Kelengkeng</p>
+                      <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Pohon Kelengkeng</p>
+                    </div>
+
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-lime-600">
+                        <CountUp
+                          start={0}
+                          end={
+                            filteredData.features[0].properties
+                              .volume_produksi || 0
+                          }
+                          duration={3}
+                          decimals={1}
+                          separator="."
+                          decimal=","
+                        /> <span className="text-sm font-bold text-gray-500">Kg</span>
+                      </div>
+                      <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Total Volume Produksi</p>
                     </div>
 
                     <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
@@ -871,6 +947,20 @@ export default function MapSection() {
                         />
                       </div>
                       <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Pohon Kelengkeng</p>
+                    </div>
+
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">
+                      <div className="text-4xl font-black text-lime-600">
+                        <CountUp
+                          start={0}
+                          end={dataAgregat.volume_produksi || 0}
+                          duration={3}
+                          decimals={1}
+                          separator="."
+                          decimal=","
+                        /> <span className="text-sm font-bold text-gray-500">Kg</span>
+                      </div>
+                      <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Total Volume Produksi</p>
                     </div>
 
                     <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-left shadow-sm">

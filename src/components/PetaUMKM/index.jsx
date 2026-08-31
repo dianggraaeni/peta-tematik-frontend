@@ -90,7 +90,8 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const villageFormatted = desaName.charAt(0).toUpperCase() + desaName.slice(1).toLowerCase();
+        const cleanDesaName = desaName.replace(/\s+/g, '');
+        const villageFormatted = cleanDesaName.charAt(0).toUpperCase() + cleanDesaName.slice(1).toLowerCase();
         
         // 1. Fetch GeoJSON from database endpoint
         const geoRes = await api6.get(`/api/peta?nmdesa=${villageFormatted}`);
@@ -148,10 +149,10 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
     if (properties.marker_type === "UMKM") return {};
     const rt = properties.RT || properties.rt;
     const rw = properties.RW || properties.rw;
-    const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
+    const match = allRawData.find(item => Number(item.rt) === Number(rt) && Number(item.rw) === Number(rw));
     
     if (!match || (match.jml_umkm || 0) === 0) {
-      return { fillColor: "#cbd5e1", fillOpacity: 0.2, color: "#94a3b8", weight: 1.5 };
+      return { fillColor: "#ffffff", fillOpacity: 0.4, color: "#1e293b", weight: 1 };
     }
     const dom = getDominantKbli(match);
     const color = kbliColors[dom.kbli] || "#94a3b8";
@@ -186,7 +187,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
 
     const rt = props.RT || props.rt;
     const rw = props.RW || props.rw;
-    const match = allRawData.find(item => item.rt === String(rt) && item.rw === String(rw));
+    const match = allRawData.find(item => Number(item.rt) === Number(rt) && Number(item.rw) === Number(rw));
     
     let popupContent = `<div style="font-family: 'Inter', sans-serif; padding: 4px;">
       <h4 style="margin: 0 0 6px 0; font-weight: 700; color: #1e293b; border-bottom: 1px solid #e2e8f0; pb: 4px;">RT ${rt} / RW ${rw}</h4>`;
@@ -243,7 +244,7 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
     const features = geojsonData.features.map(f => {
       const rt = f.properties.RT || f.properties.rt;
       const rw = f.properties.RW || f.properties.rw;
-      const match = allOriginalData.find(item => item.rt === String(rt) && item.rw === String(rw));
+      const match = allOriginalData.find(item => Number(item.rt) === Number(rt) && Number(item.rw) === Number(rw));
       const dom = match ? getDominantKbli(match) : { kbli: "None", count: 0 };
       return {
         ...f,
@@ -403,6 +404,29 @@ const Dashboard = ({ desaName: propsDesaName, hideCards }) => {
                 </div>
                 <div className="w-full">
                   <UmkmCharts data={activeKbliFilter ? allRawData.filter(item => getDominantKbli(item).kbli === activeKbliFilter) : allRawData} />
+                </div>
+
+                {/* Legend KBLI Dominan */}
+                <div className="mt-4 bg-white border border-gray-100 p-3 rounded-xl shadow-sm">
+                  <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">
+                    Legenda Warna Peta
+                  </h3>
+                  <p className="text-[10px] text-gray-400 text-center mb-3 leading-tight">
+                    Warna area menunjukkan Sektor KBLI Dominan
+                  </p>
+                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                    {Object.entries(kbliColors).map(([kbli, color]) => (
+                      <div key={kbli} className="flex items-center text-[10px]">
+                        <span 
+                          className="w-3.5 h-3.5 rounded-full mr-2 shrink-0 border border-gray-200 shadow-sm" 
+                          style={{ backgroundColor: color }}
+                        ></span>
+                        <span className="text-gray-700 font-medium truncate" title={`KBLI ${kbli} - ${getKbliName(kbli)}`}>
+                          KBLI {kbli} - {getKbliName(kbli)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

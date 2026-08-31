@@ -283,55 +283,55 @@ const FilterPanel = ({ onFilterChange, filteredCount, totalCount }) => {
             </select>
           </div>
 
-          {/* Active Filters Display */}
-          {hasActiveFilters && (
-            <div className="border-t border-gray-200 pt-2">
-              <h5 className="text-xs font-medium text-gray-600 mb-1">
-                Filter Aktif:
-              </h5>
-              <div className="flex flex-wrap gap-1">
-                {Object.entries(filters).map(([key, value]) => {
-                  if (!value) return null;
-
-                  let displayValue = value;
-                  if (key === "gender") {
-                    displayValue =
-                      genderOptions.find((opt) => opt.value === value)?.label ||
-                      value;
-                  } else if (key === "ageGroup") {
-                    displayValue =
-                      ageOptions.find((opt) => opt.value === value)?.label ||
-                      value;
-                  } else if (key === "employment") {
-                    displayValue =
-                      employmentOptions.find((opt) => opt.value === value)
-                        ?.label || value;
-                  } else if (key === "workField") {
-                    displayValue =
-                      workFieldOptions.find((opt) => opt.value === value)
-                        ?.label || value;
-                  }
-
-                  return (
-                    <span
-                      key={key}
-                      className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
-                    >
-                      {displayValue}
-                      <button
-                        onClick={() => handleFilterChange(key, "")}
-                        className="ml-1 text-blue-600 hover:text-blue-800 font-bold"
+            {/* Active Filters Display */}
+            {hasActiveFilters && (
+              <div className="border-t border-gray-200 pt-2">
+                <h5 className="text-xs font-medium text-gray-600 mb-1">
+                  Filter Aktif:
+                </h5>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(filters).map(([key, value]) => {
+                    if (!value) return null;
+  
+                    let displayValue = value;
+                    if (key === "gender") {
+                      displayValue =
+                        genderOptions.find((opt) => opt.value === value)?.label ||
+                        value;
+                    } else if (key === "ageGroup") {
+                      displayValue =
+                        ageOptions.find((opt) => opt.value === value)?.label ||
+                        value;
+                    } else if (key === "employment") {
+                      displayValue =
+                        employmentOptions.find((opt) => opt.value === value)
+                          ?.label || value;
+                    } else if (key === "workField") {
+                      displayValue =
+                        workFieldOptions.find((opt) => opt.value === value)
+                          ?.label || value;
+                    }
+  
+                    return (
+                      <span
+                        key={key}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800"
                       >
-                        ×
-                      </button>
-                    </span>
-                  );
-                })}
+                        {displayValue}
+                        <button
+                          onClick={() => handleFilterChange(key, "")}
+                          className="ml-1 text-blue-600 hover:text-blue-800 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
       {/* Minimized state indicator */}
       {isMinimized && hasActiveFilters && (

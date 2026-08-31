@@ -96,10 +96,15 @@ export default function DetailWaung() {
     return '#86efac';
   };
 
+  const normalizeRT = (str) => {
+    if (!str) return '';
+    return str.toString().toLowerCase().replace(/[\s\/]/g, '');
+  };
+
   const getStyle = (feature) => {
     const rtName = feature.properties.nmsls;
     const isSelected = selectedRT === rtName;
-    const t1Data = tabulasi1.find(d => d.rt === rtName);
+    const t1Data = tabulasi1.find(d => normalizeRT(d.rt) === normalizeRT(rtName));
     
     let fillColor = '#e2e8f0'; 
     if (t1Data) {
@@ -122,7 +127,7 @@ export default function DetailWaung() {
 
   const onEachFeature = (feature, layer) => {
     const rtName = feature.properties.nmsls;
-    const t1Data = tabulasi1.find(d => d.rt === rtName);
+    const t1Data = tabulasi1.find(d => normalizeRT(d.rt) === normalizeRT(rtName));
     
     let tooltipContent = `<div style="font-family: 'Inter', sans-serif; text-align: center; padding: 4px;">
       <div style="font-weight: bold; font-size: 14px;">${rtName}</div>`;
@@ -174,8 +179,8 @@ export default function DetailWaung() {
     }
   }, [colorMode, selectedRT, tabulasi1]);
 
-  const selT1 = selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null;
-  const selT2 = selectedRT ? tabulasi2.find(d => d.rt === selectedRT) : null;
+  const selT1 = selectedRT ? tabulasi1.find(d => normalizeRT(d.rt) === normalizeRT(selectedRT)) : null;
+  const selT2 = selectedRT ? tabulasi2.find(d => normalizeRT(d.rt) === normalizeRT(selectedRT)) : null;
 
   let lantaiData = [];
   let atapData = [];
@@ -228,6 +233,25 @@ export default function DetailWaung() {
       
       {/* ── MAIN MAP AREA ── */}
       <div className="flex-grow relative h-full">
+        {/* Back Button & Title Card */}
+        <div className="absolute top-3 left-3 z-[1000] flex items-start gap-2 pointer-events-none">
+          <button
+            onClick={() => navigate(-1)}
+            className="shrink-0 pointer-events-auto w-11 h-11 bg-white rounded-2xl shadow-md flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
+            title="Kembali"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+          {/* Title Card */}
+          <div className="bg-white rounded-2xl shadow-md px-4 py-2.5 flex flex-col justify-center shrink-0 pointer-events-auto">
+            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider leading-none mb-1">Desa</div>
+            <div className="font-extrabold text-sm text-gray-800 leading-none">WAUNG</div>
+          </div>
+        </div>
+
         {(!activeThemes.includes("Sosial Kependudukan") && activeThemes.length > 0) ? (
           <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-gray-100/80 backdrop-blur-sm">
              <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm text-center">
@@ -249,35 +273,6 @@ export default function DetailWaung() {
       >
         <TileLayer url={activeBasemap.url} attribution={activeBasemap.attribution} maxZoom={22} />
             <CustomMapControls activeBasemap={activeBasemap} setActiveBasemap={setActiveBasemap} isDetail={true} onLayerOpenChange={setIsLayerOpen} 
-              legendSlot={
-                <div className={`transition-all duration-300 ${isLegendMinimized ? 'w-11 h-11 rounded-full' : 'w-48 rounded-2xl'} ${isLayerOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} bg-white/95 backdrop-blur-xl shadow-md border border-gray-100 overflow-hidden`}>
-                  <div className={`font-bold text-gray-800 ${isLegendMinimized ? 'h-full flex justify-center items-center cursor-pointer text-gray-700 hover:bg-gray-50' : 'px-4 py-3 border-b border-gray-100 text-xs flex justify-between items-center cursor-pointer hover:bg-gray-50'}`} onClick={() => setIsLegendMinimized(!isLegendMinimized)}>
-                    {!isLegendMinimized && <span>{colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}</span>}
-                    <button title={isLegendMinimized ? 'Buka Legenda' : 'Tutup Legenda'} className={isLegendMinimized ? "text-gray-700" : "text-gray-400"}>
-                      {isLegendMinimized ? (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>) : (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>)}
-                    </button>
-                  </div>
-                  {!isLegendMinimized && (
-                    <div className="p-3 pt-2 text-[10px]">
-                      {colorMode === 'keluarga' ? (
-                        <>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0369a1] shadow-sm"></span> &gt; 80 Keluarga</div>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#0284c7] shadow-sm"></span> 65 - 80 Keluarga</div>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#38bdf8] shadow-sm"></span> 55 - 65 Keluarga</div>
-                          <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#7dd3fc] shadow-sm"></span> &lt; 55 Keluarga</div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#064e3b] shadow-sm"></span> &gt; 70 m&sup2;</div>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#059669] shadow-sm"></span> 50 - 70 m&sup2;</div>
-                          <div className="flex items-center gap-2 mb-1"><span className="w-4 h-4 rounded-sm bg-[#34d399] shadow-sm"></span> 30 - 50 m&sup2;</div>
-                          <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#a7f3d0] shadow-sm"></span> &lt; 30 m&sup2;</div>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              }
             />
             {geojsonData && <AutoZoom geojsonData={geojsonData} selectedRT={selectedRT} />}
             {geojsonData && (
@@ -442,6 +437,30 @@ export default function DetailWaung() {
               <div className="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                 <p className="text-xs text-blue-800 text-center">Silakan klik area RT pada peta untuk melihat detail spesifik per wilayah.</p>
               </div>
+
+              {/* Legend Peta Waung */}
+              <div className="mt-2 bg-white border border-gray-100 p-3 rounded-xl shadow-sm">
+                <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">
+                  Legenda {colorMode === 'keluarga' ? 'Kepadatan Keluarga' : 'Rata-rata Luas Lantai'}
+                </h3>
+                <div className="p-2 bg-gray-50 rounded-lg text-[10px]">
+                  {colorMode === 'keluarga' ? (
+                    <>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#0369a1] shadow-sm border border-gray-200"></span> &gt; 80 Keluarga</div>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#0284c7] shadow-sm border border-gray-200"></span> 65 - 80 Keluarga</div>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#38bdf8] shadow-sm border border-gray-200"></span> 55 - 65 Keluarga</div>
+                      <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#7dd3fc] shadow-sm border border-gray-200"></span> &lt; 55 Keluarga</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#064e3b] shadow-sm border border-gray-200"></span> &gt; 70 m&sup2;</div>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#059669] shadow-sm border border-gray-200"></span> 50 - 70 m&sup2;</div>
+                      <div className="flex items-center gap-2 mb-1.5"><span className="w-4 h-4 rounded-sm bg-[#34d399] shadow-sm border border-gray-200"></span> 30 - 50 m&sup2;</div>
+                      <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-[#a7f3d0] shadow-sm border border-gray-200"></span> &lt; 30 m&sup2;</div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           )}
           {/* AI Insight — tampil langsung */}
@@ -452,7 +471,7 @@ export default function DetailWaung() {
             requireClick={true}
             inline={true}
             customClass="!static !w-full"
-            data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => d.rt === selectedRT) : null }}
+            data={{ rukunTetangga: selectedRT, detail: selectedRT ? tabulasi1.find(d => normalizeRT(d.rt) === normalizeRT(selectedRT)) : null }}
           />
         </div>
       </RightSidebar>
